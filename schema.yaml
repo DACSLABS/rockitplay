@@ -1,0 +1,295 @@
+title: "ROCKITPLAY"
+stackDescription: "ROCKITPLAY Instance (Engine + Edge)"
+schemaVersion: 1.1.0
+version: "20190404"
+locale: "en"
+
+groupings:
+
+  - title: "Predefined General Configuration"
+    visible: false
+    variables:
+    - tenancy_ocid
+    - compartment_ocid
+    - current_user_ocid
+    - region
+    - rockit_engine_link_b64
+
+  - title: "ROCKITPLAY Instance"
+    visible: true
+    variables:
+    - dacslabs_link_b64
+    - rockit_base_link_b64
+    - env_label
+    - WORKSPACE
+    - show_advanced_settings
+
+  - title: "Advanced Settings"
+    visible: true
+    variables:
+      - RSI_URL
+      - use_cwl
+      - N_CONTAINER_INSTANCES
+
+  - title: "MongoDB Atlas Integration"
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Life Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
+        - eq:
+          - ${env_label}
+          - "test: Testing Environment"
+    variables:
+    - MONGODBATLAS_REGION_SERVERLESS
+    - MONGODBATLAS_REGION_CLUSTER_M10
+    - MONGODBATLAS_REGION_CLUSTER_M0
+
+  - title: "Slack Integration"
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Life Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
+        - eq:
+          - ${env_label}
+          - "test: Testing Environment"
+    variables:
+    - ENGINE_SLACK_ADMIN_CHANNEL
+    - ENGINE_SLACK_ERROR_CHANNEL
+    - ENGINE_SLACK_INFO_CHANNEL
+    - EDGE_SLACK_ADMIN_CHANNEL
+    - EDGE_SLACK_ERROR_CHANNEL
+    - EDGE_SLACK_INFO_CHANNEL
+
+variables:
+
+  dacslabs_link_b64:
+    type: string
+    title: "DACSLABS Link"
+    description: "Please copy the dacslabs_link provided by DACSLABS."
+    visible: true
+    required: true
+    pattern: "^dacslabslnk1.[-A-Za-z0-9+/]*={0,3}$"
+
+  rockit_base_link_b64:
+    type: string
+    title: "ROCKIT Base Link"
+    description: "ROCKITPLAY requires the ROCKIT Base Environment Stack to be configured and
+                  installed. Please copy the 'rockit_base_link' value from the latest successul
+                  job of the OCI Stack 'ROCKIT Base Environment'."
+    visible: true
+    required: true
+    pattern: "^dxbaselnk1.[-A-Za-z0-9+/]*={0,3}$"
+
+  env_label:
+    type: enum
+    title: "Instance Environment"
+    description: "Please specify the instance environment.
+                  (1) 'prod':  Deploys production-grade resources which involve additional
+                               costs such as: (a) provisioned concurrency units to speed up
+                               initial lambda function invocation and (b) MongoDB Atlas
+                               Serverless instance.
+                  (2) 'stage': Typically close to the production environment but limited
+                               with respect to storage and performance as
+                               low-pricing / free tier resources are allocated.
+                  (3) 'test':  Add debug and side-loading functionalities, deploys
+                               low-pricing / free tier components. Operations are limited
+                               with respect to storage size and performance."
+    enum:
+    - "prod: Production or Life Environment"
+    - "stage: Staging Environent"
+    - "test: Testing Environment"
+
+  WORKSPACE:
+    type: string
+    title: "Instance Identifier"
+    description: "Please provide an identifier which will be used as suffix to all
+                  resources belonging to this ROCKIT Engine instance.
+                  If you plan to deploy a production system only simply use 'prod' or 'live'"
+    required: true
+    pattern: "^[a-z][a-z0-9]{1,19}$"
+
+  show_advanced_settings:
+    type: boolean
+    title: "Show Advanced Settings"
+    description: "Override advanced configuration. If unsure, keep unchecked."
+    visible: true
+
+  RSI_URL:
+    type: string
+    title: "ROCKIT StreamInstaller URL"
+    description: "Define the URL to download rsi.exe"
+    default: "https:/public.cloud.rockitplay.com/rsi"
+    required: true
+    visible: ${show_advanced_settings}
+
+  use_cwl:
+    type: boolean
+    title: "Use Container Workloads"
+    description: "Use container workloads instead of lambda functions to handle
+                  API requests? Before enabling make sure you understand the cost
+                  structure of container workloads. If unsure, keep unchecked."
+    visible: ${show_advanced_settings}
+    default:
+      or:
+      - eq:
+        - ${env_label}
+        - "prod: Production or Life Environment"
+      - eq:
+        - ${env_label}
+        - "stage: Staging Environent"
+
+  N_CONTAINER_INSTANCES:
+    type: number
+    title: "Number of container instances"
+    description: "Please enter the number of simultaneously running container
+                  instances."
+    visible:
+      and:
+      - ${show_advanced_settings}
+      - ${use_cwl}
+    required: true
+    minimum: 1
+    default: 1
+
+  MONGODBATLAS_REGION_SERVERLESS:
+    type: enum
+    title: "MongoDB Atlas Serverless Instance Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Life Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
+    enum:
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_WEST_2: Oregon, USA"
+    - "AP_SOUTHEAST_1: Singapore"
+    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+    - "AP_SOUTH_1: Mumbai, India"
+    - "EU_WEST_1: Ireland"
+
+  MONGODBATLAS_REGION_CLUSTER_M10:
+    type: enum
+    title: "MongoDB Atlas M10 cluster Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible: false
+    enum:
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_EAST_2: Ohio, USA"
+    - "US_WEST_1: Nothern California, USA"
+    - "US_WEST_2: Oregon, USA"
+    - "CA_CENTRAL_1: Montreal, QC, Canada"
+    - "CA_WEST_1: Calgary, Canada"
+    - "SA_EAST_1: Sao Paulo, Brazil"
+    - "AP_NORTHEAST_1: Tokyo, Japan"
+    - "AP_NORTHEAST_2: Seoul, South Korea"
+    - "AP_NORTHEAST_3: Osaka, Japan"
+    - "AP_EAST_1: Hong Kong, China"
+    - "AP_SOUTHEAST_1: Singapore"
+    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+    - "AP_SOUTHEAST_3: Jakarta, Indonesia"
+    - "AP_SOUTHEAST_4: Melbourne, Victoria, Australia"
+    - "AP_SOUTH_1: Mumbai, India"
+    - "AP_SOUTH_2: Hyderabad, India"
+    - "EU_CENTRAL_1: Frankfurt, Germany"
+    - "EU_CENTRAL_2: Zurich, Switzerland"
+    - "EU_NORTH_1: Stockholm, Sweden"
+    - "EU_WEST_1: Ireland"
+    - "EU_WEST_2: London, England, UK"
+    - "EU_WEST_3: Paris, France"
+    - "EU_SOUTH_1: Milan, Italy"
+    - "EU_SOUTH_2: Spain"
+    - "ME_SOUTH_1: Bahrain"
+    - "AF_SOUTH_1: Cape Town, South Africa"
+    - "IL_CENTRAL_1: Tel Aviv, Israel"
+    - "ME_CENTRAL_1: UAE"
+
+  MONGODBATLAS_REGION_CLUSTER_M0:
+    type: enum
+    title: "MongoDB Atlas M0 (free-tier) Cluster Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      and:
+        - eq:
+          - ${env_label}
+          - "test: Testing Environment"
+    enum:
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_WEST_2: Oregon, USA"
+    - "SA_EAST_1: Sao Paulo, Brazil"
+    - "AP_NORTHEAST_1: Tokyo, Japan"
+    - "AP_NORTHEAST_2: Seoul, South Korea"
+    - "AP_EAST_1: Hong Kong, China"
+    - "AP_SOUTHEAST_1: Singapore"
+    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+    - "AP_SOUTH_1: Mumbai, India"
+    - "EU_CENTRAL_1: Frankfurt, Germany"
+    - "EU_NORTH_1: Stockholm, Sweden"
+    - "EU_WEST_1: Ireland"
+    - "EU_WEST_3: Paris, France"
+    - "ME_SOUTH_1: Bahrain"
+    - "AF_SOUTH_1: Cape Town, South Africa"
+
+  ENGINE_SLACK_ADMIN_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Engine Site-Admins"
+    description: "Please enter the Id of the Slack channel which should receive
+                  notifications for the site administrators of ROCKIT Engine, e.g,
+                  '#my-admin-channel'"
+    required: true
+
+  ENGINE_SLACK_ERROR_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Engine Errors"
+    description: "Please enter the Id of the Slack channel which should receive
+                  error notifications from ROCKIT Engine, e.g, '#my-error-channel'"
+    required: true
+
+  ENGINE_SLACK_INFO_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Engine Infos"
+    description: "Please enter the Id of the Slack channel which should receive
+                  information notifications from ROCKIT Engine, e.g., '#my-info-channel'"
+    required: true
+
+  EDGE_SLACK_ADMIN_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Edge Site-Admins"
+    description: "Please enter the Id of the Slack channel which should receive
+                  notifications for the site administrators of ROCKIT Edge, e.g,
+                  '#my-admin-channel'"
+    required: true
+
+  EDGE_SLACK_ERROR_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Edge Errors"
+    description: "Please enter the Id of the Slack channel which should receive
+                  error notifications from ROCKIT Edge, e.g, '#my-error-channel'"
+    required: true
+
+  EDGE_SLACK_INFO_CHANNEL:
+    type: string
+    title: "Slack Channel for ROCKIT Edge Infos"
+    description: "Please enter the Id of the Slack channel which should receive
+                  information notifications from ROCKIT Edge, e.g., '#my-info-channel'"
+    required: true
