@@ -59,11 +59,28 @@ locals {
     stage = max (1, var.N_CONTAINER_INSTANCES)
     test  = var.N_CONTAINER_INSTANCES
   }
-  mongodbatlas = {
+  mongodbatlas_engine = {
     prod = {
       type   = "serverless"
       size   = ""
       region = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
+    }
+    stage = {
+      type   = "serverless"
+      size   = ""
+      region = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
+    }
+    test = {
+      type   = "cluster"
+      size   = "M0"
+      region = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
+    }
+  }
+    mongodbatlas_edge = {
+    prod = {
+      type   = "cluster"
+      size   = "M10"
+      region = split (":", var.MONGODBATLAS_REGION_CLUSTER_M10)[0]
     }
     stage = {
       type   = "serverless"

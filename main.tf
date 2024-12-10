@@ -48,9 +48,9 @@ module engine {
    ENGINE_VAULT_OCID                = local.vault_ocid
    ENGINE_VAULT_KEY_OCID            = local.vault_key_ocid
    ENGINE_DB_ORGID                  = local.mongodbatlas_orgid
-   ENGINE_DB_TYPE                   = local.mongodbatlas[local.env].type
-   ENGINE_DB_SIZE                   = local.mongodbatlas[local.env].size
-   ENGINE_DB_REGION                 = local.mongodbatlas[local.env].region
+   ENGINE_DB_TYPE                   = local.mongodbatlas_engine[local.env].type
+   ENGINE_DB_SIZE                   = local.mongodbatlas_engine[local.env].size
+   ENGINE_DB_REGION                 = local.mongodbatlas_engine[local.env].region
    ENGINE_SLACK_TOKEN               = local.slack_token
    ENGINE_SLACK_ADMIN_CHANNEL       = var.ENGINE_SLACK_ADMIN_CHANNEL
    ENGINE_SLACK_ERROR_CHANNEL       = var.ENGINE_SLACK_ERROR_CHANNEL
@@ -115,9 +115,9 @@ module edge {
    EDGE_ENGINE_ADMIN_TOKEN        = local.engine_admin_token
    EDGE_ENGINE_BASE_URL           = module.engine.baseurl
    EDGE_DB_ORGID                  = local.mongodbatlas_orgid
-   EDGE_DB_TYPE                   = local.mongodbatlas[local.env].type
-   EDGE_DB_SIZE                   = local.mongodbatlas[local.env].size
-   EDGE_DB_REGION                 = local.mongodbatlas[local.env].region
+   EDGE_DB_TYPE                   = local.mongodbatlas_edge[local.env].type
+   EDGE_DB_SIZE                   = local.mongodbatlas_edge[local.env].size
+   EDGE_DB_REGION                 = local.mongodbatlas_edge[local.env].region
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
    EDGE_SLACK_ERROR_CHANNEL       = var.EDGE_SLACK_ERROR_CHANNEL
