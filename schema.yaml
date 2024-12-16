@@ -162,7 +162,7 @@ variables:
   MONGODBATLAS_REGION_SERVERLESS:
     type: enum
     title: "MongoDB Atlas Serverless Instance Region"
-    description: "Please choose the location of the MongoDB Atlas instances.
+    description: "Please choose the location of the MongoDB Atlas serverless instances.
                   Location identifiers taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
@@ -185,11 +185,18 @@ variables:
   MONGODBATLAS_REGION_CLUSTER_M10:
     type: enum
     title: "MongoDB Atlas M10 cluster Region"
-    description: "Please choose the location of the MongoDB Atlas instances.
+    description: "Please choose the location of the MongoDB Atlas clusters.
                   Location identifiers taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
-    visible: false
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Life Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
     enum:
     - "US_EAST_1: Northern Virginia, USA"
     - "US_EAST_2: Ohio, USA"
@@ -224,7 +231,7 @@ variables:
   MONGODBATLAS_REGION_CLUSTER_M0:
     type: enum
     title: "MongoDB Atlas M0 (free-tier) Cluster Region"
-    description: "Please choose the location of the MongoDB Atlas instances.
+    description: "Please choose the location of the MongoDB Atlas clusters.
                   Location identifiers taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
