@@ -22,7 +22,7 @@ resource "mongodbatlas_cluster" "edge_mongodb_cluster" {
    name       = "edg-${local.workspace}-${local.db_region}"
    project_id = mongodbatlas_project.edge_mongodb_proj.id
    provider_name               = "TENANT"
-   backing_provider_name       = var.EDGE_DB_PROVIDER
+   backing_provider_name       = "AWS"
    provider_instance_size_name = var.EDGE_DB_SIZE
    provider_region_name        = var.EDGE_DB_REGION
 }
@@ -34,8 +34,8 @@ resource "mongodbatlas_serverless_instance" "edge_mongodb_instance" {
    name       = "edg-${local.workspace}-${local.db_region}"
 
    provider_settings_backing_provider_name = "AWS"
-   provider_settings_provider_name = "SERVERLESS"
-   provider_settings_region_name   = var.EDGE_DB_REGION
+   provider_settings_provider_name         = "SERVERLESS"
+   provider_settings_region_name           = var.EDGE_DB_REGION
 }
 
 # --- Network Access

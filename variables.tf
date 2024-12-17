@@ -22,7 +22,7 @@ variable "MONGODBATLAS_REGION_SERVERLESS"  {
   type = string
   default = ""
 }
-variable "MONGODBATLAS_REGION_CLUSTER_M10" {
+variable "MONGODBATLAS_REGION_CLUSTER_M5" {
   type = string
   default = ""
 }
@@ -62,19 +62,16 @@ locals {
   mongodbatlas_engine = {
     prod = {
       type     = "serverless"
-      provider = "TENANT"
       size     = ""
       region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     stage = {
       type     = "serverless"
-      provider = "TENANT"
       size     = ""
       region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     test = {
       type     = "cluster"
-      provider = "TENANT"
       size     = "M0"
       region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
     }
@@ -82,19 +79,16 @@ locals {
   mongodbatlas_edge = {
     prod = {
       type     = "cluster"
-      provider = "AWS"
-      size     = "M10"
-      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M10)[0]
+      size     = "M5"
+      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M5)[0]
     }
     stage = {
       type     = "serverless"
-      provider = "TENANT"
       size     = ""
       region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     test = {
       type     = "cluster"
-      provider = "TENANT"
       size     = "M0"
       region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
     }

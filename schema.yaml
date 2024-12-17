@@ -44,8 +44,8 @@ groupings:
           - ${env_label}
           - "test: Testing Environment"
     variables:
+    - MONGODBATLAS_REGION_CLUSTER_M5
     - MONGODBATLAS_REGION_SERVERLESS
-    - MONGODBATLAS_REGION_CLUSTER_M10
     - MONGODBATLAS_REGION_CLUSTER_M0
 
   - title: "Slack Integration"
@@ -159,10 +159,10 @@ variables:
     minimum: 1
     default: 1
 
-  MONGODBATLAS_REGION_SERVERLESS:
+  MONGODBATLAS_REGION_CLUSTER_M5:
     type: enum
-    title: "MongoDB Atlas Serverless Instance Region"
-    description: "Please choose the location of the MongoDB Atlas serverless instances.
+    title: "MongoDB Atlas M5 Cluster Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
                   Location identifiers taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
@@ -171,32 +171,6 @@ variables:
         - eq:
           - ${env_label}
           - "prod: Production or Life Environment"
-        - eq:
-          - ${env_label}
-          - "stage: Staging Environent"
-    enum:
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_WEST_2: Oregon, USA"
-    - "AP_SOUTHEAST_1: Singapore"
-    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
-    - "AP_SOUTH_1: Mumbai, India"
-    - "EU_WEST_1: Ireland"
-
-  MONGODBATLAS_REGION_CLUSTER_M10:
-    type: enum
-    title: "MongoDB Atlas M10 cluster Region"
-    description: "Please choose the location of the MongoDB Atlas clusters.
-                  Location identifiers taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
-    required: true
-    visible:
-      or:
-        - eq:
-          - ${env_label}
-          - "prod: Production or Life Environment"
-        - eq:
-          - ${env_label}
-          - "stage: Staging Environent"
     enum:
     - "US_EAST_1: Northern Virginia, USA"
     - "US_EAST_2: Ohio, USA"
@@ -226,12 +200,36 @@ variables:
     - "ME_SOUTH_1: Bahrain"
     - "AF_SOUTH_1: Cape Town, South Africa"
     - "IL_CENTRAL_1: Tel Aviv, Israel"
+
     - "ME_CENTRAL_1: UAE"
+
+  MONGODBATLAS_REGION_SERVERLESS:
+    type: enum
+    title: "MongoDB Atlas Serverless Instance Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Life Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
+    enum:
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_WEST_2: Oregon, USA"
+    - "AP_SOUTHEAST_1: Singapore"
+    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+    - "AP_SOUTH_1: Mumbai, India"
+    - "EU_WEST_1: Ireland"
 
   MONGODBATLAS_REGION_CLUSTER_M0:
     type: enum
     title: "MongoDB Atlas M0 (free-tier) Cluster Region"
-    description: "Please choose the location of the MongoDB Atlas clusters.
+    description: "Please choose the location of the MongoDB Atlas instances.
                   Location identifiers taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true

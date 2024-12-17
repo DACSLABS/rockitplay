@@ -22,7 +22,6 @@ variable "ENGINE_DB_ORGID"             {
    sensitive = true
 }
 variable "ENGINE_DB_TYPE"              { type = string }
-variable "ENGINE_DB_PROVIDER"          { type = string }
 variable "ENGINE_DB_SIZE"              { type = string }
 variable "ENGINE_DB_REGION"            { type = string }
 

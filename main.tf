@@ -49,7 +49,6 @@ module engine {
    ENGINE_VAULT_KEY_OCID            = local.vault_key_ocid
    ENGINE_DB_ORGID                  = local.mongodbatlas_orgid
    ENGINE_DB_TYPE                   = local.mongodbatlas_engine[local.env].type
-   ENGINE_DB_PROVIDER               = local.mongodbatlas_engine[local.env].provider
    ENGINE_DB_SIZE                   = local.mongodbatlas_engine[local.env].size
    ENGINE_DB_REGION                 = local.mongodbatlas_engine[local.env].region
    ENGINE_SLACK_TOKEN               = local.slack_token
@@ -117,7 +116,6 @@ module edge {
    EDGE_ENGINE_BASE_URL           = module.engine.baseurl
    EDGE_DB_ORGID                  = local.mongodbatlas_orgid
    EDGE_DB_TYPE                   = local.mongodbatlas_edge[local.env].type
-   EDGE_DB_PROVIDER               = local.mongodbatlas_edge[local.env].provider
    EDGE_DB_SIZE                   = local.mongodbatlas_edge[local.env].size
    EDGE_DB_REGION                 = local.mongodbatlas_edge[local.env].region
    EDGE_SLACK_TOKEN               = local.slack_token
