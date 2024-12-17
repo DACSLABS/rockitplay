@@ -61,36 +61,42 @@ locals {
   }
   mongodbatlas_engine = {
     prod = {
-      type   = "serverless"
-      size   = ""
-      region = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
+      type     = "serverless"
+      provider = "TENANT"
+      size     = ""
+      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     stage = {
-      type   = "serverless"
-      size   = ""
-      region = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
+      type     = "serverless"
+      provider = "TENANT"
+      size     = ""
+      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     test = {
-      type   = "cluster"
-      size   = "M0"
-      region = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
+      type     = "cluster"
+      provider = "TENANT"
+      size     = "M0"
+      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
     }
   }
-    mongodbatlas_edge = {
+  mongodbatlas_edge = {
     prod = {
-      type   = "cluster"
-      size   = "M10"
-      region = split (":", var.MONGODBATLAS_REGION_CLUSTER_M10)[0]
+      type     = "cluster"
+      provider = "AWS"
+      size     = "M10"
+      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M10)[0]
     }
     stage = {
-      type   = "serverless"
-      size   = ""
-      region = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
+      type     = "serverless"
+      provider = "TENANT"
+      size     = ""
+      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
     }
     test = {
-      type   = "cluster"
-      size   = "M0"
-      region = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
+      type     = "cluster"
+      provider = "TENANT"
+      size     = "M0"
+      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
     }
   }
 }

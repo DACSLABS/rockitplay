@@ -23,6 +23,7 @@ variable "EDGE_DB_ORGID"              {
    sensitive = true
 }
 variable "EDGE_DB_TYPE"               { type = string }
+variable "EDGE_DB_PROVIDER"           { type = string }
 variable "EDGE_DB_SIZE"               { type = string }
 variable "EDGE_DB_REGION"             { type = string }
 

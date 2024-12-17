@@ -21,7 +21,7 @@ resource "mongodbatlas_cluster" "engine_mongodb_cluster" {
    name       = "eng-${local.workspace}-${local.db_region}"
    project_id = mongodbatlas_project.engine_mongodb_proj.id
    provider_name               = "TENANT"
-   backing_provider_name       = "AWS"
+   backing_provider_name       = var.ENGINE_DB_PROVIDER
    provider_instance_size_name = var.ENGINE_DB_SIZE
    provider_region_name        = var.ENGINE_DB_REGION
 }

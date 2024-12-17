@@ -22,7 +22,7 @@ resource "mongodbatlas_cluster" "edge_mongodb_cluster" {
    name       = "edg-${local.workspace}-${local.db_region}"
    project_id = mongodbatlas_project.edge_mongodb_proj.id
    provider_name               = "TENANT"
-   backing_provider_name       = "AWS"
+   backing_provider_name       = var.EDGE_DB_PROVIDER
    provider_instance_size_name = var.EDGE_DB_SIZE
    provider_region_name        = var.EDGE_DB_REGION
 }
