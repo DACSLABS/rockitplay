@@ -1,5 +1,5 @@
 
 variable "VERSION" {
    type = number
-   default = 54
+   default = 55
 }
