@@ -149,7 +149,6 @@ resource "oci_objectstorage_preauthrequest" "edge_tsk_bucket_readwrite_par" {
 }
 
 resource "oci_objectstorage_bucket" "edge_dev_bucket" {
-   count          = local.env == "test" ? 1 : 0
    compartment_id = oci_identity_compartment.edge_comp.id
    name           = "edge-dev-bucket-${local.workspace}"
    namespace      = var.EDGE_OCI_NAMESPACE
@@ -157,7 +156,6 @@ resource "oci_objectstorage_bucket" "edge_dev_bucket" {
 }
 
 resource "oci_objectstorage_preauthrequest" "edge_dev_bucket_readwrite_par" {
-   count        = local.env == "test" ? 1 : 0
    depends_on   = [ oci_objectstorage_bucket.edge_dev_bucket ]
    access_type  = "AnyObjectReadWrite"
    bucket       = "edge-dev-bucket-${local.workspace}"
@@ -166,13 +164,22 @@ resource "oci_objectstorage_preauthrequest" "edge_dev_bucket_readwrite_par" {
    time_expires = "2030-01-01T10:00:00+02:00"
 }
 
-locals {
-   dev_bucket_readwrite_par = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par[0].access_uri}" : null
+resource "oci_objectstorage_preauthrequest" "edge_rockitmc_read_par" {
+   depends_on   = [ oci_objectstorage_bucket.edge_dev_bucket ]
+   access_type  = "ObjectRead"
+   bucket       = "edge-dev-bucket-${local.workspace}"
+   name         = "read-rockitmc-only"
+   object_name  = "rockit-mc.js"
+   namespace    = var.EDGE_OCI_NAMESPACE
+   time_expires = "2030-01-01T10:00:00+02:00"
 }
+
 
 locals {
    edge_tsk_bucket_readwrite_url    = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_tsk_bucket_readwrite_par.access_uri}"
    edge_trc_bucket_readwrite_url    = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_trc_bucket_readwrite_par.access_uri}"
    edge_assets_bucket_readwrite_url = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_assets_bucket_readwrite_par.access_uri}"
    edge_deps_bucket_readwrite_url   = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_deps_bucket_readwrite_par.access_uri}"
+   dev_bucket_readwrite_par         = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par.access_uri}"
+   edge_rockitmc_read_url           = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_rockitmc_read_par.access_uri}"
 }

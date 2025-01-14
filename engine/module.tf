@@ -189,27 +189,6 @@ locals {
    engine_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.engine_admin_secretbundle.secret_bundle_content.0.content)
 }
 
-resource "null_resource" "curl_post_initialize" {
-   depends_on = [
-      oci_apigateway_deployment.engine_adm_api_deployment,
-      oci_functions_function.engine_fn
-   ]
-   triggers = {
-      # always = "${timestamp()}"
-      src_updated  = var.ENGINE_SRC_HASH
-   }
-   provisioner "local-exec" {
-      interpreter = [ "/bin/bash", "-c" ]
-      command = <<-EOT
-         set -e
-         ENGINE_BASE_URL="${local.engine_apigw_url}"
-         chmod +x ./engine/gen-admin-token.sh
-         token=$(./engine/gen-admin-token.sh '${local.engine_admin_secret_b64}' 'engine-stack')
-         curl --insecure -H "x-rockit-engine-admin-token: $token" -H "Content-Type: application/json" -X POST $ENGINE_BASE_URL/adm/v1/initialize || true
-      EOT
-   }
-}
-
 # --- prepare ROCKIT Engine link to ROCKIT Edge instance(s)
 resource "null_resource" "edge_admin_token" {
    triggers = {

@@ -124,6 +124,36 @@ module edge {
    EDGE_SLACK_INFO_CHANNEL        = var.EDGE_SLACK_INFO_CHANNEL
 }
 
+resource "null_resource" "engine_curl_post_initialize" {
+   depends_on = [ module.engine ]
+   triggers = { always = "${timestamp()}" }
+   provisioner "local-exec" {
+      interpreter = [ "/bin/bash", "-c" ]
+      command = <<-EOT
+         set -e
+         ENGINE_BASE_URL="${module.engine.apigw_url}"
+         chmod +x ./engine/gen-admin-token.sh
+         token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
+         curl --insecure -H "x-rockit-engine-admin-token: $token" -H "Content-Type: application/json" -X POST $ENGINE_BASE_URL/adm/v1/initialize || true
+      EOT
+   }
+}
+
+resource "null_resource" "edge_curl_post_initialize" {
+   depends_on = [ module.edge ]
+   triggers = { always = "${timestamp()}" }
+   provisioner "local-exec" {
+      interpreter = [ "/bin/bash", "-c" ]
+      command = <<-EOT
+         set -e
+         EDGE_BASE_URL="${module.edge.apigw_url}"
+         chmod +x ./edge/gen-admin-token.sh
+         token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
+         curl --insecure -H "x-rockit-admin-token: $token" -H "Content-Type: application/json" -X POST $EDGE_BASE_URL/adm/v1/initialize || true
+      EOT
+   }
+}
+
 output "admin_secret_b64"   { value = module.edge.edge_admin_secret_b64 }
 output "version"            { value = var.VERSION }
 output "inject_link_edge"   { value = module.edge.inject_link }

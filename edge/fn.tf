@@ -55,6 +55,7 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_TASK_URL"          : "${local.edge_tsk_bucket_readwrite_url}edge-task.tgz"
       "DX_EDGE_TASK_SIG"          : var.EDGE_TASK_SIG
       "DX_EDGE_RSI_BASE_URL"      : var.EDGE_RSI_BASE_URL
+      "DX_EDGE_ROCKIT_MC_JS"      : "${local.edge_rockitmc_read_url}"
    }
 }
 

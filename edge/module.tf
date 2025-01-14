@@ -196,27 +196,6 @@ locals {
    edge_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_admin_secretbundle.secret_bundle_content.0.content)
 }
 
-resource "null_resource" "edge_curl_post_initialize" {
-   depends_on = [
-      oci_apigateway_deployment.edge_adm_api_deployment,
-      oci_functions_function.edge_fn
-   ]
-   triggers = {
-      always = "${timestamp()}"
-      # src_updated  = local.dx_src_hash
-   }
-   provisioner "local-exec" {
-      interpreter = [ "/bin/bash", "-c" ]
-      command = <<-EOT
-         set -e
-         EDGE_BASE_URL="${local.edge_apigw_url}"
-         chmod +x ./edge/gen-admin-token.sh
-         token=$(./edge/gen-admin-token.sh '${local.edge_admin_secret_b64}' 'edge-stack')
-         curl --insecure -H "x-rockit-admin-token: $token" -H "Content-Type: application/json" -X POST $EDGE_BASE_URL/adm/v1/initialize || true
-      EOT
-   }
-}
-
 # --- inject.sh link
 locals {
    inject_link_args = [

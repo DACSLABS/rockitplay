@@ -1,137 +1,148 @@
 // --- endpoint definitions: /adm/v1
-variable "edge_adm_v1_endpoints" {
+variable "edge_endpoints" {
    type = list (object ({
       path      = string
       methods   = list(string)
    }))
    default = [{
-     path       = "/hello"
-     methods    = ["POST"]
+      path       = "/mc"
+      methods    = ["GET"]
    }, {
-      path      = "/initialize"
+      // --- /adm/v1/*
+      path       = "/adm/v1/hello"
       methods    = ["POST"]
    }, {
-      path      = "/orgs"
+      path      = "/adm/v1/initialize"
+      methods    = ["POST"]
+   }, {
+      path      = "/adm/v1/orgs"
+      methods    = ["POST"]
+   }, {
+      path      = "/adm/v1/orgs/{var1}"
+      methods    = ["DELETE"]
+   }, {
+      path      = "/adm/v1/ping"
+      methods    = ["POST"]
+   }, {
+
+      // --- /be/v1/*
+      path       = "/be/v1/apikeys"
       methods    = ["POST", "DELETE"]
    }, {
-      path      = "/ping"
-      methods    = ["POST"]
-   }]
-}
-
-// --- endpoint definitions: /be/v1
-variable "edge_be_v1_endpoints" {
-   type = list (object ({
-      path      = string
-      methods   = list(string)
-   }))
-   default = [{
-     path       = "/apikeys"
-     methods    = ["POST", "DELETE"]
+      path       = "/be/v1/apps"
+      methods    = ["GET", "POST", "PATCH"]
    }, {
-     path       = "/apps"
-     methods    = ["GET", "POST", "PATCH", "DELETE"]
+      path       = "/be/v1/apps/{var1}"
+      methods    = ["GET", "DELETE"]
    }, {
-     path       = "/apps/{var1}"
-     methods    = ["GET"]
-   }, {
-     path       = "/assets"
-     methods    = ["POST"]
-   }, {
-     path       = "/auth"
-     methods    = ["POST"]
-   }, {
-     path       = "/builds"
-     methods    = ["POST"]
-   }, {
-     path       = "/commit"
-     methods    = ["POST"]
-   }, {
-     path       = "/deployments"
-     methods    = ["POST", "PATCH", "DELETE"]
-   }, {
-     path       = "/deps"
-     methods    = ["POST", "PATCH", "DELETE"]
-   }, {
-     path       = "/export"
-     methods    = ["POST"]
-   }, {
-     path       = "/import"
-     methods    = ["POST"]
-   }, {
-     path       = "/keys"
-     methods    = ["POST", "DELETE"]
-   }, {
-     path       = "/login"
-     methods    = ["POST"]
-   }, {
-     path       = "/progress"
-     methods    = ["POST"]
-   }, {
-     path       = "/publish"
-     methods    = ["POST"]
-   }, {
-     path       = "/release"
-     methods    = ["POST"]
-   }, {
-     path       = "/roles"
-     methods    = ["POST", "PATCH", "GET", "DELETE"]
-   }, {
-     path       = "/sources"
-     methods    = ["GET", "POST", "PATCH", "DELETE"]
-   }, {
-     path       = "/tasks"
-     methods    = ["GET"]
-   }, {
-     path       = "/tasks/{var1}"
-     methods    = ["GET"]
-   }, {
-     path       = "/trigger"
-     methods    = ["POST"]
-   }, {
-     path       = "/users"
-     methods    = ["GET", "POST", "PATCH", "DELETE"]
-   }]
-}
-
-// --- endpoint definitions: /client/v1
-variable "edge_client_v1_endpoints" {
-   type = list (object ({
-      path      = string
-      methods   = list(string)
-   }))
-   default = [{
-     path       = "/apps"
-     methods    = ["GET"]
-   }, {
-      path       = "/apps/{var1}"
-      methods    = ["GET"]
-   }, {
-      path       = "/auth"
+      path       = "/be/v1/assets"
       methods    = ["POST"]
    }, {
-      path       = "/client-items"
+      path       = "/be/v1/auth"
       methods    = ["POST"]
    }, {
-      path       = "/deps/{var1}"
-      methods    = ["GET"]
-   }, {
-      path       = "/feedback"
+      path       = "/be/v1/builds"
       methods    = ["POST"]
    }, {
-      path       = "/ib-sessions"
+      path       = "/be/v1/commit"
       methods    = ["POST"]
    }, {
-      path       = "/login"
-      methods    = ["POST"]
+      path       = "/be/v1/deployments"
+      methods    = ["GET", "POST", "PATCH"]
    }, {
-      path       = "/rsi"
-      methods    = ["GET"]
+      path       = "/be/v1/deployments/{var1}"
+      methods    = ["GET", "DELETE"]
    }, {
-      path       = "/rte-sessions"
+      path       = "/be/v1/deps"
       methods    = ["POST", "PATCH"]
    }, {
-      path       = "/traces"
+      path       = "/be/v1/deps/{var1}"
+      methods    = ["DELETE"]
+   }, {
+      path       = "/be/v1/export"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/import"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/keys"
+      methods    = ["GET", "POST", "PATCH"]
+   }, {
+      path       = "/be/v1/keys/{var1}"
+      methods    = ["GET", "DELETE"]
+   }, {
+      path       = "/be/v1/login"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/progress"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/publish"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/release"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/roles"
+      methods    = ["POST", "PATCH", "GET"]
+   }, {
+      path       = "/be/v1/roles/{var1}"
+      methods    = ["DELETE"]
+   }, {
+      path       = "/be/v1/sources"
+      methods    = ["GET", "POST", "PATCH"]
+   }, {
+      path       = "/be/v1/sources/{var1}"
+      methods    = ["GET", "DELETE"]
+   }, {
+      path       = "/be/v1/tasks"
+      methods    = ["GET"]
+   }, {
+      path       = "/be/v1/tasks/{var1}"
+      methods    = ["GET"]
+   }, {
+      path       = "/be/v1/trigger"
+      methods    = ["POST"]
+   }, {
+      path       = "/be/v1/users"
+      methods    = ["GET", "POST", "PATCH"]
+   }, {
+      path       = "/be/v1/users/{var1}"
+      methods    = ["DELETE"]
+   }, {
+
+      // --- /client/v1/*
+      path       = "/client/v1/apps"
+      methods    = ["GET"]
+   }, {
+      path       = "/client/v1/apps/{var1}"
+      methods    = ["GET"]
+   }, {
+      path       = "/client/v1/auth"
+      methods    = ["POST"]
+   }, {
+      path       = "/client/v1/client-items"
+      methods    = ["POST"]
+   }, {
+      path       = "/client/v1/deps/{var1}"
+      methods    = ["GET"]
+   }, {
+      path       = "/client/v1/feedback"
+      methods    = ["POST"]
+   }, {
+      path       = "/client/v1/ib-sessions"
+      methods    = ["POST"]
+   }, {
+      path       = "/client/v1/login"
+      methods    = ["POST"]
+   }, {
+      path       = "/client/v1/rsi"
+      methods    = ["GET"]
+   }, {
+      path       = "/client/v1/rte-sessions"
+      methods    = ["POST", "PATCH"]
+   }, {
+      path       = "/client/v1/traces"
       methods    = ["POST"]
    }]
 }
@@ -154,62 +165,16 @@ resource "oci_apigateway_gateway" "edge_pub_api_gw" {
    certificate_id = var.EDGE_WITH_CERT ? var.EDGE_CERT_OCID : null
 }
 
-# --- API Deployment: Site-Administrator Endpoint definitions: /adm/v1
-resource "oci_apigateway_deployment" "edge_adm_api_deployment" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   gateway_id     = oci_apigateway_gateway.edge_pub_api_gw.id
-   display_name  = "edge-adm-api-${local.workspace}"
-   path_prefix    = "/adm/v1"
-
-   specification {
-     dynamic "routes" {
-         for_each = var.edge_adm_v1_endpoints
-         content {
-            path    = routes.value.path
-            methods = routes.value.methods
-            dynamic "backend" {
-               for_each = local.use_cwl ? [1] : []
-               content {
-                  type = "HTTP_BACKEND"
-                  url  = "${local.nlb_url}/adm/v1${replace(replace (routes.value.path, local.path_param1_key, local.path_param1_val), local.path_param2_key, local.path_param2_val)}"
-                  connect_timeout_in_seconds = var.EDGE_APIGW_CONNECTION_TIMEOUT
-                  read_timeout_in_seconds    = var.EDGE_APIGW_READ_TIMEOUT
-                  send_timeout_in_seconds    = var.EDGE_APIGW_SEND_TIMEOUT
-               }
-            }
-            dynamic "backend" {
-               for_each = local.use_cwl ? [] : [1]
-               content {
-                  type        = "ORACLE_FUNCTIONS_BACKEND"
-                  function_id = oci_functions_function.edge_fn.id
-               }
-            }
-            # request_policies {
-            #    body_validation {
-            #       content {
-            #          media_type      = "application/json"
-            #          validation_type = "NONE"
-            #       }
-            #       required        = "true"
-            #       validation_mode = "ENFORCING"
-            #    }
-				# }
-         }
-      }
-   }
-}
-
-
-# --- API Deployment: Backend-API, Public Endpoint definitions /be/v1
-resource "oci_apigateway_deployment" "edge_pub_api_be_deployment_v1" {
+# --- API Deployments
+resource "oci_apigateway_deployment" "edge_api_deployment" {
    compartment_id = oci_identity_compartment.edge_comp.id
    gateway_id     = oci_apigateway_gateway.edge_pub_api_gw.id
    display_name  = "edge-pub-api-v1-${local.workspace}"
-   path_prefix    = "/be/v1"
+   path_prefix    = "/"
 
    specification {
       dynamic "routes" {
-         for_each = var.edge_be_v1_endpoints
+         for_each = var.edge_endpoints
          content {
             path    = routes.value.path
             methods = routes.value.methods
@@ -217,52 +182,7 @@ resource "oci_apigateway_deployment" "edge_pub_api_be_deployment_v1" {
                for_each = local.use_cwl ? [1] : []
                content {
                   type = "HTTP_BACKEND"
-                  url  = "${local.nlb_url}/be/v1${replace(replace (routes.value.path, local.path_param1_key, local.path_param1_val), local.path_param2_key, local.path_param2_val)}"
-                  connect_timeout_in_seconds = var.EDGE_APIGW_CONNECTION_TIMEOUT
-                  read_timeout_in_seconds    = var.EDGE_APIGW_READ_TIMEOUT
-                  send_timeout_in_seconds    = var.EDGE_APIGW_SEND_TIMEOUT
-               }
-            }
-            dynamic "backend" {
-               for_each = local.use_cwl ? [] : [1]
-               content {
-                  type        = "ORACLE_FUNCTIONS_BACKEND"
-                  function_id = oci_functions_function.edge_fn.id
-               }
-            }
-            # request_policies {
-            #    body_validation {
-            #       content {
-            #          media_type      = "application/json"
-            #          validation_type = "NONE"
-            #       }
-            #       required        = "true"
-            #       validation_mode = "ENFORCING"
-            #    }
-				# }
-         }
-      }
-   }
-}
-
-# --- API Deployment: ROCKIT Client API: Public Endpoint definitions /client/v1
-resource "oci_apigateway_deployment" "edge_pub_api_launcher_deployment_v1" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   gateway_id     = oci_apigateway_gateway.edge_pub_api_gw.id
-   display_name  = "edge-pub-api-v1-${local.workspace}"
-   path_prefix    = "/client/v1"
-
-   specification {
-      dynamic "routes" {
-         for_each = var.edge_client_v1_endpoints
-         content {
-            path    = routes.value.path
-            methods = routes.value.methods
-            dynamic "backend" {
-               for_each = local.use_cwl ? [1] : []
-               content {
-                  type = "HTTP_BACKEND"
-                  url  = "${local.nlb_url}/client/v1${replace(replace (routes.value.path, local.path_param1_key, local.path_param1_val), local.path_param2_key, local.path_param2_val)}"
+                  url  = "${local.nlb_url}${replace(replace (routes.value.path, local.path_param1_key, local.path_param1_val), local.path_param2_key, local.path_param2_val)}"
                   connect_timeout_in_seconds = var.EDGE_APIGW_CONNECTION_TIMEOUT
                   read_timeout_in_seconds    = var.EDGE_APIGW_READ_TIMEOUT
                   send_timeout_in_seconds    = var.EDGE_APIGW_SEND_TIMEOUT
