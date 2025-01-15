@@ -209,7 +209,7 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
    </details>
 3. Setup your [OCI tenancy](https://www.oracle.com/cloud/).
 4. Deploy ROCKITPLAY Base Environment  
-   [![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/DACSLABS/ROCKIT-BaseEnv/archive/refs/heads/prod.zip)  
+   [![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/DACSLABS/rockitbase/archive/refs/heads/master.zip)  
    In the dialog the following information have to be provided:  
       | Input     | Description |
    |-----|-----|
@@ -220,7 +220,7 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
    | Slack token | Slack bot token to post notifications. |
 
 4. Deploy ROCKITPLAY Cloud Service  
-   [![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/DACSLABS/ROCKITPLAY-dacslabs/archive/refs/heads/prod.zip)  
+   [![Deploy to Oracle Cloud](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/DACSLABS/rockitplay/archive/refs/heads/master.zip)  
    The following information are required in the installation dialog:  
    | Input     | Description |
    |-----|-----|
