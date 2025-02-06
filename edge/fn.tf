@@ -46,7 +46,7 @@ resource "oci_functions_application" "edge_app" {
       "WORKSPACE"                 : local.workspace
       "INSTANCE_ID"               : random_password.edge_instance_id.result
       "OCI_TENANCY"               : var.EDGE_OCI_TENANCY_OCID
-      "DX_EDGE_BASE_URL"          : "https://${local.edge_pub_hostname}.cloud.rockitplay.com"
+      "DX_EDGE_BASE_URL"          : local.edge_base_url
       "DX_EDGE_COMP_OCID"         : oci_identity_compartment.edge_comp.id
       "DX_EDGE_VAULT_OCID"        : var.EDGE_VAULT_OCID
       "DX_EDGE_TASK_LOG_OCID"     : oci_logging_log.edge_task_log.id
@@ -55,7 +55,7 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_TASK_URL"          : "${local.edge_tsk_bucket_readwrite_url}edge-task.tgz"
       "DX_EDGE_TASK_SIG"          : var.EDGE_TASK_SIG
       "DX_EDGE_RSI_BASE_URL"      : var.EDGE_RSI_BASE_URL
-      "DX_EDGE_ROCKIT_MC_JS"      : "${local.edge_rockitmc_read_url}"
+      "DX_EDGE_ROCKIT_MC_JS"      : local.edge_rockitmc_read_url
    }
 }
 

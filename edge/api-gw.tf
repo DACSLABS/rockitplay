@@ -96,7 +96,7 @@ variable "edge_endpoints" {
       methods    = ["GET", "DELETE"]
    }, {
       path       = "/be/v1/tasks"
-      methods    = ["GET"]
+      methods    = ["GET", "PATCH"]
    }, {
       path       = "/be/v1/tasks/{var1}"
       methods    = ["GET"]

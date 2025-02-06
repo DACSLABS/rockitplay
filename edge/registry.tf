@@ -8,11 +8,19 @@ resource "oci_identity_group" "edge_registry_group" {
   name           = "edge-registry-group-${local.workspace}"
   description    = "Registry Upload User Group for ROCKIT Edge [${local.workspace}]"
 }
-resource "oci_identity_user_group_membership" "edge_registry_user_group_membership" {
-  user_id  = oci_identity_user.edge_registry_user.id
-  group_id = oci_identity_group.edge_registry_group.id
+# --- avoid OCI bug (error 500 when destroying oci_identity_user_group_membership)
+# resource "oci_identity_user_group_membership" "edge_registry_group" {
+#   user_id  = oci_identity_user.edge_registry_user.id
+#   group_id = oci_identity_group.edge_registry_group.id
+# }
+resource "null_resource" "edge_registry_user_group_membership" {
+  provisioner "local-exec" {
+    command = "oci iam group add-user --user-id ${oci_identity_user.edge_registry_user.id} --group-id ${oci_identity_group.edge_registry_group.id} || true"
+  }
 }
+
 resource "oci_identity_auth_token" "edge_registry_user_authtoken" {
+  depends_on  = [ null_resource.edge_registry_user_group_membership ]
   user_id     = oci_identity_user.edge_registry_user.id
   description = "Docker login auth token for ROCKIT Edge [${local.workspace}]"
 }

@@ -159,4 +159,6 @@ output "version"            { value = var.VERSION }
 output "inject_link_edge"   { value = module.edge.inject_link }
 output "inject_link_engine" { value = module.engine.inject_link }
 # output "instance_id"      { value = module.edge.instance_id_output }
-# output "baseurl"          { value = module.edge.baseurl }
+output "baseurl"            { value = module.edge.baseurl }
+output "db_conn_edge"       { value = module.edge.edge_db_conn_str }
+output "db_conn_engine"     { value = module.engine.engine_db_conn_str }
