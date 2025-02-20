@@ -1,3 +1,18 @@
+resource "oci_events_rule" "edge_depot_event" {
+   compartment_id =  oci_identity_compartment.edge_comp.id
+   display_name   = "edge-depot-event-${local.workspace}"
+   description    = "object creation in edge-depot-bucket-${local.workspace}"
+   condition      = "{\"eventType\":[\"com.oraclecloud.objectstorage.createobject\",\"com.oraclecloud.objectstorage.updateobject\"],\"data\":{\"resourceName\":[\"*/*/*/deploy.json\",\"*/*/*/trigger\"],\"additionalDetails\":{\"bucketName\":[\"edge-depot-bucket-${local.workspace}\"]}}}"
+   is_enabled     = true
+   actions {
+      actions {
+         action_type = "FAAS"
+         is_enabled  = true
+         function_id = oci_functions_function.edge_fn.id
+      }
+   }
+}
+
 resource "oci_events_rule" "edge_assets_event" {
    compartment_id =  oci_identity_compartment.edge_comp.id
    display_name   = "edge-assets-event-${local.workspace}"

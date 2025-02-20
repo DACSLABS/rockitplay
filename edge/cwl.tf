@@ -84,6 +84,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_TASK_BOOTIMG_OCID" : var.EDGE_LOADER_IMG_OCID
          "DX_EDGE_TASK_URL"          : "${local.edge_tsk_bucket_readwrite_url}edge-task.tgz"
          "DX_EDGE_TASK_SIG"          : var.EDGE_TASK_SIG
+         "DX_EDGE_DEPOT_BASE_URL"    : local.edge_depot_bucket_read_url
          "DX_EDGE_RSI_BASE_URL"      : var.EDGE_RSI_BASE_URL
          "DX_EDGE_ROCKIT_MC_JS"      : local.edge_rockitmc_read_url
       }

@@ -74,6 +74,12 @@ variable "edge_endpoints" {
       path       = "/be/v1/login"
       methods    = ["POST"]
    }, {
+      path      = "/be/v1/orgs"
+      methods    = ["POST"]
+   }, {
+      path      = "/be/v1/orgs/{var1}"
+      methods    = ["DELETE"]
+   }, {
       path       = "/be/v1/progress"
       methods    = ["POST"]
    }, {
@@ -94,6 +100,12 @@ variable "edge_endpoints" {
    }, {
       path       = "/be/v1/sources/{var1}"
       methods    = ["GET", "DELETE"]
+   }, {
+      path       = "/be/v1/subscriptions"
+      methods    = [ "GET", "POST" ]
+   }, {
+      path       = "/be/v1/subscriptions/{var1}"
+      methods    = [ "DELETE" ]
    }, {
       path       = "/be/v1/tasks"
       methods    = ["GET", "PATCH"]

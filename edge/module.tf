@@ -148,7 +148,7 @@ resource "oci_identity_compartment" "edge_comp" {
 resource "oci_logging_log_group" "edge_log_group" {
    compartment_id = oci_identity_compartment.edge_comp.id
    display_name   = "edge-log-${local.workspace}"
-   description    = "Combined logs of ROCKIT Session Manager"
+   description    = "Combined logs of ROCKIT Edge"
 }
 
 # --- Logs

@@ -114,21 +114,54 @@ resource "oci_vault_secret" "session_edge_secret" {
    }
 }
 
-# --- EDGE_ORG_TOKEN_PUBKEY_PEM
-resource "oci_vault_secret" "org_token_pubkey_secret" {
+# --- EDGE_ORG_TOKEN_PUBKEY_PEM_PROD
+resource "oci_vault_secret" "org_token_pubkey_prod_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
    vault_id       = var.EDGE_VAULT_OCID
    key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "DACSLABS orgToken public key in PEM format"
+   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "DACSLABS orgToken public key in PEM format (prod)"
    secret_content {
       content_type = "BASE64"
-      content      = local.orgTokenPubKeyB64[local.env]
+      content      = local.orgTokenPubKeyB64.prod
    }
    lifecycle {
       ignore_changes = all
    }
 }
+
+# --- EDGE_ORG_TOKEN_PUBKEY_PEM_STAGE
+resource "oci_vault_secret" "org_token_pubkey_stage_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "DACSLABS orgToken public key in PEM format (stage)"
+   secret_content {
+      content_type = "BASE64"
+      content      = local.orgTokenPubKeyB64.stage
+   }
+   lifecycle {
+      ignore_changes = all
+   }
+}
+
+# --- EDGE_ORG_TOKEN_PUBKEY_PEM_TEST
+resource "oci_vault_secret" "org_token_pubkey_test_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "DACSLABS orgToken public key in PEM format (test)"
+   secret_content {
+      content_type = "BASE64"
+      content      = local.orgTokenPubKeyB64.test
+   }
+   lifecycle {
+      ignore_changes = all
+   }
+}
+
 
 # --- EDGE_IB_SECRET
 resource "random_password" "initial_edge_ib_secret" {
@@ -275,6 +308,37 @@ resource "oci_vault_secret" "edge_engine_subscription_secret" {
    secret_content {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_engine_subscription_secret.result)
+   }
+   lifecycle {
+      ignore_changes = all
+   }
+}
+
+
+# --- EDGE_SUBSCRIPTION_SECRET
+#     (aes-256-cbc algorithm: fixed key length: 32 bytes)
+resource "random_password" "initial_edge_subscription_secret" {
+  length           = 32
+  special          = false
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 0
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+
+resource "oci_vault_secret" "edge_subscription_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = "EDGE_SUBSCRIPTION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}"
+   description    = "Secret to encode/sign subscription tokens"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_subscription_secret.result)
    }
    lifecycle {
       ignore_changes = all
@@ -473,6 +537,37 @@ resource "oci_vault_secret" "edge_assets_bucket_rw_url_secret" {
    }
 }
 
+# --- EDGE_DEPOT_BUCKET_READ_URL
+resource "oci_vault_secret" "edge_depot_bucket_ro_url_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_DEPOT_BUCKET_READ_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Download URL to access the depot bucket"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(local.edge_depot_bucket_read_url)
+   }
+   lifecycle {
+      ignore_changes = all
+   }
+}
+
+# --- EDGE_DEPOT_BUCKET_READWRITE_URL
+resource "oci_vault_secret" "edge_depot_bucket_rw_url_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_DEPOT_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Download/upload URL to access the depot bucket"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(local.edge_depot_bucket_readwrite_url)
+   }
+   lifecycle {
+      ignore_changes = all
+   }
+}
 
 # --- EDGE_ORG_ADMIN_SECRET
 resource "random_password" "initial_edge_org_admin_secret" {
