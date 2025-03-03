@@ -100,7 +100,7 @@ variables:
                                low-pricing / free tier components. Operations are limited
                                with respect to storage size and performance."
     enum:
-    - "prod: Production or Life Environment"
+    - "prod: Production or Live Environment"
     - "stage: Staging Environent"
     - "test: Testing Environment"
 
