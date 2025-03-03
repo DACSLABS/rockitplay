@@ -21,7 +21,9 @@ resource "null_resource" "edge_import_cwl_image" {
          curl --fail -o $workdir/edge-cwl.tgz ${var.EDGE_CWL_URL}
          pushd $workdir
             tar xvfz edge-cwl.tgz
-            docker buildx build --platform linux/arm64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .
+            docker buildx create --name edge_builder
+            docker buildx use edge_builder
+            docker buildx build --platform linux/arm64,linux/amd64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .
          popd
       EOT
    }
@@ -90,7 +92,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
       }
    }
 
-   shape = "CI.Standard.A1.Flex"
+   shape = var.EDGE_CWL_CONTAINER_SHAPE
 
    shape_config {
       ocpus         = 1

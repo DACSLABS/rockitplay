@@ -14,27 +14,44 @@ locals {
    db_region = replace (lower (var.ENGINE_DB_REGION), "_", "")
 }
 
-# --- MongoDB Cluster: eu-central-1 @ aws
+
+# --- MongoDB Cluster: M0, Free Tier
 resource "mongodbatlas_cluster" "engine_mongodb_cluster" {
-   count      = var.ENGINE_DB_TYPE == "cluster" ? 1 : 0
+   count      = var.ENGINE_DB_TYPE == "free_cluster" ? 1 : 0
    depends_on = [ mongodbatlas_project.engine_mongodb_proj ]
    name       = "eng-${local.workspace}-${local.db_region}"
    project_id = mongodbatlas_project.engine_mongodb_proj.id
    provider_name               = "TENANT"
    backing_provider_name       = "AWS"
-   provider_instance_size_name = var.ENGINE_DB_SIZE
+   provider_instance_size_name = "M0"
    provider_region_name        = var.ENGINE_DB_REGION
 }
 
-# --- MongoDB Atlas Serverless Instance @ aws
-resource "mongodbatlas_serverless_instance" "engine_mongodb_instance" {
-   count      = var.ENGINE_DB_TYPE == "serverless" ? 1 : 0
-   project_id = mongodbatlas_project.engine_mongodb_proj.id
+# --- MongoDB Cluster: M10, minimal
+resource "mongodbatlas_advanced_cluster" "engine_mongodb_cluster" {
+   count      = var.ENGINE_DB_TYPE == "advanced_cluster" ? 1 : 0
+   depends_on = [ mongodbatlas_project.engine_mongodb_proj ]
    name       = "eng-${local.workspace}-${local.db_region}"
-
-   provider_settings_backing_provider_name = "AWS"
-   provider_settings_provider_name         = "SERVERLESS"
-   provider_settings_region_name           = var.ENGINE_DB_REGION
+   project_id = mongodbatlas_project.engine_mongodb_proj.id
+   cluster_type = "REPLICASET"
+   bi_connector_config {
+      enabled         = false
+   }
+   replication_specs {
+     region_configs {
+       auto_scaling {
+          disk_gb_enabled = false
+          compute_enabled = false
+       }
+       electable_specs {
+          instance_size = var.ENGINE_DB_SIZE
+          node_count    = 3
+       }
+       provider_name = "AWS"
+       priority      = 7
+       region_name   = var.ENGINE_DB_REGION
+     }
+   }
 }
 
 # --- Network Access
@@ -47,17 +64,17 @@ resource "mongodbatlas_project_ip_access_list" "engine_mongodb_global_acl" {
 # --- Retrieve connstr
 locals {
    mongodb_connstr = replace (
-      var.ENGINE_DB_TYPE == "serverless"  ? mongodbatlas_serverless_instance.engine_mongodb_instance[0].connection_strings_standard_srv
-                                          : mongodbatlas_cluster.engine_mongodb_cluster[0].connection_strings[0].standard_srv,
+      var.ENGINE_DB_TYPE == "free_cluster" ? mongodbatlas_cluster.engine_mongodb_cluster[0].connection_strings[0].standard_srv
+                                           : mongodbatlas_advanced_cluster.engine_mongodb_cluster[0].connection_strings[0].standard_srv,
       "mongodb+srv://",
       "mongodb+srv://engine-db-user-${local.workspace}:${urlencode(random_password.db_pw.result)}@"
    )
 }
 
-# --- Create DB Client User
+# --- Create DB User
 resource "mongodbatlas_database_user" "db_user" {
    username           = "engine-db-user-${local.workspace}"
-   depends_on         = [ mongodbatlas_cluster.engine_mongodb_cluster ]
+   depends_on         = [ mongodbatlas_advanced_cluster.engine_mongodb_cluster ]
    password           = random_password.db_pw.result
    project_id         = mongodbatlas_project.engine_mongodb_proj.id
    auth_database_name = "admin"

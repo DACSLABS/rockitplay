@@ -14,6 +14,9 @@ groupings:
     - current_user_ocid
     - region
     - rockit_engine_link_b64
+    - VERSION
+    - MONGODBATLAS_CLUSTER_SIZE
+    - ENGINE_LB_BANDWIDTH_MBPS
 
   - title: "ROCKITPLAY Instance"
     visible: true
@@ -22,31 +25,25 @@ groupings:
     - rockit_base_link_b64
     - env_label
     - WORKSPACE
-    - show_advanced_settings
 
   - title: "Advanced Settings"
     visible: true
     variables:
+      - show_advanced_settings
       - RSI_URL
       - use_cwl
+      - CWL_CONTAINER_SHAPE
       - N_CONTAINER_INSTANCES
+      - EDGE_LB_BANDWIDTH_MBPS
+
 
   - title: "MongoDB Atlas Integration"
-    visible:
-      or:
-        - eq:
-          - ${env_label}
-          - "prod: Production or Life Environment"
-        - eq:
-          - ${env_label}
-          - "stage: Staging Environent"
-        - eq:
-          - ${env_label}
-          - "test: Testing Environment"
+    visible: true
     variables:
-    - MONGODBATLAS_REGION_CLUSTER_M5
-    - MONGODBATLAS_REGION_SERVERLESS
-    - MONGODBATLAS_REGION_CLUSTER_M0
+      - EDGE_MONGODBATLAS_DB_TYPE
+      - EDGE_MONGODBATLAS_REGION_CLUSTER
+      - ENGINE_MONGODBATLAS_DB_TYPE
+      - ENGINE_MONGODBATLAS_REGION_CLUSTER
 
   - title: "Slack Integration"
     visible:
@@ -146,6 +143,17 @@ variables:
         - ${env_label}
         - "stage: Staging Environent"
 
+  CWL_CONTAINER_SHAPE:
+    type: enum
+    title: "Container Shape"
+    description: "Please choose the shape of the container instances."
+    visible: ${use_cwl}
+    required: true
+    default: "CI.Standard.A1.Flex"
+    enum:
+    - "CI.Standard.A1.Flex"
+    - "CI.Standard.E4.Flex"
+
   N_CONTAINER_INSTANCES:
     type: number
     title: "Number of container instances"
@@ -159,101 +167,120 @@ variables:
     minimum: 1
     default: 1
 
-  MONGODBATLAS_REGION_CLUSTER_M5:
-    type: enum
-    title: "MongoDB Atlas M5 Cluster Region"
-    description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+  EDGE_LB_BANDWIDTH_MBPS:
+    type: number
+    title: "Load Balancer Bandwidth for ROCKIT Edge"
+    description: "Please enter the bandwidth of the load balancer in Mbps."
+    visible: ${use_cwl}
     required: true
-    visible:
-      or:
-        - eq:
-          - ${env_label}
-          - "prod: Production or Life Environment"
+    default: 10
+    minimum: 10
+    maximum: 8000
+
+  EDGE_MONGODBATLAS_DB_TYPE:
+    type: enum
+    title: "MongoDB Atlas Cluster Type for ROCKIT Edge"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers supporting M0 and M10+ clusters
+                  taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    default: "free_cluster"
+    required: true
+    visible:  true
     enum:
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_EAST_2: Ohio, USA"
-    - "US_WEST_1: Nothern California, USA"
-    - "US_WEST_2: Oregon, USA"
-    - "CA_CENTRAL_1: Montreal, QC, Canada"
-    - "CA_WEST_1: Calgary, Canada"
-    - "SA_EAST_1: Sao Paulo, Brazil"
-    - "AP_NORTHEAST_1: Tokyo, Japan"
-    - "AP_NORTHEAST_2: Seoul, South Korea"
-    - "AP_NORTHEAST_3: Osaka, Japan"
-    - "AP_EAST_1: Hong Kong, China"
-    - "AP_SOUTHEAST_1: Singapore"
-    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
-    - "AP_SOUTHEAST_3: Jakarta, Indonesia"
-    - "AP_SOUTHEAST_4: Melbourne, Victoria, Australia"
-    - "AP_SOUTH_1: Mumbai, India"
-    - "AP_SOUTH_2: Hyderabad, India"
-    - "EU_CENTRAL_1: Frankfurt, Germany"
-    - "EU_CENTRAL_2: Zurich, Switzerland"
-    - "EU_NORTH_1: Stockholm, Sweden"
-    - "EU_WEST_1: Ireland"
-    - "EU_WEST_2: London, England, UK"
-    - "EU_WEST_3: Paris, France"
-    - "EU_SOUTH_1: Milan, Italy"
-    - "EU_SOUTH_2: Spain"
-    - "ME_SOUTH_1: Bahrain"
-    - "AF_SOUTH_1: Cape Town, South Africa"
-    - "IL_CENTRAL_1: Tel Aviv, Israel"
+    - "free_cluster"
+    - "advanced_cluster"
 
-    - "ME_CENTRAL_1: UAE"
-
-  MONGODBATLAS_REGION_SERVERLESS:
+  EDGE_MONGODBATLAS_REGION_CLUSTER:
     type: enum
-    title: "MongoDB Atlas Serverless Instance Region"
+    title: "MongoDB Atlas Cluster Region for ROCKIT Edge"
     description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers taken from
+                  Location identifiers supporting M0 and M10+ clusters taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
     visible:
       or:
         - eq:
           - ${env_label}
-          - "prod: Production or Life Environment"
+          - "prod: Production or Live Environment"
         - eq:
           - ${env_label}
           - "stage: Staging Environent"
-    enum:
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_WEST_2: Oregon, USA"
-    - "AP_SOUTHEAST_1: Singapore"
-    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
-    - "AP_SOUTH_1: Mumbai, India"
-    - "EU_WEST_1: Ireland"
-
-  MONGODBATLAS_REGION_CLUSTER_M0:
-    type: enum
-    title: "MongoDB Atlas M0 (free-tier) Cluster Region"
-    description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
-    required: true
-    visible:
-      and:
         - eq:
           - ${env_label}
           - "test: Testing Environment"
     enum:
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_WEST_2: Oregon, USA"
-    - "SA_EAST_1: Sao Paulo, Brazil"
+    - "AF_SOUTH_1: Cape Town, South Africa"
+    - "AP_EAST_1: Hong Kong, China"
     - "AP_NORTHEAST_1: Tokyo, Japan"
     - "AP_NORTHEAST_2: Seoul, South Korea"
-    - "AP_EAST_1: Hong Kong, China"
     - "AP_SOUTHEAST_1: Singapore"
     - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
     - "AP_SOUTH_1: Mumbai, India"
     - "EU_CENTRAL_1: Frankfurt, Germany"
     - "EU_NORTH_1: Stockholm, Sweden"
+    - "EU_SOUTH_1: Milan, Italy"
+    - "EU_SOUTH_2: Spain"
     - "EU_WEST_1: Ireland"
     - "EU_WEST_3: Paris, France"
+    - "IL_CENTRAL_1: Tel Aviv, Israel"
     - "ME_SOUTH_1: Bahrain"
+    - "SA_EAST_1: Sao Paulo, Brazil"
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_WEST_2: Oregon, USA"
+
+  ENGINE_MONGODBATLAS_DB_TYPE:
+    type: enum
+    title: "MongoDB Atlas Cluster Type for ROCKIT Engine"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers supporting M0 and M10+ clusters
+                  taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    default: "free_cluster"
+    required: true
+    visible:  true
+    enum:
+    - "free_cluster"
+    - "advanced_cluster"
+
+  ENGINE_MONGODBATLAS_REGION_CLUSTER:
+    type: enum
+    title: "MongoDB Atlas Cluster Region for ROCKIT Engine"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers supporting M0 and M10+ clusters taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      or:
+        - eq:
+          - ${env_label}
+          - "prod: Production or Live Environment"
+        - eq:
+          - ${env_label}
+          - "stage: Staging Environent"
+        - eq:
+          - ${env_label}
+          - "test: Testing Environment"
+    enum:
     - "AF_SOUTH_1: Cape Town, South Africa"
+    - "AP_EAST_1: Hong Kong, China"
+    - "AP_NORTHEAST_1: Tokyo, Japan"
+    - "AP_NORTHEAST_2: Seoul, South Korea"
+    - "AP_SOUTHEAST_1: Singapore"
+    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+    - "AP_SOUTH_1: Mumbai, India"
+    - "EU_CENTRAL_1: Frankfurt, Germany"
+    - "EU_NORTH_1: Stockholm, Sweden"
+    - "EU_SOUTH_1: Milan, Italy"
+    - "EU_SOUTH_2: Spain"
+    - "EU_WEST_1: Ireland"
+    - "EU_WEST_3: Paris, France"
+    - "IL_CENTRAL_1: Tel Aviv, Israel"
+    - "ME_SOUTH_1: Bahrain"
+    - "SA_EAST_1: Sao Paulo, Brazil"
+    - "US_EAST_1: Northern Virginia, USA"
+    - "US_WEST_2: Oregon, USA"
+
 
   ENGINE_SLACK_ADMIN_CHANNEL:
     type: string

@@ -14,9 +14,10 @@ variable "EDGE_BASEENV_ID"            { type = string }
 variable "EDGE_VAULT_OCID"            { type = string }
 variable "EDGE_VAULT_KEY_OCID"        { type = string }
 
-variable "EDGE_LOADER_IMG_OCID"      { type = string }
+variable "EDGE_LOADER_IMG_OCID"       { type = string }
 
 variable "EDGE_N_CONTAINER_INSTANCES" { type = number }
+variable "EDGE_LB_BANDWIDTH_MBPS"     { type = number }
 
 variable "EDGE_DB_ORGID"              {
    type      = string
@@ -36,6 +37,8 @@ variable "EDGE_CWL_URL"               { type = string }
 variable "EDGE_TASK_URL"              { type = string }
 variable "EDGE_TASK_SIG"              { type = string }
 variable "EDGE_TASK_HASH"             { type = string }
+
+variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }
 
 variable "EDGE_DX_URL"                { type = string }
 
@@ -104,6 +107,14 @@ locals {
    registry_prefix = "${var.EDGE_OCI_REGION}.ocir.io/${var.EDGE_OCI_NAMESPACE}/"
    edge_registry   = "${local.registry_prefix}edge-registry-${local.workspace}"
    use_cwl         = var.EDGE_N_CONTAINER_INSTANCES > 0
+   cwl_shapes = {
+      "CI.Standard.A1.Flex" = {
+         platform = "linux/arm64"
+      }
+      "CI.Standard.E4.Flex" = {
+         platform = "linux/amd64"
+      }
+   }
 }
 
 locals {
@@ -206,10 +217,15 @@ locals {
       local.edge_admin_secret_b64,
       oci_functions_function.edge_fn.id,
       "x64",
+      local.cwl_shapes[var.EDGE_CWL_CONTAINER_SHAPE].platform,
       (local.env == "test") ? local.dev_bucket_readwrite_par : "",
       (local.env == "test" && local.use_cwl) ? oci_container_instances_container_instance.edge_cwl[0].id : ""
    ]
    inject_link_data = base64encode(join (",", local.inject_link_args))
+}
+
+locals {
+   edge_base_url = var.EDGE_WITH_CERT ? "https://${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}" : "https://local.edge_ipaddr"
 }
 
 # --- Output
@@ -218,7 +234,7 @@ output "edge_instance_id" {
 }
 
 output "inject_link" {
-   value = local.env == "test" ? "dxinjectlnk2.edge.${nonsensitive(local.inject_link_data)}" : null
+   value = local.env == "test" ? "dxinjectlnk3.edge.${nonsensitive(local.inject_link_data)}" : null
 }
 
 output "apigw_url" {
@@ -231,4 +247,12 @@ output "edge_admin_secret_b64" {
 
 output "edge_db_conn_str" {
    value = nonsensitive (local.mongodb_connstr)
+}
+
+output "edge_ipaddr" {
+   value = local.use_cwl ? local.lb_ipaddr : local.edge_apigw_ipaddr
+}
+
+output "edge_base_url" {
+   value = local.edge_base_url
 }

@@ -21,7 +21,9 @@ resource "null_resource" "engine_import_cwl_image" {
          curl --fail -o $workdir/engine-cwl.tgz ${var.ENGINE_CWL_URL}
          pushd $workdir
             tar xvfz engine-cwl.tgz
-            docker buildx build --platform linux/arm64 -t ${local.engine_registry}/rockit-engine-cwl:latest --push .
+            docker buildx create --name mybuilder
+            docker buildx use mybuilder
+            docker buildx build --platform linux/arm64,linux/amd64 -t ${local.engine_registry}/rockit-engine-cwl:latest --push .
          popd
       EOT
    }
@@ -88,7 +90,7 @@ resource "oci_container_instances_container_instance" "engine_cwl" {
       }
    }
 
-   shape = "CI.Standard.A1.Flex"
+    shape = var.ENGINE_CWL_CONTAINER_SHAPE
 
    shape_config {
       ocpus         = 1

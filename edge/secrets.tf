@@ -22,9 +22,7 @@ resource "oci_vault_secret" "edge_admin_secret" {
       content_type = "BASE64"
       content      = nonsensitive (base64encode(random_password.initial_edge_admin_secret.result))
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_BE_SESSION_SECRET
@@ -51,9 +49,7 @@ resource "oci_vault_secret" "edge_be_session_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_be_session_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_BE_AUTH_SECRET
@@ -80,9 +76,7 @@ resource "oci_vault_secret" "edge_be_auth_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_be_auth_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_SESSION_SECRET
@@ -109,9 +103,7 @@ resource "oci_vault_secret" "session_edge_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_session_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_PROD
@@ -125,9 +117,7 @@ resource "oci_vault_secret" "org_token_pubkey_prod_secret" {
       content_type = "BASE64"
       content      = local.orgTokenPubKeyB64.prod
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_STAGE
@@ -141,9 +131,7 @@ resource "oci_vault_secret" "org_token_pubkey_stage_secret" {
       content_type = "BASE64"
       content      = local.orgTokenPubKeyB64.stage
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_TEST
@@ -157,9 +145,7 @@ resource "oci_vault_secret" "org_token_pubkey_test_secret" {
       content_type = "BASE64"
       content      = local.orgTokenPubKeyB64.test
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 
@@ -187,9 +173,7 @@ resource "oci_vault_secret" "edge_ib_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_ib_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 
@@ -217,9 +201,7 @@ resource "oci_vault_secret" "edge_auth_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_auth_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ORG_SECRET
@@ -247,9 +229,7 @@ resource "oci_vault_secret" "edge_org_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_org_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ENGINE_BASE_URL
@@ -263,9 +243,7 @@ resource "oci_vault_secret" "edge_engine_baseurl_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_ENGINE_BASE_URL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ENGINE_ADMIN_TOKEN
@@ -279,9 +257,7 @@ resource "oci_vault_secret" "edge_engine_admin_token_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_ENGINE_ADMIN_TOKEN)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 
@@ -309,9 +285,7 @@ resource "oci_vault_secret" "edge_engine_subscription_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_engine_subscription_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 
@@ -340,9 +314,7 @@ resource "oci_vault_secret" "edge_subscription_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_subscription_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_DEPLOYMENTS_SECRET
@@ -370,9 +342,7 @@ resource "oci_vault_secret" "edge_deployment_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_deployment_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_SLACK_TOKEN
@@ -386,9 +356,7 @@ resource "oci_vault_secret" "edge_slack_token_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_SLACK_TOKEN)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_SLACK_INFO_CHANNEL
@@ -402,9 +370,7 @@ resource "oci_vault_secret" "edge_slack_info_channel_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_SLACK_INFO_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_SLACK_ADMIN_CHANNEL
@@ -418,9 +384,7 @@ resource "oci_vault_secret" "edge_slack_admin_channel_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_SLACK_ADMIN_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_SLACK_ERROR_CHANNEL
@@ -434,9 +398,7 @@ resource "oci_vault_secret" "edge_slack_error_channel_secret" {
       content_type = "BASE64"
       content      = base64encode (var.EDGE_SLACK_ERROR_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_DB_PW
@@ -461,9 +423,7 @@ resource "oci_vault_secret" "edge_db_pw_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.edge_db_pw.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 data "oci_secrets_secretbundle" "edge_db_pw_secret" {
@@ -473,7 +433,7 @@ data "oci_secrets_secretbundle" "edge_db_pw_secret" {
 # --- EDGE_DB_CONNSTR
 resource "oci_vault_secret" "edge_db_connstr_secret" {
    depends_on = [
-      mongodbatlas_cluster.edge_mongodb_cluster  # for $local.mongodb_connstr}
+      mongodbatlas_advanced_cluster.edge_mongodb_cluster  # for $local.mongodb_connstr}
    ]
    compartment_id = oci_identity_compartment.edge_comp.id
    vault_id       = var.EDGE_VAULT_OCID
@@ -484,9 +444,7 @@ resource "oci_vault_secret" "edge_db_connstr_secret" {
       content_type = "BASE64"
       content      = base64encode(local.mongodb_connstr)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- TRC_BUCKET_READWRITE_URL_
@@ -500,9 +458,7 @@ resource "oci_vault_secret" "edge_trc_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.edge_trc_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- DEPS_BUCKET_READWRITE_URL_
@@ -516,9 +472,7 @@ resource "oci_vault_secret" "edge_deps_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.edge_deps_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ASSETS_BUCKET_READWRITE_URL
@@ -532,9 +486,7 @@ resource "oci_vault_secret" "edge_assets_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.edge_assets_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_DEPOT_BUCKET_READ_URL
@@ -548,9 +500,7 @@ resource "oci_vault_secret" "edge_depot_bucket_ro_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.edge_depot_bucket_read_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_DEPOT_BUCKET_READWRITE_URL
@@ -564,9 +514,7 @@ resource "oci_vault_secret" "edge_depot_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.edge_depot_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_ORG_ADMIN_SECRET
@@ -593,9 +541,7 @@ resource "oci_vault_secret" "edge_org_admin_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_org_admin_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- EDGE_CLIENT_SECRET
@@ -622,9 +568,7 @@ resource "oci_vault_secret" "edge_client_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_edge_client_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 resource "time_sleep" "edge_wait_for_secrets" {

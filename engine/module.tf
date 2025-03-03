@@ -16,6 +16,7 @@ variable "ENGINE_VAULT_KEY_OCID"       { type = string }
 variable "ENGINE_LOADER_IMG_OCID"      { type = string }
 
 variable "ENGINE_N_CONTAINER_INSTANCES" { type = number }
+variable "ENGINE_LB_BANDWIDTH_MBPS"     { type = number }
 
 variable "ENGINE_DB_ORGID"             {
    type      = string
@@ -32,6 +33,9 @@ variable "ENGINE_CWL_URL"              { type = string }
 variable "ENGINE_TASK_URL"             { type = string }
 variable "ENGINE_TASK_SIG"             { type = string }
 variable "ENGINE_TASK_HASH"            { type = string }
+
+variable "ENGINE_CWL_CONTAINER_SHAPE"  { type = string }
+
 variable "EDGE_DX_URL"                 { type = string }
 
 variable "ENGINE_SLACK_TOKEN"          { type = string }
@@ -89,6 +93,14 @@ locals {
    registry_prefix = "${var.ENGINE_OCI_REGION}.ocir.io/${var.ENGINE_OCI_NAMESPACE}/"
    engine_registry = "${local.registry_prefix}engine-registry-${local.workspace}"
    use_cwl         = var.ENGINE_N_CONTAINER_INSTANCES > 0
+   cwl_shapes = {
+      "CI.Standard.A1.Flex" = {
+         platform = "linux/arm64"
+      }
+      "CI.Standard.E4.Flex" = {
+         platform = "linux/amd64"
+      }
+   }
 }
 
 # --- instance / rollout identifier
@@ -171,10 +183,15 @@ locals {
       local.engine_admin_secret_b64,
       oci_functions_function.engine_fn.id,
       "x64",
+      local.cwl_shapes[var.ENGINE_CWL_CONTAINER_SHAPE].platform,
       (local.env == "test") ? local.dev_bucket_readwrite_par : "",
       (local.env == "test" && local.use_cwl) ? oci_container_instances_container_instance.engine_cwl[0].id : ""
    ]
    inject_link_data = base64encode(join (",", local.inject_link_args))
+}
+
+locals {
+   engine_base_url = var.ENGINE_WITH_CERT ? "https://${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}" : "https://local.engine_ipaddr"
 }
 
 # --- Update database after deployment
@@ -229,11 +246,7 @@ output "rockit_edge_link" {
 }
 
 output "inject_link" {
-   value = local.env == "test" ? "dxinjectlnk2.engine.${nonsensitive(local.inject_link_data)}" : null
-}
-
-output "apigw_url" {
-   value = local.engine_apigw_url
+   value = local.env == "test" ? "dxinjectlnk3.engine.${nonsensitive(local.inject_link_data)}" : null
 }
 
 output "admin_secret_b64" {
@@ -242,4 +255,12 @@ output "admin_secret_b64" {
 
 output "engine_db_conn_str" {
    value = nonsensitive (local.mongodb_connstr)
+}
+
+output "engine_ipaddr" {
+   value = local.use_cwl ? local.lb_ipaddr : local.engine_apigw_ipaddr
+}
+
+output "engine_base_url" {
+   value = local.engine_base_url
 }

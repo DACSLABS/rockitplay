@@ -93,6 +93,7 @@ locals {
 
 # --- API Gateway
 resource "oci_apigateway_gateway" "engine_pub_api_gw" {
+   count          = local.use_cwl ? 0 : 1
    compartment_id = oci_identity_compartment.engine_comp.id
    display_name   = "engine-pub-gw-${local.workspace}"
    endpoint_type  = "PUBLIC"
@@ -102,8 +103,9 @@ resource "oci_apigateway_gateway" "engine_pub_api_gw" {
 
 # --- API Deployments
 resource "oci_apigateway_deployment" "engine_api_deployment" {
+   count          = local.use_cwl ? 0 : 1
    compartment_id = oci_identity_compartment.engine_comp.id
-   gateway_id     = oci_apigateway_gateway.engine_pub_api_gw.id
+   gateway_id     = oci_apigateway_gateway.engine_pub_api_gw[0].id
    display_name  = "engine-pub-api-v1-${local.workspace}"
    path_prefix    = "/"
 
@@ -145,17 +147,7 @@ resource "oci_apigateway_deployment" "engine_api_deployment" {
    }
 }
 
-
 locals {
-   engine_apigw_ipaddr = oci_apigateway_gateway.engine_pub_api_gw.ip_addresses[0].ip_address
-   engine_apigw_url    = "https://${oci_apigateway_gateway.engine_pub_api_gw.hostname}"
-   engine_base_url     = var.ENGINE_WITH_CERT ? "https://${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}" : local.engine_apigw_url
-}
-
-output "baseurl" {
-   value = local.engine_base_url
-}
-
-output "apigw_ip" {
-   value = local.engine_apigw_ipaddr
+   engine_apigw_ipaddr = local.use_cwl ? "n/a" : oci_apigateway_gateway.engine_pub_api_gw[0].ip_addresses[0].ip_address
+   engine_apigw_url    = local.use_cwl ? "n/a" : "https://${oci_apigateway_gateway.engine_pub_api_gw[0].hostname}"
 }

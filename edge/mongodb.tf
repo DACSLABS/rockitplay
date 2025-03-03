@@ -15,27 +15,43 @@ locals {
 }
 
 
-# --- MongoDB Cluster: eu-central-1 @ aws
+# --- MongoDB Cluster: M0, Free Tier
 resource "mongodbatlas_cluster" "edge_mongodb_cluster" {
-   count      = var.EDGE_DB_TYPE == "cluster" ? 1 : 0
+   count      = var.EDGE_DB_TYPE == "free_cluster" ? 1 : 0
    depends_on = [ mongodbatlas_project.edge_mongodb_proj ]
    name       = "edg-${local.workspace}-${local.db_region}"
    project_id = mongodbatlas_project.edge_mongodb_proj.id
    provider_name               = "TENANT"
    backing_provider_name       = "AWS"
-   provider_instance_size_name = var.EDGE_DB_SIZE
+   provider_instance_size_name = "M0"
    provider_region_name        = var.EDGE_DB_REGION
 }
 
-# --- MongoDB Atlas Serverless Instance @ aws
-resource "mongodbatlas_serverless_instance" "edge_mongodb_instance" {
-   count      = var.EDGE_DB_TYPE == "serverless" ? 1 : 0
-   project_id = mongodbatlas_project.edge_mongodb_proj.id
+# --- MongoDB Cluster: M10, minimal
+resource "mongodbatlas_advanced_cluster" "edge_mongodb_cluster" {
+   count      = var.EDGE_DB_TYPE == "advanced_cluster" ? 1 : 0
+   depends_on = [ mongodbatlas_project.edge_mongodb_proj ]
    name       = "edg-${local.workspace}-${local.db_region}"
-
-   provider_settings_backing_provider_name = "AWS"
-   provider_settings_provider_name         = "SERVERLESS"
-   provider_settings_region_name           = var.EDGE_DB_REGION
+   project_id = mongodbatlas_project.edge_mongodb_proj.id
+   cluster_type = "REPLICASET"
+   bi_connector_config {
+      enabled         = false
+   }
+   replication_specs {
+     region_configs {
+       auto_scaling {
+          disk_gb_enabled = false
+          compute_enabled = false
+       }
+       electable_specs {
+          instance_size = var.EDGE_DB_SIZE
+          node_count    = 3
+       }
+       provider_name = "AWS"
+       priority      = 7
+       region_name   = var.EDGE_DB_REGION
+     }
+   }
 }
 
 # --- Network Access
@@ -48,8 +64,8 @@ resource "mongodbatlas_project_ip_access_list" "edge_mongodb_global_acl" {
 # --- Retrieve connstr
 locals {
    mongodb_connstr = replace (
-      var.EDGE_DB_TYPE == "serverless" ? mongodbatlas_serverless_instance.edge_mongodb_instance[0].connection_strings_standard_srv
-                                       : mongodbatlas_cluster.edge_mongodb_cluster[0].connection_strings[0].standard_srv,
+      var.EDGE_DB_TYPE == "free_cluster" ? mongodbatlas_cluster.edge_mongodb_cluster[0].connection_strings[0].standard_srv
+                                         : mongodbatlas_advanced_cluster.edge_mongodb_cluster[0].connection_strings[0].standard_srv,
       "mongodb+srv://",
       "mongodb+srv://edge-db-user-${local.workspace}:${urlencode(random_password.edge_db_pw.result)}@"
    )
@@ -58,7 +74,7 @@ locals {
 # --- Create DB User
 resource "mongodbatlas_database_user" "edge_db_user" {
    username           = "edge-db-user-${local.workspace}"
-   depends_on         = [ mongodbatlas_cluster.edge_mongodb_cluster ]
+   depends_on         = [ mongodbatlas_advanced_cluster.edge_mongodb_cluster ]
    password           = random_password.edge_db_pw.result
    project_id         = mongodbatlas_project.edge_mongodb_proj.id
    auth_database_name = "admin"

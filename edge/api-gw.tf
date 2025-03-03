@@ -170,6 +170,7 @@ locals {
 
 # --- API Gateway
 resource "oci_apigateway_gateway" "edge_pub_api_gw" {
+   count          = local.use_cwl ? 0 : 1
    compartment_id = oci_identity_compartment.edge_comp.id
    display_name   = "edge-pub-gw-${local.workspace}"
    endpoint_type  = "PUBLIC"
@@ -179,8 +180,9 @@ resource "oci_apigateway_gateway" "edge_pub_api_gw" {
 
 # --- API Deployments
 resource "oci_apigateway_deployment" "edge_api_deployment" {
+   count          = local.use_cwl ? 0 : 1
    compartment_id = oci_identity_compartment.edge_comp.id
-   gateway_id     = oci_apigateway_gateway.edge_pub_api_gw.id
+   gateway_id     = oci_apigateway_gateway.edge_pub_api_gw[0].id
    display_name  = "edge-pub-api-v1-${local.workspace}"
    path_prefix    = "/"
 
@@ -224,15 +226,6 @@ resource "oci_apigateway_deployment" "edge_api_deployment" {
 
 
 locals {
-   edge_apigw_ipaddr = oci_apigateway_gateway.edge_pub_api_gw.ip_addresses[0].ip_address
-   edge_apigw_url    = "https://${oci_apigateway_gateway.edge_pub_api_gw.hostname}"
-   edge_base_url     = var.EDGE_WITH_CERT ? "https://${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}" : local.edge_apigw_url
-}
-
-output "baseurl" {
-   value = local.edge_base_url
-}
-
-output "apigw_ip" {
-   value = local.edge_apigw_ipaddr
+   edge_apigw_ipaddr = local.use_cwl ? "n/a" : oci_apigateway_gateway.edge_pub_api_gw[0].ip_addresses[0].ip_address
+   edge_apigw_url    = local.use_cwl ? "n/a" : "https://${oci_apigateway_gateway.edge_pub_api_gw[0].hostname}"
 }

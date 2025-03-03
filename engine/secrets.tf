@@ -22,9 +22,7 @@ resource "oci_vault_secret" "admin_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_admin_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- ENGINE_SESSION_SECRET
@@ -51,9 +49,7 @@ resource "oci_vault_secret" "session_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_session_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- ENGINE_AUTH_SECRET
@@ -80,9 +76,7 @@ resource "oci_vault_secret" "auth_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_auth_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- ENGINE_SUBSCRIPTION_SECRET
@@ -110,9 +104,7 @@ resource "oci_vault_secret" "subscription_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.initial_subscription_secret.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- ENGINE_DB_PW
@@ -137,9 +129,7 @@ resource "oci_vault_secret" "db_pw_secret" {
       content_type = "BASE64"
       content      = base64encode(random_password.db_pw.result)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 data "oci_secrets_secretbundle" "db_pw_secret" {
@@ -149,7 +139,7 @@ data "oci_secrets_secretbundle" "db_pw_secret" {
 # --- ENGINE_DB_CONNSTR
 resource "oci_vault_secret" "db_connstr_secret" {
    depends_on = [
-      mongodbatlas_cluster.engine_mongodb_cluster  # for $local.mongodb_connstr}
+      mongodbatlas_advanced_cluster.engine_mongodb_cluster  # for $local.mongodb_connstr}
    ]
    compartment_id = oci_identity_compartment.engine_comp.id
    vault_id       = var.ENGINE_VAULT_OCID
@@ -160,9 +150,7 @@ resource "oci_vault_secret" "db_connstr_secret" {
       content_type = "BASE64"
       content      = base64encode(local.mongodb_connstr)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- SLACK_TOKEN
@@ -176,9 +164,7 @@ resource "oci_vault_secret" "slack_token_secret" {
       content_type = "BASE64"
       content      = base64encode(var.ENGINE_SLACK_TOKEN)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- SLACK_ADMIN_CHANNEL
@@ -192,9 +178,7 @@ resource "oci_vault_secret" "slack_admin_channel_secret" {
       content_type = "BASE64"
       content      = base64encode(var.ENGINE_SLACK_ADMIN_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- SLACK_ERROR_CHANNEL
@@ -208,9 +192,7 @@ resource "oci_vault_secret" "slack_error_channel_secret" {
       content_type = "BASE64"
       content      = base64encode(var.ENGINE_SLACK_ERROR_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- SLACK_INFO_CHANNEL
@@ -224,9 +206,7 @@ resource "oci_vault_secret" "slack_info_channel_secret" {
       content_type = "BASE64"
       content      = base64encode(var.ENGINE_SLACK_INFO_CHANNEL)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   lifecycle { ignore_changes = all }
 }
 
 # --- TAR_BUCKET_READWRITE_URL
@@ -240,9 +220,7 @@ resource "oci_vault_secret" "tar_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.tar_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 
@@ -257,9 +235,7 @@ resource "oci_vault_secret" "raw_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.raw_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- DXF_BUCKET_READWRITE_URL
@@ -273,9 +249,7 @@ resource "oci_vault_secret" "dxf_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.dxf_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 
@@ -290,9 +264,7 @@ resource "oci_vault_secret" "seq_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.seq_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- TRC_BUCKET_READWRITE_URL
@@ -306,9 +278,7 @@ resource "oci_vault_secret" "trc_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.trc_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 # --- PAT_BUCKET_READWRITE_URL
@@ -322,9 +292,7 @@ resource "oci_vault_secret" "pat_bucket_rw_url_secret" {
       content_type = "BASE64"
       content      = base64encode(local.pat_bucket_readwrite_url)
    }
-   lifecycle {
-      ignore_changes = all
-   }
+   # lifecycle { ignore_changes = all }
 }
 
 resource "time_sleep" "engine_wait_for_secrets" {

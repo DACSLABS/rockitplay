@@ -13,22 +13,48 @@ variable "RSI_URL" {
   type = string
   default = "https://public.cloud.rockitplay.com/rsi"
 }
+variable "CWL_CONTAINER_SHAPE" {
+  type    = string
+  default = "CI.Standard.A1.Flex"
+}
 variable "N_CONTAINER_INSTANCES" {
   type    = number
   default = 0
 }
 
-variable "MONGODBATLAS_REGION_SERVERLESS"  {
-  type = string
-  default = ""
+variable "EDGE_LB_BANDWIDTH_MBPS" {
+  type    = number
+  default = 10
 }
-variable "MONGODBATLAS_REGION_CLUSTER_M5" {
-  type = string
-  default = ""
+variable "ENGINE_LB_BANDWIDTH_MBPS" {
+  type    = number
+  default = 10
 }
-variable "MONGODBATLAS_REGION_CLUSTER_M0" {
+
+variable "EDGE_MONGODBATLAS_DB_TYPE" {
   type = string
-  default = ""
+}
+
+variable "EDGE_MONGODBATLAS_REGION_CLUSTER" {
+  type = string
+}
+
+variable "EDGE_MONGODBATLAS_CLUSTER_SIZE" {
+  type = string
+  default = "M10"
+}
+
+variable "ENGINE_MONGODBATLAS_DB_TYPE" {
+  type = string
+}
+
+variable "ENGINE_MONGODBATLAS_REGION_CLUSTER" {
+  type = string
+}
+
+variable "ENGINE_MONGODBATLAS_CLUSTER_SIZE" {
+  type = string
+  default = "M10"
 }
 
 variable "WORKSPACE"                    { type = string }
@@ -59,38 +85,10 @@ locals {
     stage = max (1, var.N_CONTAINER_INSTANCES)
     test  = var.N_CONTAINER_INSTANCES
   }
-  mongodbatlas_engine = {
-    prod = {
-      type     = "serverless"
-      size     = ""
-      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
-    }
-    stage = {
-      type     = "serverless"
-      size     = ""
-      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
-    }
-    test = {
-      type     = "cluster"
-      size     = "M0"
-      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
-    }
-  }
-  mongodbatlas_edge = {
-    prod = {
-      type     = "cluster"
-      size     = "M5"
-      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M5)[0]
-    }
-    stage = {
-      type     = "serverless"
-      size     = ""
-      region   = split (":", var.MONGODBATLAS_REGION_SERVERLESS)[0]
-    }
-    test = {
-      type     = "cluster"
-      size     = "M0"
-      region   = split (":", var.MONGODBATLAS_REGION_CLUSTER_M0)[0]
-    }
-  }
+  edge_mongodbatlas_region                  = split (":", var.EDGE_MONGODBATLAS_REGION_CLUSTER)[0]
+  edge_mongodbatlas_advanced_cluster_size   = var.EDGE_MONGODBATLAS_CLUSTER_SIZE
+  edge_mongodbatlas_db_type                 = split (":", var.EDGE_MONGODBATLAS_DB_TYPE)[0]
+  engine_mongodbatlas_region                = split (":", var.ENGINE_MONGODBATLAS_REGION_CLUSTER)[0]
+  engine_mongodbatlas_advanced_cluster_size = var.ENGINE_MONGODBATLAS_CLUSTER_SIZE
+  engine_mongodbatlas_db_type               = split (":", var.ENGINE_MONGODBATLAS_DB_TYPE)[0]
 }
