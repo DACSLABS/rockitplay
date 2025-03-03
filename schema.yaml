@@ -50,7 +50,7 @@ groupings:
       or:
         - eq:
           - ${env_label}
-          - "prod: Production or Life Environment"
+          - "prod: Production or Live Environment"
         - eq:
           - ${env_label}
           - "stage: Staging Environent"
@@ -138,7 +138,7 @@ variables:
       or:
       - eq:
         - ${env_label}
-        - "prod: Production or Life Environment"
+        - "prod: Production or Live Environment"
       - eq:
         - ${env_label}
         - "stage: Staging Environent"
