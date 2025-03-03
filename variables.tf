@@ -22,15 +22,6 @@ variable "N_CONTAINER_INSTANCES" {
   default = 0
 }
 
-variable "EDGE_LB_BANDWIDTH_MBPS" {
-  type    = number
-  default = 10
-}
-variable "ENGINE_LB_BANDWIDTH_MBPS" {
-  type    = number
-  default = 10
-}
-
 variable "EDGE_MONGODBATLAS_DB_TYPE" {
   type = string
 }

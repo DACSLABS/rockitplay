@@ -46,7 +46,6 @@ module engine {
    ENGINE_TASK_SIG                  = local.engine_task_sig
    ENGINE_TASK_HASH                 = local.engine_task_hash
    ENGINE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   ENGINE_LB_BANDWIDTH_MBPS         = var.ENGINE_LB_BANDWIDTH_MBPS
    ENGINE_VAULT_OCID                = local.vault_ocid
    ENGINE_VAULT_KEY_OCID            = local.vault_key_ocid
    ENGINE_DB_ORGID                  = local.mongodbatlas_orgid
@@ -110,14 +109,13 @@ module edge {
    EDGE_TASK_SIG                  = local.edge_task_sig
    EDGE_TASK_HASH                 = local.edge_task_hash
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   EDGE_LB_BANDWIDTH_MBPS         = var.EDGE_LB_BANDWIDTH_MBPS
    EDGE_DX_URL                    = local.edge_dx_url
    EDGE_RSI_BASE_URL              = var.RSI_URL
    EDGE_WITH_CERT                 = local.with_cert
    EDGE_VAULT_OCID                = local.vault_ocid
    EDGE_VAULT_KEY_OCID            = local.vault_key_ocid
    EDGE_ENGINE_ADMIN_TOKEN        = local.engine_admin_token
-   EDGE_ENGINE_BASE_URL           = module.engine.engine_base_url
+   EDGE_ENGINE_BASE_URL           = module.engine.baseurl
    EDGE_DB_ORGID                  = local.mongodbatlas_orgid
    EDGE_DB_TYPE                   = local.edge_mongodbatlas_db_type
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
@@ -134,7 +132,7 @@ resource "null_resource" "engine_curl_post_initialize" {
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
-         ENGINE_BASE_URL="https://${module.engine.engine_ipaddr}"
+         ENGINE_BASE_URL="${module.engine.apigw_url}"
          chmod +x ./engine/gen-admin-token.sh
          token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
          nRetries=0
@@ -155,7 +153,7 @@ resource "null_resource" "edge_curl_post_initialize" {
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
-         EDGE_BASE_URL="https://${module.edge.edge_ipaddr}"
+         EDGE_BASE_URL="${module.edge.apigw_url}"
          chmod +x ./edge/gen-admin-token.sh
          token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
          nRetries=0
@@ -175,6 +173,6 @@ output "version"            { value = var.VERSION }
 output "inject_link_edge"   { value = module.edge.inject_link }
 output "inject_link_engine" { value = module.engine.inject_link }
 # output "instance_id"      { value = module.edge.instance_id_output }
-output "baseurl"            { value = module.edge.edge_base_url }
+output "baseurl"            { value = module.edge.baseurl }
 output "db_conn_edge"       { value = module.edge.edge_db_conn_str }
 output "db_conn_engine"     { value = module.engine.engine_db_conn_str }
