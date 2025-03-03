@@ -16,6 +16,7 @@ groupings:
     - rockit_engine_link_b64
     - VERSION
     - MONGODBATLAS_CLUSTER_SIZE
+    - ENGINE_LB_BANDWIDTH_MBPS
 
   - title: "ROCKITPLAY Instance"
     visible: true
@@ -33,6 +34,8 @@ groupings:
       - use_cwl
       - CWL_CONTAINER_SHAPE
       - N_CONTAINER_INSTANCES
+      - EDGE_LB_BANDWIDTH_MBPS
+
 
   - title: "MongoDB Atlas Integration"
     visible: true
@@ -163,6 +166,16 @@ variables:
     required: true
     minimum: 1
     default: 1
+
+  EDGE_LB_BANDWIDTH_MBPS:
+    type: number
+    title: "Load Balancer Bandwidth for ROCKIT Edge"
+    description: "Please enter the bandwidth of the load balancer in Mbps."
+    visible: ${use_cwl}
+    required: true
+    default: 10
+    minimum: 10
+    maximum: 8000
 
   EDGE_MONGODBATLAS_DB_TYPE:
     type: enum
