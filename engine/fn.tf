@@ -65,7 +65,7 @@ resource "oci_functions_function" "engine_fn" {
    display_name       = "engine-fn-${local.workspace}"
    image              = "${local.engine_registry}/rockit-engine-fn:${var.ENGINE_SRC_HASH}"
    memory_in_mbs      = 128
-   timeout_in_seconds = 60
+   timeout_in_seconds = 300
    defined_tags = {
       "ROCKITPLAY-Tags.instanceName" = "engine-${local.workspace}"
       "ROCKITPLAY-Tags.taskLoader"   = "rockit-loader-${var.ENGINE_BASEENV_ID}"

@@ -19,9 +19,9 @@ resource "oci_monitoring_alarm" "maintenance_trigger" {
    display_name          = "maintenance-trigger"
    is_enabled            = true
    metric_compartment_id = oci_identity_compartment.engine_comp.id
-   namespace             = "oci_apigateway"
+   namespace             = "oci_internet_gateway"
    # any valid query which ALWAYS returns TRUE
-   query                 = "HttpRequests[1m].count() >= 0"
+   query                 = "BytesFromIgw[1m].count() >= 0"
    # 2m: PT2M, 2h: PT2H, 2d: PT2D
    repeat_notification_duration = "PT10M"
    severity              = "INFO"

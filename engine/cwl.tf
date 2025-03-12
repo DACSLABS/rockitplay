@@ -15,7 +15,8 @@ resource "null_resource" "engine_import_cwl_image" {
          set -e
          (echo '${local.engine_registry_user_pw}' | docker login ${var.ENGINE_OCI_REGION}.ocir.io -u ${var.ENGINE_OCI_NAMESPACE}/default/${oci_identity_user.engine_registry_user.name} --password-stdin)
 
-         workdir=/var/tmp/engine-${var.ENGINE_SRC_HASH}
+         #workdir=/var/tmp/engine-${var.ENGINE_SRC_HASH}
+         workdir=cwl
          mkdir -p $workdir
 
          curl --fail -o $workdir/engine-cwl.tgz ${var.ENGINE_CWL_URL}

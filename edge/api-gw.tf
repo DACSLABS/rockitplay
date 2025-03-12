@@ -7,8 +7,8 @@ variable "edge_endpoints" {
    default = [{
       path       = "/mc"
       methods    = ["GET"]
-   }, {
-      // --- /adm/v1/*
+    }, {
+       // --- /adm/v1/*
       path       = "/adm/v1/hello"
       methods    = ["POST"]
    }, {
@@ -43,6 +43,12 @@ variable "edge_endpoints" {
    }, {
       path       = "/be/v1/builds"
       methods    = ["POST"]
+   }, {
+      path       = "/be/v1/bundles"
+      methods    = ["GET", "POST", "PATCH"]
+   }, {
+      path       = "/be/v1/bundles/{var1}"
+      methods    = ["GET", "DELETE"]
    }, {
       path       = "/be/v1/commit"
       methods    = ["POST"]
@@ -113,6 +119,9 @@ variable "edge_endpoints" {
       path       = "/be/v1/tasks/{var1}"
       methods    = ["GET"]
    }, {
+      path       = "/be/v1/trainings"
+      methods    = ["GET"]
+   }, {
       path       = "/be/v1/trigger"
       methods    = ["POST"]
    }, {
@@ -124,14 +133,14 @@ variable "edge_endpoints" {
    }, {
 
       // --- /client/v1/*
-      path       = "/client/v1/apps"
-      methods    = ["GET"]
-   }, {
-      path       = "/client/v1/apps/{var1}"
-      methods    = ["GET"]
-   }, {
       path       = "/client/v1/auth"
       methods    = ["POST"]
+   }, {
+      path       = "/client/v1/bundles"
+      methods    = ["GET"]
+   }, {
+      path       = "/client/v1/bundles/{var1}"
+      methods    = ["GET"]
    }, {
       path       = "/client/v1/client-items"
       methods    = ["POST"]

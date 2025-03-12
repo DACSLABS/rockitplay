@@ -15,7 +15,8 @@ resource "null_resource" "edge_import_cwl_image" {
          set -e
          (echo '${local.edge_registry_user_pw}' | docker login ${var.EDGE_OCI_REGION}.ocir.io -u ${var.EDGE_OCI_NAMESPACE}/default/${oci_identity_user.edge_registry_user.name} --password-stdin)
 
-         workdir=/var/tmp/edge-${var.EDGE_SRC_HASH}
+         #workdir=/var/tmp/edge-${var.EDGE_SRC_HASH}
+         workdir=cwl
          mkdir -p $workdir
 
          curl --fail -o $workdir/edge-cwl.tgz ${var.EDGE_CWL_URL}
@@ -23,7 +24,8 @@ resource "null_resource" "edge_import_cwl_image" {
             tar xvfz edge-cwl.tgz
             docker buildx create --name edge_builder
             docker buildx use edge_builder
-            docker buildx build --platform linux/arm64,linux/amd64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .
+            docker buildx build --platform linux/arm64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .
+            docker buildx build --platform linux/amd64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .
          popd
       EOT
    }
