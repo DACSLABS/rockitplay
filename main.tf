@@ -36,6 +36,7 @@ module engine {
    ENGINE_WITH_CERT                 = local.with_cert
    ENGINE_CERT_DOMAINNAME           = local.cert_domainname
    ENGINE_CERT_OCID                 = local.cert_ocid
+   ENGINE_DNS_ZONE_OCID             = local.dns_zone_ocid
    ENGINE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    ENGINE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    ENGINE_SRC_HASH                  = local.engine_src_hash
@@ -100,6 +101,7 @@ module edge {
    EDGE_BASEENV_ID                = local.baseenv_id
    EDGE_CERT_DOMAINNAME           = local.cert_domainname
    EDGE_CERT_OCID                 = local.cert_ocid
+   EDGE_DNS_ZONE_OCID             = local.dns_zone_ocid
    EDGE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    EDGE_SRC_HASH                  = local.edge_src_hash

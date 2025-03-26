@@ -14,6 +14,14 @@ data "oci_vault_secrets" "cert_domainname_secret" {
 }
 data "oci_secrets_secretbundle" "cert_domainname_secretbundle" { secret_id = data.oci_vault_secrets.cert_domainname_secret.secrets.0.id }
 
+# --- ROCKITPLAY_DNS_ZONE_OCID
+data "oci_vault_secrets" "dns_zone_ocid_secret" {
+    vault_id       = local.vault_ocid
+    compartment_id = local.rockitplay_comp_ocid
+    name           = "ROCKITPLAY_DNS_ZONE_OCID.${local.baseenv_id}"
+}
+data "oci_secrets_secretbundle" "dns_zone_ocid_secretbundle" { secret_id = data.oci_vault_secrets.dns_zone_ocid_secret.secrets.0.id }
+
 # --- ROCKITPLAY_LOADER_IMAGE_OCID
 data "oci_vault_secrets" "rockitplay_loader_img_ocid_secret" {
     vault_id       = local.vault_ocid
@@ -59,6 +67,7 @@ locals {
    with_cert                  = local.cert_ocid == "n/a" ? false : true
    cert_ocid                  = base64decode (data.oci_secrets_secretbundle.cert_ocid_secretbundle.secret_bundle_content.0.content)
    cert_domainname            = base64decode (data.oci_secrets_secretbundle.cert_domainname_secretbundle.secret_bundle_content.0.content)
+   dns_zone_ocid              = base64decode (data.oci_secrets_secretbundle.dns_zone_ocid_secretbundle.secret_bundle_content.0.content)
    rockitplay_loader_img_ocid = base64decode (data.oci_secrets_secretbundle.rockitplay_loader_img_ocid_secretbundle.secret_bundle_content.0.content)
    mongodbatlas_orgid         = base64decode (data.oci_secrets_secretbundle.mongodbatlas_orgid_secretbundle.secret_bundle_content.0.content)
    mongodbatlas_admin_pubkey  = base64decode (data.oci_secrets_secretbundle.mongodbatlas_admin_pubkey_secretbundle.secret_bundle_content.0.content)

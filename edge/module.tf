@@ -59,6 +59,11 @@ variable "EDGE_CERT_OCID" {
    default = ""
 }
 
+variable "EDGE_DNS_ZONE_OCID" {
+   type = string
+   default = ""
+}
+
 variable "EDGE_USE_S3_BACKEND" {
    type    = bool
    default = false

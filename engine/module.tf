@@ -55,6 +55,12 @@ variable "ENGINE_CERT_OCID" {
    default = null
 }
 
+variable "ENGINE_DNS_ZONE_OCID" {
+   type = string
+   default = ""
+}
+
+
 variable "ENGINE_APIGW_CONNECTION_TIMEOUT"  {
    type    = number
    default = 60
