@@ -200,18 +200,6 @@ resource "time_sleep" "edge_wait_for_registry_user" {
   create_duration = "120s"
 }
 
-# --- Update database after deployment
-data "oci_vault_secrets" "edge_admin_secret" {
-   depends_on     = [ oci_vault_secret.edge_admin_secret ]
-   vault_id       = var.EDGE_VAULT_OCID
-   compartment_id = oci_identity_compartment.edge_comp.id
-   name           = "EDGE_ADMIN_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}"
-}
-data "oci_secrets_secretbundle" "edge_admin_secretbundle" { secret_id = data.oci_vault_secrets.edge_admin_secret.secrets.0.id }
-locals {
-   edge_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_admin_secretbundle.secret_bundle_content.0.content)
-}
-
 # --- inject.sh link
 locals {
    inject_link_args = [

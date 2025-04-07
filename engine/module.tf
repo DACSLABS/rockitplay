@@ -200,17 +200,6 @@ locals {
    engine_base_url = var.ENGINE_WITH_CERT ? "https://${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}" : "https://local.engine_ipaddr"
 }
 
-# --- Update database after deployment
-data "oci_vault_secrets" "engine_admin_secret" {
-   depends_on     = [ oci_vault_secret.admin_secret ]
-   vault_id       = var.ENGINE_VAULT_OCID
-   compartment_id = oci_identity_compartment.engine_comp.id
-   name           = "ENGINE_ADMIN_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
-}
-data "oci_secrets_secretbundle" "engine_admin_secretbundle" { secret_id = data.oci_vault_secrets.engine_admin_secret.secrets.0.id }
-locals {
-   engine_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.engine_admin_secretbundle.secret_bundle_content.0.content)
-}
 
 # --- prepare ROCKIT Engine link to ROCKIT Edge instance(s)
 resource "null_resource" "edge_admin_token" {

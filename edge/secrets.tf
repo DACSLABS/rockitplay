@@ -25,6 +25,16 @@ resource "oci_vault_secret" "edge_admin_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_admin_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ADMIN_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_admin_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_admin_secret.secrets.0.id }
+locals {
+   edge_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_admin_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_BE_SESSION_SECRET
 resource "random_password" "initial_edge_be_session_secret" {
   length           = 100
@@ -50,6 +60,16 @@ resource "oci_vault_secret" "edge_be_session_secret" {
       content      = base64encode(random_password.initial_edge_be_session_secret.result)
    }
    lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_be_session_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_BE_SESSION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_be_session_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_session_secret.secrets.0.id }
+locals {
+   edge_be_session_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_session_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_BE_AUTH_SECRET
@@ -79,6 +99,16 @@ resource "oci_vault_secret" "edge_be_auth_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_be_auth_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_BE_AUTH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_be_auth_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_auth_secret.secrets.0.id }
+locals {
+   edge_be_auth_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_auth_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_SESSION_SECRET
 resource "random_password" "initial_edge_session_secret" {
   length           = 100
@@ -106,6 +136,16 @@ resource "oci_vault_secret" "session_edge_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "session_edge_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SESSION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "session_edge_secret_secretbundle" { secret_id = data.oci_vault_secrets.session_edge_secret.secrets.0.id }
+locals {
+   edge_session_secret_b64 = sensitive(data.oci_secrets_secretbundle.session_edge_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_PROD
 resource "oci_vault_secret" "org_token_pubkey_prod_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -118,6 +158,16 @@ resource "oci_vault_secret" "org_token_pubkey_prod_secret" {
       content      = local.orgTokenPubKeyB64.prod
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "org_token_pubkey_prod_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "org_token_pubkey_prod_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_prod_secret.secrets.0.id }
+locals {
+   org_token_pubkey_prod_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_prod_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_STAGE
@@ -134,6 +184,16 @@ resource "oci_vault_secret" "org_token_pubkey_stage_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "org_token_pubkey_stage_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "org_token_pubkey_stage_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_stage_secret.secrets.0.id }
+locals {
+   org_token_pubkey_stage_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_stage_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_ORG_TOKEN_PUBKEY_PEM_TEST
 resource "oci_vault_secret" "org_token_pubkey_test_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -146,6 +206,16 @@ resource "oci_vault_secret" "org_token_pubkey_test_secret" {
       content      = local.orgTokenPubKeyB64.test
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "org_token_pubkey_test_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "org_token_pubkey_test_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_test_secret.secrets.0.id }
+locals {
+   org_token_pubkey_test_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_test_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 
@@ -176,6 +246,16 @@ resource "oci_vault_secret" "edge_ib_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_ib_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_IB_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_ib_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_ib_secret.secrets.0.id }
+locals {
+   edge_ib_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_ib_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 
 # --- EDGE_AUTH_SECRET
 resource "random_password" "initial_edge_auth_secret" {
@@ -202,6 +282,16 @@ resource "oci_vault_secret" "edge_auth_secret" {
       content      = base64encode(random_password.initial_edge_auth_secret.result)
    }
    lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_auth_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_AUTH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_auth_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_auth_secret.secrets.0.id }
+locals {
+   edge_auth_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_auth_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_ORG_SECRET
@@ -232,6 +322,16 @@ resource "oci_vault_secret" "edge_org_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_org_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ORG_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_org_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_org_secret.secrets.0.id }
+locals {
+   edge_org_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_org_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_ENGINE_BASE_URL
 resource "oci_vault_secret" "edge_engine_baseurl_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -246,6 +346,16 @@ resource "oci_vault_secret" "edge_engine_baseurl_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_engine_baseurl_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ENGINE_BASE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_engine_baseurl_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_engine_baseurl_secret.secrets.0.id }
+locals {
+   edge_engine_baseurl_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_engine_baseurl_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_ENGINE_ADMIN_TOKEN
 resource "oci_vault_secret" "edge_engine_admin_token_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -258,6 +368,16 @@ resource "oci_vault_secret" "edge_engine_admin_token_secret" {
       content      = base64encode (var.EDGE_ENGINE_ADMIN_TOKEN)
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_engine_admin_token_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ENGINE_ADMIN_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_engine_admin_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_engine_admin_token_secret.secrets.0.id }
+locals {
+   edge_engine_admin_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_engine_admin_token_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 
@@ -286,6 +406,16 @@ resource "oci_vault_secret" "edge_engine_subscription_secret" {
       content      = base64encode(random_password.initial_edge_engine_subscription_secret.result)
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_engine_subscription_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ENGINE_SUBSCRIPTION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_engine_subscription_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_engine_subscription_secret.secrets.0.id }
+locals {
+   edge_engine_subscription_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_engine_subscription_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 
@@ -317,6 +447,16 @@ resource "oci_vault_secret" "edge_subscription_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_subscription_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SUBSCRIPTION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_subscription_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_subscription_secret.secrets.0.id }
+locals {
+   edge_subscription_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_subscription_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_DEPLOYMENTS_SECRET
 #     (aes-256-cbc algorithm: fixed key length: 32 bytes)
 resource "random_password" "initial_edge_deployment_secret" {
@@ -345,6 +485,16 @@ resource "oci_vault_secret" "edge_deployment_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_deployment_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DEPLOYMENT_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_deployment_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_deployment_secret.secrets.0.id }
+locals {
+   edge_deployment_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_deployment_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_SLACK_TOKEN
 resource "oci_vault_secret" "edge_slack_token_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -357,6 +507,16 @@ resource "oci_vault_secret" "edge_slack_token_secret" {
       content      = base64encode (var.EDGE_SLACK_TOKEN)
    }
    lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_slack_token_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SLACK_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_slack_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_token_secret.secrets.0.id }
+locals {
+   edge_slack_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_token_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_SLACK_INFO_CHANNEL
@@ -373,6 +533,16 @@ resource "oci_vault_secret" "edge_slack_info_channel_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_slack_info_channel_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SLACK_INFO_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_slack_info_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_info_channel_secret.secrets.0.id }
+locals {
+   edge_slack_info_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_info_channel_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_SLACK_ADMIN_CHANNEL
 resource "oci_vault_secret" "edge_slack_admin_channel_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -387,6 +557,16 @@ resource "oci_vault_secret" "edge_slack_admin_channel_secret" {
    lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_slack_admin_channel_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_slack_admin_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_admin_channel_secret.secrets.0.id }
+locals {
+   edge_slack_admin_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_admin_channel_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_SLACK_ERROR_CHANNEL
 resource "oci_vault_secret" "edge_slack_error_channel_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -399,6 +579,16 @@ resource "oci_vault_secret" "edge_slack_error_channel_secret" {
       content      = base64encode (var.EDGE_SLACK_ERROR_CHANNEL)
    }
    lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_slack_error_channel_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SLACK_ERROR_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_slack_error_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_error_channel_secret.secrets.0.id }
+locals {
+   edge_slack_error_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_error_channel_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_DB_PW
@@ -447,6 +637,16 @@ resource "oci_vault_secret" "edge_db_connstr_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_db_connstr_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DB_CONNSTR_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_db_connstr_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_db_connstr_secret.secrets.0.id }
+locals {
+   edge_db_connstr_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_db_connstr_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- TRC_BUCKET_READWRITE_URL_
 resource "oci_vault_secret" "edge_trc_bucket_rw_url_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -459,6 +659,16 @@ resource "oci_vault_secret" "edge_trc_bucket_rw_url_secret" {
       content      = base64encode(local.edge_trc_bucket_readwrite_url)
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_trc_bucket_rw_url_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_TRC_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_trc_bucket_rw_url_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_trc_bucket_rw_url_secret.secrets.0.id }
+locals {
+   edge_trc_bucket_rw_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_trc_bucket_rw_url_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- DEPS_BUCKET_READWRITE_URL_
@@ -475,6 +685,16 @@ resource "oci_vault_secret" "edge_deps_bucket_rw_url_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_deps_bucket_rw_url_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DEPS_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_deps_bucket_rw_url_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_deps_bucket_rw_url_secret.secrets.0.id }
+locals {
+   edge_deps_bucket_rw_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_deps_bucket_rw_url_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_ASSETS_BUCKET_READWRITE_URL
 resource "oci_vault_secret" "edge_assets_bucket_rw_url_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -489,6 +709,16 @@ resource "oci_vault_secret" "edge_assets_bucket_rw_url_secret" {
    # lifecycle { ignore_changes = all }
 }
 
+data "oci_vault_secrets" "edge_assets_bucket_rw_url_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ASSETS_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_assets_bucket_rw_url_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_assets_bucket_rw_url_secret.secrets.0.id }
+locals {
+   edge_assets_bucket_rw_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_assets_bucket_rw_url_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_DEPOT_BUCKET_READ_URL
 resource "oci_vault_secret" "edge_depot_bucket_ro_url_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -501,6 +731,16 @@ resource "oci_vault_secret" "edge_depot_bucket_ro_url_secret" {
       content      = base64encode(local.edge_depot_bucket_read_url)
    }
    # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_depot_bucket_ro_url_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_DEPOT_BUCKET_READ_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_depot_bucket_ro_url_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_depot_bucket_ro_url_secret.secrets.0.id }
+locals {
+   edge_depot_bucket_ro_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_depot_bucket_ro_url_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_DEPOT_BUCKET_READWRITE_URL
@@ -569,6 +809,16 @@ resource "oci_vault_secret" "edge_client_secret" {
       content      = base64encode(random_password.initial_edge_client_secret.result)
    }
    lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_client_secret" {
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_CLIENT_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_client_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_client_secret.secrets.0.id }
+locals {
+   edge_client_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_client_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 resource "time_sleep" "edge_wait_for_secrets" {

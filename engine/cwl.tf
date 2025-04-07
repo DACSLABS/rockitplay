@@ -76,18 +76,27 @@ resource "oci_container_instances_container_instance" "engine_cwl" {
       display_name = "rockit-engine-cwl-container-${count.index+1}-${local.workspace}"
       image_url    = "${local.engine_registry}/rockit-engine-cwl:latest"
       environment_variables  = {
-         "ENV"                         : local.env
-         "WORKSPACE"                   : local.workspace
-         "INSTANCE_ID"                 : random_password.instance_id.result
-         "OCI_TENANCY"                 : var.ENGINE_OCI_TENANCY_OCID
-         "DX_ENGINE_BASE_URL"          : "https://${local.engine_pub_hostname}.cloud.rockitplay.com"
-         "DX_ENGINE_COMP_OCID"         : oci_identity_compartment.engine_comp.id
-         "DX_ENGINE_VAULT_OCID"        : var.ENGINE_VAULT_OCID
-         "DX_ENGINE_TASK_LOG_OCID"     : oci_logging_log.engine_task_log.id
-         "DX_ENGINE_TASK_SUBNET_OCID"  : oci_core_subnet.engine_pub_subnet.id
-         "DX_ENGINE_TASK_BOOTIMG_OCID" : var.ENGINE_LOADER_IMG_OCID
-         "DX_ENGINE_TASK_URL"          : "${local.tsk_bucket_readwrite_url}engine-task.tgz"
-         "DX_ENGINE_TASK_SIG"          : var.ENGINE_TASK_SIG
+         "ENV"                               : local.env
+         "WORKSPACE"                         : local.workspace
+         "INSTANCE_ID"                       : random_password.instance_id.result
+         "OCI_TENANCY"                       : var.ENGINE_OCI_TENANCY_OCID
+         "DX_ENGINE_BASE_URL"                : "https://${local.engine_pub_hostname}.cloud.rockitplay.com"
+         "DX_ENGINE_COMP_OCID"               : oci_identity_compartment.engine_comp.id
+         "DX_ENGINE_VAULT_OCID"              : var.ENGINE_VAULT_OCID
+         "DX_ENGINE_TASK_LOG_OCID"           : oci_logging_log.engine_task_log.id
+         "DX_ENGINE_TASK_SUBNET_OCID"        : oci_core_subnet.engine_pub_subnet.id
+         "DX_ENGINE_TASK_BOOTIMG_OCID"       : var.ENGINE_LOADER_IMG_OCID
+         "DX_ENGINE_TASK_URL"                : "${local.tsk_bucket_readwrite_url}engine-task.tgz"
+         "DX_ENGINE_TASK_SIG"                : var.ENGINE_TASK_SIG
+         "DX_ENGINE_ADMIN_SECRET_B64"        : local.engine_admin_secret_b64
+         "DX_ENGINE_SESSION_SECRET_B64"      : local.engine_session_secret_b64
+         "DX_ENGINE_AUTH_SECRET_B64"         : local.engine_session_secret_b64
+         "DX_ENGINE_SUBSCRIPTION_SECRET_B64" : local.engine_subscription_secret_b64
+         "DX_ENGINE_DB_CONNSTR_B64"          : local.engine_db_connstr_secret_b64
+         "DX_ENGINE_SLACK_TOKEN_B64"         : local.engine_slack_token_secret_b64
+         "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : local.engine_slack_admin_channel_secret_b64
+         "DX_ENGINE_SLACK_ERROR_CHANNEL_B64" : local.engine_slack_error_channel_secret_b64
+         "DX_ENGINE_SLACK_INFO_CHANNEL_B64"  : local.engine_slack_info_channel_secret_b64
       }
    }
 

@@ -42,17 +42,26 @@ resource "oci_functions_application" "engine_app" {
    display_name   = "engine-app-${local.workspace}"
    subnet_ids     = [ oci_core_subnet.engine_pub_subnet.id ]
    config         = {
-      "ENV"                         : local.env
-      "WORKSPACE"                   : local.workspace
-      "INSTANCE_ID"                 : random_password.instance_id.result
-      "OCI_TENANCY"                 : var.ENGINE_OCI_TENANCY_OCID
-      "DX_ENGINE_COMP_OCID"         : oci_identity_compartment.engine_comp.id
-      "DX_ENGINE_VAULT_OCID"        : var.ENGINE_VAULT_OCID
-      "DX_ENGINE_TASK_LOG_OCID"     : oci_logging_log.engine_task_log.id
-      "DX_ENGINE_TASK_SUBNET_OCID"  : oci_core_subnet.engine_pub_subnet.id
-      "DX_ENGINE_TASK_BOOTIMG_OCID" : var.ENGINE_LOADER_IMG_OCID
-      "DX_ENGINE_TASK_URL"          : "${local.tsk_bucket_readwrite_url}engine-task.tgz"
-      "DX_ENGINE_TASK_SIG"          : var.ENGINE_TASK_SIG
+      "ENV"                               : local.env
+      "WORKSPACE"                         : local.workspace
+      "INSTANCE_ID"                       : random_password.instance_id.result
+      "OCI_TENANCY"                       : var.ENGINE_OCI_TENANCY_OCID
+      "DX_ENGINE_COMP_OCID"               : oci_identity_compartment.engine_comp.id
+      "DX_ENGINE_VAULT_OCID"              : var.ENGINE_VAULT_OCID
+      "DX_ENGINE_TASK_LOG_OCID"           : oci_logging_log.engine_task_log.id
+      "DX_ENGINE_TASK_SUBNET_OCID"        : oci_core_subnet.engine_pub_subnet.id
+      "DX_ENGINE_TASK_BOOTIMG_OCID"       : var.ENGINE_LOADER_IMG_OCID
+      "DX_ENGINE_TASK_URL"                : "${local.tsk_bucket_readwrite_url}engine-task.tgz"
+      "DX_ENGINE_TASK_SIG"                : var.ENGINE_TASK_SIG
+      "DX_ENGINE_ADMIN_SECRET_B64"        : local.engine_admin_secret_b64
+      "DX_ENGINE_SESSION_SECRET_B64"      : local.engine_session_secret_b64
+      "DX_ENGINE_AUTH_SECRET_B64"         : local.engine_auth_secret_b64
+      "DX_ENGINE_SUBSCRIPTION_SECRET_B64" : local.engine_subscription_secret_b64
+      "DX_ENGINE_DB_CONNSTR_B64"          : local.engine_db_connstr_secret_b64
+      "DX_ENGINE_SLACK_TOKEN_B64"         : local.engine_slack_token_secret_b64
+      "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : local.engine_slack_admin_channel_secret_b64
+      "DX_ENGINE_SLACK_ERROR_CHANNEL_B64" : local.engine_slack_error_channel_secret_b64
+      "DX_ENGINE_SLACK_INFO_CHANNEL_B64"  : local.engine_slack_info_channel_secret_b64
    }
 }
 
