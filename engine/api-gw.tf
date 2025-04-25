@@ -9,9 +9,6 @@ variable "engine_endpoints" {
       path       = "/adm/v1/hello"
       methods    = ["POST"]
    }, {
-      path      = "/adm/v1/initialize"
-      methods    = ["POST"]
-   }, {
       path      = "/adm/v1/orgs"
       methods    = ["GET", "POST"]
    }, {
@@ -63,7 +60,7 @@ variable "engine_endpoints" {
       methods    = ["DELETE"]
    }, {
       path      = "/be/v1/tasks"
-      methods    = ["GET"]
+      methods    = ["GET", "PATCH"]
    }, {
       path      = "/be/v1/tasks/{var1}"
       methods    = ["DELETE"]
@@ -79,6 +76,10 @@ variable "engine_endpoints" {
    }, {
       path      = "/be/v1/users/{var1}"
       methods    = ["GET", "DELETE"]
+   }, {
+      // --- /srv/v1/*
+      path      = "/srv/v1/initialize"
+      methods    = ["POST"]
    }]
 }
 

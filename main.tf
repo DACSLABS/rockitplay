@@ -32,7 +32,7 @@ module engine {
    ENGINE_OCI_REGION                = var.region
    ENGINE_OCI_NAMESPACE             = local.namespace
    ENGINE_PARENT_COMP_OCID          = var.compartment_ocid
-    ENGINE_BASEENV_ID                = local.baseenv_id
+   ENGINE_BASEENV_ID                = local.baseenv_id
    ENGINE_WITH_CERT                 = local.with_cert
    ENGINE_CERT_DOMAINNAME           = local.cert_domainname
    ENGINE_CERT_OCID                 = local.cert_ocid
@@ -124,6 +124,7 @@ module edge {
    EDGE_DB_TYPE                   = local.edge_mongodbatlas_db_type
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
    EDGE_DB_REGION                 = local.edge_mongodbatlas_region
+   EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
    EDGE_SLACK_ERROR_CHANNEL       = var.EDGE_SLACK_ERROR_CHANNEL
@@ -141,7 +142,7 @@ resource "null_resource" "engine_curl_post_initialize" {
          token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-            if curl --insecure --fail -H "x-rockit-engine-admin-token: $token" -H "Content-Type: application/json" -X POST $ENGINE_BASE_URL/adm/v1/initialize; then
+            if curl --insecure --fail -H "x-rockit-engine-admin-token: $token" -H "Content-Type: application/json" -X POST $ENGINE_BASE_URL/srv/v1/initialize; then
                break
             fi
             nRetries=$((nRetries+1))
@@ -162,7 +163,7 @@ resource "null_resource" "edge_curl_post_initialize" {
          token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-         if curl --insecure --fail -H "x-rockit-admin-token: $token" -H "Content-Type: application/json" -X POST $EDGE_BASE_URL/adm/v1/initialize; then
+         if curl --insecure --fail -H "x-rockit-admin-token: $token" -H "Content-Type: application/json" -X POST $EDGE_BASE_URL/srv/v1/initialize; then
             break
          fi
          nRetries=$((nRetries+1))

@@ -3,7 +3,7 @@ resource "oci_objectstorage_bucket" "edge_trc_bucket" {
    compartment_id = oci_identity_compartment.edge_comp.id
    name           = "edge-trc-bucket-${local.workspace}"
    namespace      = var.EDGE_OCI_NAMESPACE
-   object_events_enabled = true
+   object_events_enabled = false
 }
 
 resource "oci_objectstorage_object_lifecycle_policy" "edge_trc_bucket_lifecycle" {

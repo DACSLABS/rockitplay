@@ -2,12 +2,12 @@
 
 * [About](#about)
 * [ROCKITPLAY Cloud Service](#rockitplay-cloud-service)
-   * [External Cloud Services and Dependencies](#external-cloud-services-and-dependencies)
+* [External Cloud Services and Dependencies](#external-cloud-services-and-dependencies)
 * [Usage](#usage)
 * [Deployment](#deployment)
 * [Contact](#contact)
 
-# About
+# Introduction
 
 Modern video games can easily be as large as 50 GB or even 100 GB. Downloading
 such applications even with fast internet connections may take several hours.
@@ -21,16 +21,16 @@ only a few percent. While the game can be launched within seconds or minutes wit
 ROCKIT, the download continues in the background until the entire title is locally
 available (see Tab.1).
 
-|             **Time-to-Play** |  **Game** |     **Standard** |   **ROCKITPLAY** |
+|                              |  **Game** |     **Standard** |   **ROCKITPLAY** |
 |-----------------------------:|----------:|-----------------:|-----------------:|
-| **@100Mbit/s**               |  **Size** | **Time-to-Play** | **Time-to-Play** |
+|                   **Title**  |  **Size** | **Time-to-Play** | **Time-to-Play** |
 | The Elder Scrolls Online[^1] |     97 GB |       2 h 10 min |           90 sec |
 |               AC Odyssey[^2] |     77 GB |       1 h 45 min |           28 sec |
 |                 Lost Ark[^3] |     76 GB |       1 h 44 min |           34 sec |
 |               God of War[^4] |     68 GB |       1 h 31 min |            3 min |
 |                Mafia III[^5] |     57 GB |       1 h 16 min |           34 sec |
 
-*Tab.1: Internal benchmark results comparing time-to-play for full game downloads to ROCKITPLAY.*
+*Tab.1: Internal benchmark results comparing time-to-play for full game downloads to ROCKITPLAY at 100Mbit/s.*
 
 [^1]: © 2024 ZeniMax Media Inc. Trademarks are the property of their respective owners. All rights reserved.
 [^2]: © 2020 Ubisoft Entertainment. All Rights Reserved. Ubisoft and the Ubisoft logo are trademarks of Ubisoft Entertainment in the U.S. and/or other countries.
@@ -51,19 +51,20 @@ multiple PCs using multiple game sessions.
 computed from the set of generated trace files. Together with the traced timing
 information a load profile can be created which is used to calculate a user specific
 application start point within the data stream. Depending on the game title typically
-a few ten traces suffice to obtain a suitable load profile with significant
+a dozen traces suffice to obtain a suitable load profile with significant
 acceleration factors. Hundreds or more traces will further improve the load profile.
 The obtained optimized sequence of the data stream is used to launch the game before
 the download is completed. The ROCKIT preload size is dynamically evaluated from both
 the load profile of the game and the current download bandwidth measured on the user
 side. Statistical fluctuations of the network connection are taken into account.
 Faster network connections allow for launching a game with smaller preloads.
-ROCKIT's data stream representation allows for computing very small patch sizes
+
+**Patches.** ROCKIT's data stream representation allows for computing very small patch sizes
 compared to conventional general-purpose patch methods (see Tab. 2).
 
 |                           |   **Standard** | **ROCKITPLAY** |               |
 |--------------------------:|---------------:|---------------:|--------------:|
-|                  **Game** | **Patch Size** | **Patch Size** | **Reduction** |
+|                 **Title** | **Patch Size** | **Patch Size** | **Reduction** |
 |      Crime Boss Q2/23[^6] |       4 300 MB |         717 MB |          83 % |
 | AC Valhalla DoR Q3/22[^7] |       7 080 MB |       2 300 GB |          68 % |
 |        Fortnite Q3/21[^8] |      10 200 MB |       2 800 GB |          73 % |
@@ -84,15 +85,34 @@ application specific data prefetching can be applied. Even on PCs with
 low-performance spinning HDDs read performances equivalent to (or even higher than)
 SSD are possible, compared to the native installation.
 
-**ROCKITPLAY FastStart** consists of
+**ROCKITPLAY FastStart** 
 
+The following figure illustrates the typical workflow of producing ROCKITPLAY FastStart images:
+
+<img src="images/ROCKITPLAY-Roundtrip.svg" width="500" />
+
+The game publisher uploads the native game build to the ROCKITPLAY Cloud Service (ROCKIT Edge).
+The internal service ROCKIT Engine generates ROCKIT images and ROCKIT patches which will be
+automatically deployed to the CDN origin. A game launcher which is linked against the ROCKIT RTE
+downloads the ROCKIT image / patches from the CDN. Leveraging ROCKIT's progressive download
+technology based on storage virtualization, the game starts after a brief download, allowing
+gamers to play already while the download continues in the background. After the game play session
+ROCKIT Trace data (block access pattern) can be uploaded to the ROCKITPLAY Cloud Service in order
+to improve the FastStart experience. Typically, only a few iterations are necessary to obtain a
+ROCKIT FastStart image.
+
+The following chart presents a simplified architecture chart of the ROCKITPLAY Cloud Service
+consisting of 
 * a client-side component (provided as **ROCKIT SDK** or **ROCKIT StreamInstaller**) and
 * the service-side component **ROCKITPLAY Cloud Service**.
 
-This repository hosts the **ROCKITPLAY Cloud Service**.
+<img src="images/ROCKITPLAY-Architecture.svg" width="800" />
+
+The details of the architecture chart can also be found in this repository which hosts the 
+Terraform stack of **ROCKITPLAY Cloud Service**.
 
 Learn more about **ROCKITPLAY FastStart**: Contact [DACSLABS](https://www.dacslabs.com).  
-<a href="https://www.linkedin.com/in/frank-schwarz-rockit/recent-activity/all/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" height="20px"/></a><a href="https://www.youtube.com/@dacslaboratories3117/videos"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" height="20px"/></a>
+<a href="https://www.linkedin.com/in/frank-schwarz-rockit/recent-activity/all/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" height="20px"/></a><a href="https://www.youtube.com/watch?v=KcAgoVNso0g&t"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" height="20px"/></a>
 
 
 
@@ -146,24 +166,25 @@ In order to deploy the ROCKIT Edge and ROCKIT Engine services the following prer
 # Usage
 
 1. Create a new organization:  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-admin-api-v1/index.html#tag/ROCKIT-Edge-Organizations/paths/~1adm~1v1~1orgs/post">![](https://img.shields.io/badge//adm/v1/orgs-lightgray.svg?labelColor=blue&label=POST)</a>
+   <a href="https://edge.api.cloud.rockitplay.com/create-organization-11591049e0">![](https://img.shields.io/badge//adm/v1/orgs-lightgray.svg?labelColor=blue&label=POST)</a>
 2. Register at least one destination CDN origin:  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html#tag/Deployments">![](https://img.shields.io/badge//be/v1/deployments-lightgray.svg?labelColor=blue&label=POST)</a>
+   <a href="https://edge.api.cloud.rockitplay.com/creating-deployments-11747958e0">![](https://img.shields.io/badge//be/v1/deployments-lightgray.svg?labelColor=blue&label=POST)</a>
 3. Create a new App:  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html#tag/Apps">![](https://img.shields.io/badge//be/v1/apps-lightgray.svg?labelColor=blue&label=POST)</a>
+   <a href="https://edge.api.cloud.rockitplay.com/creating-apps-11634354e0">![](https://img.shields.io/badge//be/v1/apps-lightgray.svg?labelColor=blue&label=POST)</a>
 4. Upload native game builds:  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html#tag/Apps/paths/~1be~1v1~1builds/post">![](https://img.shields.io/badge//be/v1/builds-lightgray.svg?labelColor=blue&label=POST)</a>
+   <a href="https://edge.api.cloud.rockitplay.com/import-native-builds-11634363e0">![](https://img.shields.io/badge//be/v1/builds-lightgray.svg?labelColor=blue&label=POST)</a>
 5. Optionally, monitor the status of the app  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html#tag/Appss">![](https://img.shields.io/badge//be/v1/apps-lightgray.svg?labelColor=green&label=GET)</a>  
+   <a href="https://edge.api.cloud.rockitplay.com/list-apps-13039645e0">![](https://img.shields.io/badge//be/v1/apps-lightgray.svg?labelColor=green&label=GET)</a>  
    and the ongoing processing tasks:  
-   <a href="https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html#tag/Tasks">![](https://img.shields.io/badge//be/v1/tasks-lightgray.svg?labelColor=green&label=GET)</a>
+   <a href="https://edge.api.cloud.rockitplay.com/listing-tasks-11779680e0">![](https://img.shields.io/badge//be/v1/tasks-lightgray.svg?labelColor=green&label=GET)</a>  
+   or subscribe a webhook to ROCKITPLAY events:  
+   <a href="https://edge.api.cloud.rockitplay.com/subscribe-14052754e0">![](https://img.shields.io/badge//be/v1/subscriptions-lightgray.svg?labelColor=blue&label=POST)</a>  
 6. As soon as ROCKITPLAY has uploaded the generated ROCKIT image play the game to obtain ROCKIT traces using a game launcher supporting **ROCKITPLAY FastStart**, e.g., **ROCKIT StreamInstaller**.
 7. **ROCKITPLAY Cloud Service** automatically optimizes the ROCKIT acceleration and redeploys the new ROCKIT images.
 
 *Additional Information*
 
-* [ROCKIT Edge Administrator Guide](https://public.cloud.rockitplay.com/doc/rockit-edge-admin-api-v1/index.html)
-* [ROCKIT Edge Backend API](https://public.cloud.rockitplay.com/doc/rockit-edge-backend-api-v1/index.html)
+* [ROCKITPLAY API](https://edge.api.cloud.rockitplay.com/)
 
 # Deployment
 

@@ -25,6 +25,7 @@ groupings:
     - rockit_base_link_b64
     - env_label
     - WORKSPACE
+    - MAINTENANCE_MODE
 
   - title: "Advanced Settings"
     visible: true
@@ -112,6 +113,14 @@ variables:
                   If you plan to deploy a production system only simply use 'prod' or 'live'"
     required: true
     pattern: "^[a-z][a-z0-9]{1,19}$"
+
+  MAINTENANCE_MODE:
+    type: boolean
+    title: "Maintenance Mode"
+    description: "Enable maintenance mode for the ROCKIT Edge instance?
+                  This will disable all API endpoints and periodic jobs."
+    visible: true
+    default: false
 
   show_advanced_settings:
     type: boolean

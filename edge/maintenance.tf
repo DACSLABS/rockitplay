@@ -16,8 +16,8 @@ resource "oci_ons_subscription" "edge_maintenance_subscription" {
 resource "oci_monitoring_alarm" "edge_maintenance_trigger" {
    compartment_id        = oci_identity_compartment.edge_comp.id
    destinations          = [ oci_ons_notification_topic.edge_maintenance_topic.id ]
-   display_name          = "maintenance-trigger-${local.workspace}"
-   is_enabled            = true
+   display_name          = "maintenance-trigger-${local.workspace} ${var.EDGE_MAINTENANCE_MODE ? "OFF (maintenance)" : "ON"}"
+   is_enabled            = !var.EDGE_MAINTENANCE_MODE
    metric_compartment_id = oci_identity_compartment.edge_comp.id
    namespace             = "oci_internet_gateway"
    # any valid query which ALWAYS returns TRUE

@@ -9,6 +9,11 @@ variable "dacslabs_link_b64"            { type = string }
 variable "rockit_base_link_b64"         { type = string }
 variable "env_label"                    { type = string }
 
+variable "MAINTENANCE_MODE" {
+  type    = bool
+  default = false
+}
+
 variable "RSI_URL" {
   type = string
   default = "https://public.cloud.rockitplay.com/rsi"

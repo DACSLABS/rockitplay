@@ -6,8 +6,8 @@ resource "null_resource" "edge_import_cwl_image" {
       oci_artifacts_container_repository.edge_cwl_container_repository
    ]
    triggers = {
-      always = "${timestamp()}"
-      # src_updated = var.EDGE_SRC_HASH
+      # always = "${timestamp()}"
+      src_updated = var.EDGE_SRC_HASH
    }
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
@@ -22,6 +22,8 @@ resource "null_resource" "edge_import_cwl_image" {
          curl --fail -o $workdir/edge-cwl.tgz ${var.EDGE_CWL_URL}
          pushd $workdir
             tar xvfz edge-cwl.tgz
+            # docker build --platform linux/amd64 -t ${local.edge_registry}/rockit-edge-cwl:latest .
+            # docker push ${local.edge_registry}/rockit-edge-cwl:latest
             docker buildx create --name edge_builder
             docker buildx use edge_builder
             docker buildx build --platform linux/arm64 -t ${local.edge_registry}/rockit-edge-cwl:latest --push .

@@ -42,6 +42,8 @@ variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }
 
 variable "EDGE_DX_URL"                { type = string }
 
+variable "EDGE_MAINTENANCE_MODE"      { type = bool }
+
 variable "EDGE_SLACK_TOKEN"           { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"   { type = string }
 variable "EDGE_SLACK_ERROR_CHANNEL"   { type = string }

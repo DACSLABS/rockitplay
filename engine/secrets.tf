@@ -26,6 +26,7 @@ resource "oci_vault_secret" "admin_secret" {
 }
 
 data "oci_vault_secrets" "admin_secret" {
+    depends_on     = [ oci_vault_secret.admin_secret ]
     compartment_id = oci_identity_compartment.engine_comp.id
     vault_id       = var.ENGINE_VAULT_OCID
     name           = "ENGINE_ADMIN_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
@@ -64,9 +65,10 @@ resource "oci_vault_secret" "session_secret" {
 }
 
 data "oci_vault_secrets" "session_secret" {
-   compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "ENGINE_SESSION_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
+    depends_on     = [ oci_vault_secret.session_secret ]
+    compartment_id = oci_identity_compartment.engine_comp.id
+    vault_id       = var.ENGINE_VAULT_OCID
+    name           = "ENGINE_SESSION_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 data "oci_secrets_secretbundle" "session_secret_secretbundle" { secret_id = data.oci_vault_secrets.session_secret.secrets.0.id }
 locals {
@@ -101,9 +103,10 @@ resource "oci_vault_secret" "auth_secret" {
 }
 
 data "oci_vault_secrets" "auth_secret" {
+   depends_on     = [ oci_vault_secret.auth_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "ENGINE_AUTH_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "ENGINE_AUTH_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 data "oci_secrets_secretbundle" "auth_secret_secretbundle" { secret_id = data.oci_vault_secrets.auth_secret.secrets.0.id }
 locals {
@@ -140,9 +143,10 @@ resource "oci_vault_secret" "subscription_secret" {
 }
 
 data "oci_vault_secrets" "subscription_secret" {
+   depends_on     = [ oci_vault_secret.subscription_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "ENGINE_SUBSCRIPTION_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "ENGINE_SUBSCRIPTION_SECRET_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 data "oci_secrets_secretbundle" "subscription_secret_secretbundle" { secret_id = data.oci_vault_secrets.subscription_secret.secrets.0.id }
 locals {
@@ -175,7 +179,8 @@ resource "oci_vault_secret" "db_pw_secret" {
 }
 
 data "oci_secrets_secretbundle" "db_pw_secret" {
-   secret_id = oci_vault_secret.db_pw_secret.id
+   depends_on = [ oci_vault_secret.db_pw_secret ]
+   secret_id  = oci_vault_secret.db_pw_secret.id
 }
 
 # --- ENGINE_DB_CONNSTR
@@ -196,9 +201,10 @@ resource "oci_vault_secret" "db_connstr_secret" {
 }
 
 data "oci_vault_secrets" "db_connstr_secret" {
+   depends_on     = [ oci_vault_secret.db_connstr_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "ENGINE_DB_CONNSTR_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "ENGINE_DB_CONNSTR_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 data "oci_secrets_secretbundle" "db_connstr_secret_secretbundle" { secret_id = data.oci_vault_secrets.db_connstr_secret.secrets.0.id }
 locals {
@@ -220,9 +226,10 @@ resource "oci_vault_secret" "slack_token_secret" {
 }
 
 data "oci_vault_secrets" "slack_token_secret" {
+   depends_on     = [ oci_vault_secret.slack_token_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "SLACK_TOKEN_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "SLACK_TOKEN_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 data "oci_secrets_secretbundle" "slack_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_token_secret.secrets.0.id }
 locals {
@@ -244,9 +251,10 @@ resource "oci_vault_secret" "slack_admin_channel_secret" {
 }
 
 data "oci_vault_secrets" "slack_admin_channel_secret" {
+   depends_on     = [ oci_vault_secret.slack_admin_channel_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 
 data "oci_secrets_secretbundle" "slack_admin_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_admin_channel_secret.secrets.0.id }
@@ -269,9 +277,10 @@ resource "oci_vault_secret" "slack_error_channel_secret" {
 }
 
 data "oci_vault_secrets" "slack_error_channel_secret" {
+   depends_on     = [ oci_vault_secret.slack_error_channel_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "SLACK_ERROR_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "SLACK_ERROR_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 
 data "oci_secrets_secretbundle" "slack_error_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_error_channel_secret.secrets.0.id }
@@ -294,9 +303,10 @@ resource "oci_vault_secret" "slack_info_channel_secret" {
 }
 
 data "oci_vault_secrets" "slack_info_channel_secret" {
+   depends_on     = [ oci_vault_secret.slack_info_channel_secret ]
    compartment_id = oci_identity_compartment.engine_comp.id
-    vault_id      = var.ENGINE_VAULT_OCID
-    name          = "SLACK_INFO_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
+   vault_id       = var.ENGINE_VAULT_OCID
+   name           = "SLACK_INFO_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
 }
 
 data "oci_secrets_secretbundle" "slack_info_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_info_channel_secret.secrets.0.id }

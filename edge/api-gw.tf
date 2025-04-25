@@ -1,174 +1,3 @@
-// --- endpoint definitions: /adm/v1
-variable "edge_endpoints" {
-   type = list (object ({
-      path      = string
-      methods   = list(string)
-   }))
-   default = [{
-      path       = "/mc"
-      methods    = ["GET"]
-    }, {
-       // --- /adm/v1/*
-      path       = "/adm/v1/hello"
-      methods    = ["POST"]
-   }, {
-      path      = "/adm/v1/initialize"
-      methods    = ["POST"]
-   }, {
-      path      = "/adm/v1/orgs"
-      methods    = ["POST"]
-   }, {
-      path      = "/adm/v1/orgs/{var1}"
-      methods    = ["DELETE"]
-   }, {
-      path      = "/adm/v1/ping"
-      methods    = ["POST"]
-   }, {
-
-      // --- /be/v1/*
-      path       = "/be/v1/apikeys"
-      methods    = ["POST", "DELETE"]
-   }, {
-      path       = "/be/v1/apps"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/apps/{var1}"
-      methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/be/v1/assets"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/auth"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/builds"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/bundles"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/bundles/{var1}"
-      methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/be/v1/commit"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/deployments"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/deployments/{var1}"
-      methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/be/v1/deps"
-      methods    = ["POST", "PATCH"]
-   }, {
-      path       = "/be/v1/deps/{var1}"
-      methods    = ["DELETE"]
-   }, {
-      path       = "/be/v1/export"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/import"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/keys"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/keys/{var1}"
-      methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/be/v1/login"
-      methods    = ["POST"]
-   }, {
-      path      = "/be/v1/orgs"
-      methods    = ["POST"]
-   }, {
-      path      = "/be/v1/orgs/{var1}"
-      methods    = ["DELETE"]
-   }, {
-      path       = "/be/v1/progress"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/publish"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/release"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/roles"
-      methods    = ["POST", "PATCH", "GET"]
-   }, {
-      path       = "/be/v1/roles/{var1}"
-      methods    = ["DELETE"]
-   }, {
-      path       = "/be/v1/sources"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/sources/{var1}"
-      methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/be/v1/subscriptions"
-      methods    = [ "GET", "POST" ]
-   }, {
-      path       = "/be/v1/subscriptions/{var1}"
-      methods    = [ "DELETE" ]
-   }, {
-      path       = "/be/v1/tasks"
-      methods    = ["GET", "PATCH"]
-   }, {
-      path       = "/be/v1/tasks/{var1}"
-      methods    = ["GET"]
-   }, {
-      path       = "/be/v1/trainings"
-      methods    = ["GET"]
-   }, {
-      path       = "/be/v1/trigger"
-      methods    = ["POST"]
-   }, {
-      path       = "/be/v1/users"
-      methods    = ["GET", "POST", "PATCH"]
-   }, {
-      path       = "/be/v1/users/{var1}"
-      methods    = ["DELETE"]
-   }, {
-
-      // --- /client/v1/*
-      path       = "/client/v1/auth"
-      methods    = ["POST"]
-   }, {
-      path       = "/client/v1/bundles"
-      methods    = ["GET"]
-   }, {
-      path       = "/client/v1/bundles/{var1}"
-      methods    = ["GET"]
-   }, {
-      path       = "/client/v1/client-items"
-      methods    = ["POST"]
-   }, {
-      path       = "/client/v1/deps/{var1}"
-      methods    = ["GET"]
-   }, {
-      path       = "/client/v1/feedback"
-      methods    = ["POST"]
-   }, {
-      path       = "/client/v1/ib-sessions"
-      methods    = ["POST"]
-   }, {
-      path       = "/client/v1/login"
-      methods    = ["POST"]
-   }, {
-      path       = "/client/v1/rsi"
-      methods    = ["GET"]
-   }, {
-      path       = "/client/v1/rte-sessions"
-      methods    = ["POST", "PATCH"]
-   }, {
-      path       = "/client/v1/traces"
-      methods    = ["POST"]
-   }]
-}
-
-
 locals {
    path_param1_key = "{var1}"
    path_param1_val = "$${request.path[var1]}"
@@ -201,18 +30,33 @@ resource "oci_apigateway_deployment" "edge_api_deployment" {
          content {
             path    = routes.value.path
             methods = routes.value.methods
+
+            # --- static maintenance response (503 response)
+            #     for all endpoints except /srv/*
             dynamic "backend" {
-               for_each = local.use_cwl ? [1] : []
+               for_each = (var.EDGE_MAINTENANCE_MODE && substr(routes.value.path, 0, 5) != "/srv/") ? [1] : []
                content {
-                  type = "HTTP_BACKEND"
-                  url  = "${local.nlb_url}${replace(replace (routes.value.path, local.path_param1_key, local.path_param1_val), local.path_param2_key, local.path_param2_val)}"
-                  connect_timeout_in_seconds = var.EDGE_APIGW_CONNECTION_TIMEOUT
-                  read_timeout_in_seconds    = var.EDGE_APIGW_READ_TIMEOUT
-                  send_timeout_in_seconds    = var.EDGE_APIGW_SEND_TIMEOUT
+                  type   = "STOCK_RESPONSE_BACKEND"
+                  status = 503
+                  body   = jsonencode({
+                     "status"     = "failed"
+                     "error"      = "maintenance"
+                     "message"    = "The service is in maintenance mode. Please retry later."
+                     "retryAfter" = "900"
+                  })
+                  headers {
+                     name  = "Content-Type"
+                     value = "application/json"
+                  }
+                  headers {
+                     name  = "Retry-After"
+                     value = "900"  # 15m
+                  }
                }
             }
+
             dynamic "backend" {
-               for_each = local.use_cwl ? [] : [1]
+               for_each = (var.EDGE_MAINTENANCE_MODE && substr(routes.value.path, 0, 5) != "/srv/") ? [] : (local.use_cwl ? [] : [1])
                content {
                   type        = "ORACLE_FUNCTIONS_BACKEND"
                   function_id = oci_functions_function.edge_fn.id
