@@ -87,7 +87,7 @@ variable "edge_endpoints" {
       methods    = ["POST", "PATCH", "GET"]
    }, {
       path       = "/be/v1/roles/{var1}"
-      methods    = ["DELETE"]
+      methods    = ["GET", "DELETE"]
    }, {
       path       = "/be/v1/sources"
       methods    = ["GET", "POST", "PATCH"]
@@ -99,7 +99,7 @@ variable "edge_endpoints" {
       methods    = [ "GET", "POST" ]
    }, {
       path       = "/be/v1/subscriptions/{var1}"
-      methods    = [ "DELETE" ]
+      methods    = [ "GET", "DELETE" ]
    }, {
       path       = "/be/v1/tasks"
       methods    = ["GET", "PATCH"]
@@ -108,7 +108,7 @@ variable "edge_endpoints" {
       methods    = ["GET"]
    }, {
       path       = "/be/v1/trainings"
-      methods    = ["GET"]
+      methods    = ["GET", "PATCH"]
    }, {
       path       = "/be/v1/trigger"
       methods    = ["POST"]

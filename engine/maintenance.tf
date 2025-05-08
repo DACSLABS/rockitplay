@@ -16,8 +16,8 @@ resource "oci_ons_subscription" "maintenance_subscription" {
 resource "oci_monitoring_alarm" "maintenance_trigger" {
    compartment_id        = oci_identity_compartment.engine_comp.id
    destinations          = [ oci_ons_notification_topic.maintenance_topic.id ]
-   display_name          = "maintenance-trigger"
-   is_enabled            = true
+   display_name          = "maintenance-trigger-${local.workspace} ${var.ENGINE_MAINTENANCE_MODE ? "OFF (maintenance)" : "ON"}"
+   is_enabled            = !var.ENGINE_MAINTENANCE_MODE
    metric_compartment_id = oci_identity_compartment.engine_comp.id
    namespace             = "oci_internet_gateway"
    # any valid query which ALWAYS returns TRUE

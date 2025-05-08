@@ -1,5 +1,6 @@
 # --- import cwl Docker image
 resource "null_resource" "edge_import_cwl_image" {
+   count = var.EDGE_APPLY_UPDATES ? 1 : 0
    depends_on = [
       oci_identity_auth_token.edge_registry_user_authtoken,
       time_sleep.edge_wait_for_registry_user,
@@ -86,7 +87,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_COMP_OCID"                        : oci_identity_compartment.edge_comp.id
          "DX_EDGE_VAULT_OCID"                       : var.EDGE_VAULT_OCID
          "DX_EDGE_TASK_LOG_OCID"                    : oci_logging_log.edge_task_log.id
-         "DX_EDGE_TASK_SUBNET_OCID"                 : oci_core_subnet.edge_pub_subnet.id
+         "DX_EDGE_TASK_SUBNET_OCID"                 : oci_core_subnet.edge_priv_subnet.id
          "DX_EDGE_TASK_BOOTIMG_OCID"                : var.EDGE_LOADER_IMG_OCID
          "DX_EDGE_TASK_URL"                         : "${local.edge_tsk_bucket_readwrite_url}edge-task.tgz"
          "DX_EDGE_TASK_SIG"                         : var.EDGE_TASK_SIG
@@ -109,9 +110,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_SUBSCRIPTION_SECRET_B64"          : local.edge_subscription_secret_b64
          "DX_EDGE_DEPLOYMENT_SECRET_B64"            : local.edge_deployment_secret_b64
          "DX_EDGE_SLACK_TOKEN_B64"                  : local.edge_slack_token_secret_b64
-         "DX_EDGE_SLACK_INFO_CHANNEL_B64"           : local.edge_slack_info_channel_secret_b64
          "DX_EDGE_SLACK_ADMIN_CHANNEL_B64"          : local.edge_slack_admin_channel_secret_b64
-         "DX_EDGE_SLACK_ERROR_CHANNEL_B64"          : local.edge_slack_error_channel_secret_b64
          "DX_EDGE_DB_CONNSTR_B64"                   : local.edge_db_connstr_secret_b64
          "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
          "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64

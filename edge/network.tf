@@ -481,7 +481,7 @@ resource "oci_core_subnet" "edge_priv_subnet" {
 
 
 # --- Outputs
-output "nat_gw_ip" {
+output "edge_nat_gw_ip" {
    value = oci_core_nat_gateway.edge_nat_gw.nat_ip
 }
 

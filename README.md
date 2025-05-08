@@ -1,10 +1,10 @@
 <a href="https://www.rockitplay.com"><img src="https://public.cloud.rockitplay.com/doc/faststart.png" width="400" /></a>
 
-* [About](#about)
+* [Introduction](#introduction)
 * [ROCKITPLAY Cloud Service](#rockitplay-cloud-service)
 * [External Cloud Services and Dependencies](#external-cloud-services-and-dependencies)
 * [Usage](#usage)
-* [Deployment](#deployment)
+* [Installation](#install)
 * [Contact](#contact)
 
 # Introduction
@@ -186,7 +186,7 @@ In order to deploy the ROCKIT Edge and ROCKIT Engine services the following prer
 
 * [ROCKITPLAY API](https://edge.api.cloud.rockitplay.com/)
 
-# Deployment
+# Installation
 
 <a href="https://www.terraform.io"><img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" height="20px"></a>
 
@@ -217,15 +217,17 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
 
          * use Create a pre-configured app from [here](https://api.slack.com/tutorials/tracks/posting-messages-with-curl) for the new Slack workspace and follow the tutorial
          * copy the Slack token that appears in the tutorial. It will be needed when setting up the Base Environment for the ROCKITPLAY Cloud Service.
-      * Create slack channels for collecting info and/or error messages, such as
+      * Create one or more slack channels for collecting error messages, such as
 
-         * `#info-rockit-edge`,
-         * `#info-rockit-engine`,
-         * `#error-rockit-edge`, and
-         * `#error-rockit-engine`.
+         * `#rockitplay-admin`
+
+         or 
+
+         * `#rockit-edge-admin`, and
+         * `#rockit-engine-admin`.
       * Test the setup:
          ```
-         curl -d "text=Hello World" -d "channel='#info-rockit-edge' -H "Authorization: Bearer <SLACK_TOKEN>" -X POST https://slack.com/api/chat.postMessage
+         curl -d "text=Hello World" -d channel='#rockitplay-admin' -H "Authorization: Bearer <SLACK_TOKEN>" -X POST https://slack.com/api/chat.postMessage
          ```
    </details>
 3. Setup your [OCI tenancy](https://www.oracle.com/cloud/).

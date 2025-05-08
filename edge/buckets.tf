@@ -224,6 +224,34 @@ resource "oci_objectstorage_preauthrequest" "edge_rockitmc_read_par" {
 }
 
 
+resource "null_resource" "dl_mc" {
+   depends_on   = [ oci_objectstorage_bucket.edge_mc_bucket ]
+   triggers = {
+      always      = timestamp()
+      namespace   = var.EDGE_OCI_NAMESPACE
+      workspace   = local.workspace
+      bucket_name = "edge-mc-bucket-${local.workspace}"
+   }
+
+   provisioner "local-exec" {
+      interpreter = [ "/bin/bash", "-c" ]
+      command = <<-EOT
+         set -e
+         if [ "${var.EDGE_APPLY_UPDATES}" != "true" ]; then
+            exit 0
+         fi
+         curl --fail -o rockit-mc.js ${var.EDGE_MC_URL}
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js --file ./rockit-mc.js --namespace ${self.triggers.namespace} --force
+      EOT
+   }
+   provisioner "local-exec" {
+      when = destroy
+      command = <<-EOT
+         oci os object delete --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js --namespace ${self.triggers.namespace} --force 2>/dev/null || true
+      EOT
+   }
+}
+
 
 locals {
    dev_bucket_readwrite_par = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par[0].access_uri}" : null

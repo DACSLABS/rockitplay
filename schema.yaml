@@ -25,7 +25,12 @@ groupings:
     - rockit_base_link_b64
     - env_label
     - WORKSPACE
+
+  - title: "Maintenance"
+    visible: true
+    variables:
     - MAINTENANCE_MODE
+    - APPLY_UPDATES
 
   - title: "Advanced Settings"
     visible: true
@@ -60,11 +65,7 @@ groupings:
           - "test: Testing Environment"
     variables:
     - ENGINE_SLACK_ADMIN_CHANNEL
-    - ENGINE_SLACK_ERROR_CHANNEL
-    - ENGINE_SLACK_INFO_CHANNEL
     - EDGE_SLACK_ADMIN_CHANNEL
-    - EDGE_SLACK_ERROR_CHANNEL
-    - EDGE_SLACK_INFO_CHANNEL
 
 variables:
 
@@ -114,6 +115,7 @@ variables:
     required: true
     pattern: "^[a-z][a-z0-9]{1,19}$"
 
+
   MAINTENANCE_MODE:
     type: boolean
     title: "Maintenance Mode"
@@ -122,17 +124,26 @@ variables:
     visible: true
     default: false
 
+  APPLY_UPDATES:
+    type: boolean
+    title: "Apply Updates"
+    description: "Pull and apply latest ROCKITPLAY updates from DACSLABS?"
+    visible: true
+    default: true
+
+
   show_advanced_settings:
     type: boolean
     title: "Show Advanced Settings"
     description: "Override advanced configuration. If unsure, keep unchecked."
     visible: true
+    default: false
 
   RSI_URL:
     type: string
     title: "ROCKIT StreamInstaller URL"
     description: "Define the URL to download rsi.exe"
-    default: "https:/public.cloud.rockitplay.com/rsi"
+    default: "https://public.cloud.rockitplay.com/rsi"
     required: true
     visible: ${show_advanced_settings}
 
@@ -158,7 +169,7 @@ variables:
     description: "Please choose the shape of the container instances."
     visible: ${use_cwl}
     required: true
-    default: "CI.Standard.A1.Flex"
+    default: "CI.Standard.E4.Flex"
     enum:
     - "CI.Standard.A1.Flex"
     - "CI.Standard.E4.Flex"
@@ -299,38 +310,10 @@ variables:
                   '#my-admin-channel'"
     required: true
 
-  ENGINE_SLACK_ERROR_CHANNEL:
-    type: string
-    title: "Slack Channel for ROCKIT Engine Errors"
-    description: "Please enter the Id of the Slack channel which should receive
-                  error notifications from ROCKIT Engine, e.g, '#my-error-channel'"
-    required: true
-
-  ENGINE_SLACK_INFO_CHANNEL:
-    type: string
-    title: "Slack Channel for ROCKIT Engine Infos"
-    description: "Please enter the Id of the Slack channel which should receive
-                  information notifications from ROCKIT Engine, e.g., '#my-info-channel'"
-    required: true
-
   EDGE_SLACK_ADMIN_CHANNEL:
     type: string
     title: "Slack Channel for ROCKIT Edge Site-Admins"
     description: "Please enter the Id of the Slack channel which should receive
                   notifications for the site administrators of ROCKIT Edge, e.g,
                   '#my-admin-channel'"
-    required: true
-
-  EDGE_SLACK_ERROR_CHANNEL:
-    type: string
-    title: "Slack Channel for ROCKIT Edge Errors"
-    description: "Please enter the Id of the Slack channel which should receive
-                  error notifications from ROCKIT Edge, e.g, '#my-error-channel'"
-    required: true
-
-  EDGE_SLACK_INFO_CHANNEL:
-    type: string
-    title: "Slack Channel for ROCKIT Edge Infos"
-    description: "Please enter the Id of the Slack channel which should receive
-                  information notifications from ROCKIT Edge, e.g., '#my-info-channel'"
     required: true

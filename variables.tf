@@ -8,10 +8,16 @@ variable "current_user_ocid" { }
 variable "dacslabs_link_b64"            { type = string }
 variable "rockit_base_link_b64"         { type = string }
 variable "env_label"                    { type = string }
+variable "show_advanced_settings" {
+  type = bool
+  default = false
+}
 
 variable "MAINTENANCE_MODE" {
-  type    = bool
-  default = false
+  type = bool
+}
+variable "APPLY_UPDATES" {
+  type = bool
 }
 
 variable "RSI_URL" {
@@ -64,12 +70,7 @@ variable "ENGINE_MONGODBATLAS_CLUSTER_SIZE" {
 
 variable "WORKSPACE"                    { type = string }
 variable "ENGINE_SLACK_ADMIN_CHANNEL"   { type = string }
-variable "ENGINE_SLACK_ERROR_CHANNEL"   { type = string }
-variable "ENGINE_SLACK_INFO_CHANNEL"    { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"     { type = string }
-variable "EDGE_SLACK_ERROR_CHANNEL"     { type = string }
-variable "EDGE_SLACK_INFO_CHANNEL"      { type = string }
-
 
 
 locals {

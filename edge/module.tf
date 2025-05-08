@@ -32,6 +32,7 @@ variable "EDGE_ENGINE_ADMIN_TOKEN"    { type = string }
 
 variable "EDGE_SRC_HASH"              { type = string }
 variable "EDGE_SRC_ENV"               { type = string }
+variable "EDGE_MC_URL"                { type = string }
 variable "EDGE_FN_URL"                { type = string }
 variable "EDGE_CWL_URL"               { type = string }
 variable "EDGE_TASK_URL"              { type = string }
@@ -43,11 +44,10 @@ variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }
 variable "EDGE_DX_URL"                { type = string }
 
 variable "EDGE_MAINTENANCE_MODE"      { type = bool }
+variable "EDGE_APPLY_UPDATES"         { type = bool }
 
 variable "EDGE_SLACK_TOKEN"           { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"   { type = string }
-variable "EDGE_SLACK_ERROR_CHANNEL"   { type = string }
-variable "EDGE_SLACK_INFO_CHANNEL"    { type = string }
 
 variable "EDGE_WITH_CERT" {
    type = bool

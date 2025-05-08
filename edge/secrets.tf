@@ -64,6 +64,7 @@ resource "oci_vault_secret" "edge_be_session_secret" {
 }
 
 data "oci_vault_secrets" "edge_be_session_secret" {
+    depends_on     = [ oci_vault_secret.edge_be_session_secret ]
     compartment_id = oci_identity_compartment.edge_comp.id
     vault_id       = var.EDGE_VAULT_OCID
     name           = nonsensitive ("EDGE_BE_SESSION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
@@ -534,30 +535,6 @@ locals {
    edge_slack_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_token_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_SLACK_INFO_CHANNEL
-resource "oci_vault_secret" "edge_slack_info_channel_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_SLACK_INFO_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Slack info channel"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode (var.EDGE_SLACK_INFO_CHANNEL)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_slack_info_channel_secret" {
-    depends_on     = [ oci_vault_secret.edge_slack_info_channel_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_SLACK_INFO_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_slack_info_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_info_channel_secret.secrets.0.id }
-locals {
-   edge_slack_info_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_info_channel_secret_secretbundle.secret_bundle_content.0.content)
-}
 
 # --- EDGE_SLACK_ADMIN_CHANNEL
 resource "oci_vault_secret" "edge_slack_admin_channel_secret" {
@@ -582,31 +559,6 @@ data "oci_vault_secrets" "edge_slack_admin_channel_secret" {
 data "oci_secrets_secretbundle" "edge_slack_admin_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_admin_channel_secret.secrets.0.id }
 locals {
    edge_slack_admin_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_admin_channel_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-# --- EDGE_SLACK_ERROR_CHANNEL
-resource "oci_vault_secret" "edge_slack_error_channel_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_SLACK_ERROR_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Slack error channel"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode (var.EDGE_SLACK_ERROR_CHANNEL)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_slack_error_channel_secret" {
-    depends_on     = [ oci_vault_secret.edge_slack_error_channel_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_SLACK_ERROR_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_slack_error_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_error_channel_secret.secrets.0.id }
-locals {
-   edge_slack_error_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_error_channel_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_DB_PW
@@ -859,8 +811,6 @@ resource "time_sleep" "edge_wait_for_secrets" {
      oci_vault_secret.edge_engine_subscription_secret,
      oci_vault_secret.edge_deployment_secret,
      oci_vault_secret.edge_slack_token_secret,
-     oci_vault_secret.edge_slack_info_channel_secret,
-     oci_vault_secret.edge_slack_error_channel_secret,
      oci_vault_secret.edge_db_pw_secret,
      oci_vault_secret.edge_db_connstr_secret,
      oci_vault_secret.edge_trc_bucket_rw_url_secret,

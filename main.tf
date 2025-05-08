@@ -7,9 +7,66 @@ locals {
    namespace = data.oci_objectstorage_namespace.rockitplay_namespace.namespace
 }
 
-# --- get engine-release.json
+# --- get engine-release.json and edge-release.json
+locals {
+   sys_bucket_name = "sys-bucket-${local.workspace}"
+}
+resource "oci_objectstorage_bucket" "sys_bucket" {
+   compartment_id = var.compartment_ocid
+   name           = local.sys_bucket_name
+   namespace      = local.namespace
+}
+
+resource "oci_objectstorage_preauthrequest" "sys_bucket_readonly_par" {
+   depends_on   = [ oci_objectstorage_bucket.sys_bucket ]
+   access_type  = "AnyObjectRead"
+   bucket       = local.sys_bucket_name
+   name         = "read-only"
+   namespace    = local.namespace
+   time_expires = "2030-01-01T10:00:00+02:00"
+}
+locals {
+   sys_bucket_readonly_par = "https://objectstorage.${var.region}.oraclecloud.com${oci_objectstorage_preauthrequest.sys_bucket_readonly_par.access_uri}"
+}
+
+resource "null_resource" "copy_json_to_sys_bucket" {
+   count = var.APPLY_UPDATES ? 1 : 0
+   triggers = {
+      always      = timestamp()
+      namespace   = local.namespace
+      workspace   = local.workspace
+      bucket_name = local.sys_bucket_name
+   }
+
+   provisioner "local-exec" {
+      interpreter = [ "/bin/bash", "-c" ]
+      command = <<-EOT
+         set -e
+         curl --fail -o engine-release.json ${local.engine_dx_url}
+         curl --fail -o edge-release.json   ${local.edge_dx_url}
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name engine-release.json --file ./engine-release.json --namespace ${self.triggers.namespace} --force
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name edge-release.json   --file ./edge-release.json   --namespace ${self.triggers.namespace} --force
+      EOT
+   }
+   provisioner "local-exec" {
+      when = destroy
+      command = <<-EOT
+         oci os object delete --bucket-name ${self.triggers.bucket_name} --name edge-release.tgz   --namespace ${self.triggers.namespace} --force 2>/dev/null || true
+         oci os object delete --bucket-name ${self.triggers.bucket_name} --name engine-release.tgz --namespace ${self.triggers.namespace} --force 2>/dev/null || true
+      EOT
+   }
+}
+
 data "http" "engine_release_json" {
-   url = local.engine_dx_url
+   depends_on = [ null_resource.copy_json_to_sys_bucket ]
+   url        = "${local.sys_bucket_readonly_par}engine-release.json"
+   request_headers = {
+      Accept = "application/json"
+   }
+}
+data "http" "edge_release_json" {
+   depends_on = [ null_resource.copy_json_to_sys_bucket ]
+   url        = "${local.sys_bucket_readonly_par}edge-release.json"
    request_headers = {
       Accept = "application/json"
    }
@@ -22,6 +79,16 @@ locals {
    engine_task_url  = jsondecode (data.http.engine_release_json.response_body).task
    engine_task_sig  = jsondecode (data.http.engine_release_json.response_body).taskSig
    engine_task_hash = jsondecode (data.http.engine_release_json.response_body).taskHash
+}
+locals {
+   edge_src_env     = jsondecode (data.http.edge_release_json.response_body).env
+   edge_src_hash    = jsondecode (data.http.edge_release_json.response_body).srcHash
+   edge_mc_url      = jsondecode (data.http.edge_release_json.response_body).mc
+   edge_fn_url      = jsondecode (data.http.edge_release_json.response_body).fn
+   edge_cwl_url     = jsondecode (data.http.edge_release_json.response_body).cwl
+   edge_task_url    = jsondecode (data.http.edge_release_json.response_body).task
+   edge_task_sig    = jsondecode (data.http.edge_release_json.response_body).taskSig
+   edge_task_hash   = jsondecode (data.http.edge_release_json.response_body).taskHash
 }
 
 module engine {
@@ -56,26 +123,9 @@ module engine {
    ENGINE_DB_REGION                 = local.engine_mongodbatlas_region
    ENGINE_SLACK_TOKEN               = local.slack_token
    ENGINE_SLACK_ADMIN_CHANNEL       = var.ENGINE_SLACK_ADMIN_CHANNEL
-   ENGINE_SLACK_ERROR_CHANNEL       = var.ENGINE_SLACK_ERROR_CHANNEL
-   ENGINE_SLACK_INFO_CHANNEL        = var.ENGINE_SLACK_INFO_CHANNEL
+   ENGINE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
+   ENGINE_APPLY_UPDATES             = var.APPLY_UPDATES
    EDGE_DX_URL                      = local.edge_dx_url
-}
-
-# --- get edge-release.json
-data "http" "edge_release_json" {
-   url = local.edge_dx_url
-   request_headers = {
-      Accept = "application/json"
-   }
-}
-locals {
-   edge_src_env   = jsondecode (data.http.edge_release_json.response_body).env
-   edge_src_hash  = jsondecode (data.http.edge_release_json.response_body).srcHash
-   edge_fn_url    = jsondecode (data.http.edge_release_json.response_body).fn
-   edge_cwl_url   = jsondecode (data.http.edge_release_json.response_body).cwl
-   edge_task_url  = jsondecode (data.http.edge_release_json.response_body).task
-   edge_task_sig  = jsondecode (data.http.edge_release_json.response_body).taskSig
-   edge_task_hash = jsondecode (data.http.edge_release_json.response_body).taskHash
 }
 
 locals {
@@ -106,6 +156,7 @@ module edge {
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    EDGE_SRC_HASH                  = local.edge_src_hash
    EDGE_SRC_ENV                   = local.edge_src_env
+   EDGE_MC_URL                    = local.edge_mc_url
    EDGE_FN_URL                    = local.edge_fn_url
    EDGE_CWL_URL                   = local.edge_cwl_url
    EDGE_TASK_URL                  = local.edge_task_url
@@ -125,15 +176,15 @@ module edge {
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
    EDGE_DB_REGION                 = local.edge_mongodbatlas_region
    EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
+   EDGE_APPLY_UPDATES             = var.APPLY_UPDATES
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
-   EDGE_SLACK_ERROR_CHANNEL       = var.EDGE_SLACK_ERROR_CHANNEL
-   EDGE_SLACK_INFO_CHANNEL        = var.EDGE_SLACK_INFO_CHANNEL
 }
 
 resource "null_resource" "engine_curl_post_initialize" {
+   count      = var.APPLY_UPDATES ? 1 : 0
    depends_on = [ module.engine ]
-   triggers = { always = "${timestamp()}" }
+   triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
@@ -142,7 +193,7 @@ resource "null_resource" "engine_curl_post_initialize" {
          token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-            if curl --insecure --fail -H "x-rockit-engine-admin-token: $token" -H "Content-Type: application/json" -X POST $ENGINE_BASE_URL/srv/v1/initialize; then
+            if curl --insecure --fail -H "x-rockit-engine-admin-token: $token" -X POST $ENGINE_BASE_URL/srv/v1/initialize; then
                break
             fi
             nRetries=$((nRetries+1))
@@ -153,8 +204,9 @@ resource "null_resource" "engine_curl_post_initialize" {
 }
 
 resource "null_resource" "edge_curl_post_initialize" {
+   count      = var.APPLY_UPDATES ? 1 : 0
    depends_on = [ module.edge ]
-   triggers = { always = "${timestamp()}" }
+   triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
@@ -163,7 +215,7 @@ resource "null_resource" "edge_curl_post_initialize" {
          token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-         if curl --insecure --fail -H "x-rockit-admin-token: $token" -H "Content-Type: application/json" -X POST $EDGE_BASE_URL/srv/v1/initialize; then
+         if curl --insecure --fail -H "x-rockit-admin-token: $token" -X POST $EDGE_BASE_URL/srv/v1/initialize; then
             break
          fi
          nRetries=$((nRetries+1))
@@ -181,3 +233,5 @@ output "inject_link_engine" { value = module.engine.inject_link }
 output "baseurl"            { value = module.edge.edge_base_url }
 output "db_conn_edge"       { value = module.edge.edge_db_conn_str }
 output "db_conn_engine"     { value = module.engine.engine_db_conn_str }
+output "nat_gw_ip"          { value = module.edge.edge_nat_gw_ip }
+
