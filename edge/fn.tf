@@ -1,6 +1,5 @@
 # --- import fn Docker image
 resource "null_resource" "edge_import_fn_image" {
-   count = var.EDGE_APPLY_UPDATES ? 1 : 0
    depends_on = [
       oci_identity_auth_token.edge_registry_user_authtoken,
       time_sleep.edge_wait_for_registry_user,
@@ -62,19 +61,19 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_BE_AUTH_SECRET_B64"               : local.edge_be_auth_secret_b64
       "DX_EDGE_SESSION_SECRET_B64"               : local.edge_session_secret_b64
       "DX_EDGE_CLIENT_SECRET_B64"                : local.edge_client_secret_b64
-      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_B64"  : local.org_token_pubkey_prod_secret_b64
-      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_B64" : local.org_token_pubkey_stage_secret_b64
-      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_B64"  : local.org_token_pubkey_test_secret_b64
+      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_B64"  : local.orgTokenPubKeyB64.prod
+      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_B64" : local.orgTokenPubKeyB64.stage
+      "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_B64"  : local.orgTokenPubKeyB64.test
       "DX_EDGE_IB_SECRET_B64"                    : local.edge_ib_secret_b64
       "DX_EDGE_AUTH_SECRET_B64"                  : local.edge_auth_secret_b64
       "DX_EDGE_ORG_SECRET_B64"                   : local.edge_org_secret_b64
       "DX_EDGE_ENGINE_BASE_URL_B64"              : local.edge_engine_baseurl_secret_b64
-      "DX_EDGE_ENGINE_ADMIN_TOKEN_B64"           : local.edge_engine_admin_token_secret_b64
+      "DX_EDGE_ENGINE_ADMIN_TOKEN_B64"           : base64encode(var.EDGE_ENGINE_ADMIN_TOKEN)
       "DX_EDGE_ENGINE_SUBSCRIPTION_SECRET_B64"   : local.edge_engine_subscription_secret_b64
       "DX_EDGE_SUBSCRIPTION_SECRET_B64"          : local.edge_subscription_secret_b64
       "DX_EDGE_DEPLOYMENT_SECRET_B64"            : local.edge_deployment_secret_b64
-      "DX_EDGE_SLACK_TOKEN_B64"                  : local.edge_slack_token_secret_b64
-      "DX_EDGE_SLACK_ADMIN_CHANNEL_B64"          : local.edge_slack_admin_channel_secret_b64
+      "DX_EDGE_SLACK_TOKEN_B64"                  : base64encode(var.EDGE_SLACK_TOKEN)
+      "DX_EDGE_SLACK_ADMIN_CHANNEL_B64"          : base64encode(var.EDGE_SLACK_ADMIN_CHANNEL)
       "DX_EDGE_DB_CONNSTR_B64"                   : local.edge_db_connstr_secret_b64
       "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
       "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64

@@ -16,9 +16,6 @@ variable "show_advanced_settings" {
 variable "MAINTENANCE_MODE" {
   type = bool
 }
-variable "APPLY_UPDATES" {
-  type = bool
-}
 
 variable "RSI_URL" {
   type = string

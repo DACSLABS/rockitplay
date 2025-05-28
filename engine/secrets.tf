@@ -211,57 +211,6 @@ locals {
    engine_db_connstr_secret_b64 = sensitive(data.oci_secrets_secretbundle.db_connstr_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- SLACK_TOKEN
-resource "oci_vault_secret" "slack_token_secret" {
-   compartment_id = oci_identity_compartment.engine_comp.id
-   vault_id       = var.ENGINE_VAULT_OCID
-   key_id         = var.ENGINE_VAULT_KEY_OCID
-   secret_name    = "SLACK_TOKEN_${local.WORKSPACE}.${random_password.instance_id.result}"
-   description    = "Slack token to authenticate slack notification posts"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode(var.ENGINE_SLACK_TOKEN)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "slack_token_secret" {
-   depends_on     = [ oci_vault_secret.slack_token_secret ]
-   compartment_id = oci_identity_compartment.engine_comp.id
-   vault_id       = var.ENGINE_VAULT_OCID
-   name           = "SLACK_TOKEN_${local.WORKSPACE}.${random_password.instance_id.result}"
-}
-data "oci_secrets_secretbundle" "slack_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_token_secret.secrets.0.id }
-locals {
-   engine_slack_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.slack_token_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-# --- SLACK_ADMIN_CHANNEL
-resource "oci_vault_secret" "slack_admin_channel_secret" {
-   compartment_id = oci_identity_compartment.engine_comp.id
-   vault_id       = var.ENGINE_VAULT_OCID
-   key_id         = var.ENGINE_VAULT_KEY_OCID
-   secret_name    = "SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
-   description    = "Slack channel id to receive site-admin notifications"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode(var.ENGINE_SLACK_ADMIN_CHANNEL)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "slack_admin_channel_secret" {
-   depends_on     = [ oci_vault_secret.slack_admin_channel_secret ]
-   compartment_id = oci_identity_compartment.engine_comp.id
-   vault_id       = var.ENGINE_VAULT_OCID
-   name           = "SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.instance_id.result}"
-}
-
-data "oci_secrets_secretbundle" "slack_admin_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.slack_admin_channel_secret.secrets.0.id }
-locals {
-   engine_slack_admin_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.slack_admin_channel_secret_secretbundle.secret_bundle_content.0.content)
-}
-
 
 # --- TAR_BUCKET_READWRITE_URL
 resource "oci_vault_secret" "tar_bucket_rw_url_secret" {
@@ -357,7 +306,6 @@ resource "time_sleep" "engine_wait_for_secrets" {
      oci_vault_secret.subscription_secret,
      oci_vault_secret.db_pw_secret,
      oci_vault_secret.db_connstr_secret,
-     oci_vault_secret.slack_token_secret,
      oci_vault_secret.tar_bucket_rw_url_secret,
      oci_vault_secret.raw_bucket_rw_url_secret,
      oci_vault_secret.dxf_bucket_rw_url_secret,

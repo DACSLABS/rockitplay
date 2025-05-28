@@ -1,6 +1,5 @@
 # --- import cwl Docker image
 resource "null_resource" "engine_import_cwl_image" {
-   count = var.ENGINE_APPLY_UPDATES ? 1 : 0
    depends_on = [
       oci_identity_auth_token.engine_registry_user_authtoken,
       time_sleep.engine_wait_for_registry_user,
@@ -23,9 +22,11 @@ resource "null_resource" "engine_import_cwl_image" {
          curl --fail -o $workdir/engine-cwl.tgz ${var.ENGINE_CWL_URL}
          pushd $workdir
             tar xvfz engine-cwl.tgz
-            docker buildx create --name mybuilder
-            docker buildx use mybuilder
-            docker buildx build --platform linux/arm64,linux/amd64 -t ${local.engine_registry}/rockit-engine-cwl:latest --push .
+            docker build --platform linux/amd64 -t ${local.engine_registry}/rockit-engine-cwl:latest .
+            docker push ${local.engine_registry}/rockit-engine-cwl:latest
+            # docker buildx create --name mybuilder
+            # docker buildx use mybuilder
+            # docker buildx build --platform linux/arm64,linux/amd64 -t ${local.engine_registry}/rockit-engine-cwl:latest --push .
          popd
       EOT
    }
@@ -94,8 +95,8 @@ resource "oci_container_instances_container_instance" "engine_cwl" {
          "DX_ENGINE_AUTH_SECRET_B64"         : local.engine_session_secret_b64
          "DX_ENGINE_SUBSCRIPTION_SECRET_B64" : local.engine_subscription_secret_b64
          "DX_ENGINE_DB_CONNSTR_B64"          : local.engine_db_connstr_secret_b64
-         "DX_ENGINE_SLACK_TOKEN_B64"         : local.engine_slack_token_secret_b64
-         "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : local.engine_slack_admin_channel_secret_b64
+         "DX_ENGINE_SLACK_TOKEN_B64"         : base64encode(var.ENGINE_SLACK_TOKEN)
+         "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : base64encode(var.ENGINE_SLACK_ADMIN_CHANNEL)
       }
    }
 

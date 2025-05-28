@@ -30,7 +30,6 @@ groupings:
     visible: true
     variables:
     - MAINTENANCE_MODE
-    - APPLY_UPDATES
 
   - title: "Advanced Settings"
     visible: true
@@ -123,14 +122,6 @@ variables:
                   This will disable all API endpoints and periodic jobs."
     visible: true
     default: false
-
-  APPLY_UPDATES:
-    type: boolean
-    title: "Apply Updates"
-    description: "Pull and apply latest ROCKITPLAY updates from DACSLABS?"
-    visible: true
-    default: true
-
 
   show_advanced_settings:
     type: boolean

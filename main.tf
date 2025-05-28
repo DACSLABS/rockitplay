@@ -30,7 +30,6 @@ locals {
 }
 
 resource "null_resource" "copy_json_to_sys_bucket" {
-   count = var.APPLY_UPDATES ? 1 : 0
    triggers = {
       always      = timestamp()
       namespace   = local.namespace
@@ -73,7 +72,7 @@ data "http" "edge_release_json" {
 }
 locals {
    engine_src_env   = jsondecode (data.http.engine_release_json.response_body).env
-   engine_src_hash  = jsondecode (data.http.engine_release_json.response_body).srcHash
+#  engine_src_hash  = jsondecode (data.http.engine_release_json.response_body).srcHash
    engine_fn_url    = jsondecode (data.http.engine_release_json.response_body).fn
    engine_cwl_url   = jsondecode (data.http.engine_release_json.response_body).cwl
    engine_task_url  = jsondecode (data.http.engine_release_json.response_body).task
@@ -82,8 +81,9 @@ locals {
 }
 locals {
    edge_src_env     = jsondecode (data.http.edge_release_json.response_body).env
-   edge_src_hash    = jsondecode (data.http.edge_release_json.response_body).srcHash
+#  edge_src_hash    = jsondecode (data.http.edge_release_json.response_body).srcHash
    edge_mc_url      = jsondecode (data.http.edge_release_json.response_body).mc
+   edge_mc_hash     = jsondecode (data.http.edge_release_json.response_body).mcHash
    edge_fn_url      = jsondecode (data.http.edge_release_json.response_body).fn
    edge_cwl_url     = jsondecode (data.http.edge_release_json.response_body).cwl
    edge_task_url    = jsondecode (data.http.edge_release_json.response_body).task
@@ -106,7 +106,7 @@ module engine {
    ENGINE_DNS_ZONE_OCID             = local.dns_zone_ocid
    ENGINE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    ENGINE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
-   ENGINE_SRC_HASH                  = local.engine_src_hash
+   ENGINE_SRC_HASH                  = var.ENGINE_SRC_HASH
    ENGINE_SRC_ENV                   = local.engine_src_env
    ENGINE_FN_URL                    = local.engine_fn_url
    ENGINE_CWL_URL                   = local.engine_cwl_url
@@ -124,7 +124,6 @@ module engine {
    ENGINE_SLACK_TOKEN               = local.slack_token
    ENGINE_SLACK_ADMIN_CHANNEL       = var.ENGINE_SLACK_ADMIN_CHANNEL
    ENGINE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
-   ENGINE_APPLY_UPDATES             = var.APPLY_UPDATES
    EDGE_DX_URL                      = local.edge_dx_url
 }
 
@@ -154,9 +153,10 @@ module edge {
    EDGE_DNS_ZONE_OCID             = local.dns_zone_ocid
    EDGE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
-   EDGE_SRC_HASH                  = local.edge_src_hash
+   EDGE_SRC_HASH                  = var.EDGE_SRC_HASH
    EDGE_SRC_ENV                   = local.edge_src_env
    EDGE_MC_URL                    = local.edge_mc_url
+   EDGE_MC_HASH                   = var.MC_HASH
    EDGE_FN_URL                    = local.edge_fn_url
    EDGE_CWL_URL                   = local.edge_cwl_url
    EDGE_TASK_URL                  = local.edge_task_url
@@ -176,13 +176,11 @@ module edge {
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
    EDGE_DB_REGION                 = local.edge_mongodbatlas_region
    EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
-   EDGE_APPLY_UPDATES             = var.APPLY_UPDATES
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
 }
 
 resource "null_resource" "engine_curl_post_initialize" {
-   count      = var.APPLY_UPDATES ? 1 : 0
    depends_on = [ module.engine ]
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
@@ -204,7 +202,6 @@ resource "null_resource" "engine_curl_post_initialize" {
 }
 
 resource "null_resource" "edge_curl_post_initialize" {
-   count      = var.APPLY_UPDATES ? 1 : 0
    depends_on = [ module.edge ]
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {

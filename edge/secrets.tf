@@ -150,81 +150,6 @@ locals {
    edge_session_secret_b64 = sensitive(data.oci_secrets_secretbundle.session_edge_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_ORG_TOKEN_PUBKEY_PEM_PROD
-resource "oci_vault_secret" "org_token_pubkey_prod_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "DACSLABS orgToken public key in PEM format (prod)"
-   secret_content {
-      content_type = "BASE64"
-      content      = local.orgTokenPubKeyB64.prod
-   }
-   # lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "org_token_pubkey_prod_secret" {
-    depends_on     = [ oci_vault_secret.org_token_pubkey_prod_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "org_token_pubkey_prod_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_prod_secret.secrets.0.id }
-locals {
-   org_token_pubkey_prod_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_prod_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-# --- EDGE_ORG_TOKEN_PUBKEY_PEM_STAGE
-resource "oci_vault_secret" "org_token_pubkey_stage_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "DACSLABS orgToken public key in PEM format (stage)"
-   secret_content {
-      content_type = "BASE64"
-      content      = local.orgTokenPubKeyB64.stage
-   }
-   # lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "org_token_pubkey_stage_secret" {
-    depends_on     = [ oci_vault_secret.org_token_pubkey_stage_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_STAGE_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "org_token_pubkey_stage_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_stage_secret.secrets.0.id }
-locals {
-   org_token_pubkey_stage_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_stage_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-# --- EDGE_ORG_TOKEN_PUBKEY_PEM_TEST
-resource "oci_vault_secret" "org_token_pubkey_test_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "DACSLABS orgToken public key in PEM format (test)"
-   secret_content {
-      content_type = "BASE64"
-      content      = local.orgTokenPubKeyB64.test
-   }
-   # lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "org_token_pubkey_test_secret" {
-    depends_on     = [ oci_vault_secret.org_token_pubkey_test_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_DX_ORGTOKEN_PUBKEY_PEM_TEST_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "org_token_pubkey_test_secret_secretbundle" { secret_id = data.oci_vault_secrets.org_token_pubkey_test_secret.secrets.0.id }
-locals {
-   org_token_pubkey_test_secret_b64 = sensitive(data.oci_secrets_secretbundle.org_token_pubkey_test_secret_secretbundle.secret_bundle_content.0.content)
-}
-
 
 # --- EDGE_IB_SECRET
 resource "random_password" "initial_edge_ib_secret" {
@@ -367,32 +292,6 @@ locals {
    edge_engine_baseurl_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_engine_baseurl_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_ENGINE_ADMIN_TOKEN
-resource "oci_vault_secret" "edge_engine_admin_token_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_ENGINE_ADMIN_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "ROCKIT Engine admin token"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode (var.EDGE_ENGINE_ADMIN_TOKEN)
-   }
-   # lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_engine_admin_token_secret" {
-    depends_on     = [ oci_vault_secret.edge_engine_admin_token_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_ENGINE_ADMIN_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_engine_admin_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_engine_admin_token_secret.secrets.0.id }
-locals {
-   edge_engine_admin_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_engine_admin_token_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-
 # --- EDGE_ENGINE_SUBSCRIPTION_SECRET
 resource "random_password" "initial_edge_engine_subscription_secret" {
   length           = 100
@@ -508,57 +407,6 @@ data "oci_vault_secrets" "edge_deployment_secret" {
 data "oci_secrets_secretbundle" "edge_deployment_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_deployment_secret.secrets.0.id }
 locals {
    edge_deployment_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_deployment_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-# --- EDGE_SLACK_TOKEN
-resource "oci_vault_secret" "edge_slack_token_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_SLACK_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Slack token to post messages to workspace"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode (var.EDGE_SLACK_TOKEN)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_slack_token_secret" {
-    depends_on     = [ oci_vault_secret.edge_slack_token_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_SLACK_TOKEN_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_slack_token_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_token_secret.secrets.0.id }
-locals {
-   edge_slack_token_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_token_secret_secretbundle.secret_bundle_content.0.content)
-}
-
-
-# --- EDGE_SLACK_ADMIN_CHANNEL
-resource "oci_vault_secret" "edge_slack_admin_channel_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Slack admin channel"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode (var.EDGE_SLACK_ADMIN_CHANNEL)
-   }
-   lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_slack_admin_channel_secret" {
-    depends_on     = [ oci_vault_secret.edge_slack_admin_channel_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_SLACK_ADMIN_CHANNEL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_slack_admin_channel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_slack_admin_channel_secret.secrets.0.id }
-locals {
-   edge_slack_admin_channel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_slack_admin_channel_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_DB_PW
@@ -732,32 +580,6 @@ resource "oci_vault_secret" "edge_depot_bucket_rw_url_secret" {
    # lifecycle { ignore_changes = all }
 }
 
-# --- EDGE_ORG_ADMIN_SECRET
-resource "random_password" "initial_edge_org_admin_secret" {
-  length           = 100
-  special          = true
-  upper            = true
-  lower            = true
-  numeric          = true
-  min_special      = 1
-  min_upper        = 1
-  min_lower        = 1
-  min_numeric      = 1
-  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
-}
-
-resource "oci_vault_secret" "edge_org_admin_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_ORG_ADMIN_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Secret to encode/sign organization admin tokens"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode(random_password.initial_edge_org_admin_secret.result)
-   }
-   lifecycle { ignore_changes = all }
-}
 
 # --- EDGE_CLIENT_SECRET
 resource "random_password" "initial_edge_client_secret" {
@@ -807,16 +629,13 @@ resource "time_sleep" "edge_wait_for_secrets" {
      oci_vault_secret.edge_auth_secret,
      oci_vault_secret.edge_org_secret,
      oci_vault_secret.edge_engine_baseurl_secret,
-     oci_vault_secret.edge_engine_admin_token_secret,
      oci_vault_secret.edge_engine_subscription_secret,
      oci_vault_secret.edge_deployment_secret,
-     oci_vault_secret.edge_slack_token_secret,
      oci_vault_secret.edge_db_pw_secret,
      oci_vault_secret.edge_db_connstr_secret,
      oci_vault_secret.edge_trc_bucket_rw_url_secret,
      oci_vault_secret.edge_deps_bucket_rw_url_secret,
      oci_vault_secret.edge_assets_bucket_rw_url_secret,
-     oci_vault_secret.edge_org_admin_secret,
      oci_vault_secret.edge_client_secret
   ]
   create_duration = "10s"

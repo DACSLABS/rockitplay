@@ -227,7 +227,8 @@ resource "oci_objectstorage_preauthrequest" "edge_rockitmc_read_par" {
 resource "null_resource" "dl_mc" {
    depends_on   = [ oci_objectstorage_bucket.edge_mc_bucket ]
    triggers = {
-      always      = timestamp()
+   #  always      = timestamp ()
+      mc_hash     = var.EDGE_MC_HASH
       namespace   = var.EDGE_OCI_NAMESPACE
       workspace   = local.workspace
       bucket_name = "edge-mc-bucket-${local.workspace}"
@@ -237,11 +238,8 @@ resource "null_resource" "dl_mc" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
          set -e
-         if [ "${var.EDGE_APPLY_UPDATES}" != "true" ]; then
-            exit 0
-         fi
          curl --fail -o rockit-mc.js ${var.EDGE_MC_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js --file ./rockit-mc.js --namespace ${self.triggers.namespace} --force
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js --file ./rockit-mc.js --content-type application/javascript --namespace ${self.triggers.namespace} --force
       EOT
    }
    provisioner "local-exec" {

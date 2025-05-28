@@ -1,6 +1,5 @@
 # --- import fn Docker image
 resource "null_resource" "import_fn_image" {
-   count = var.ENGINE_APPLY_UPDATES ? 1 : 0
    depends_on = [
       oci_identity_auth_token.engine_registry_user_authtoken,
       time_sleep.engine_wait_for_registry_user,
@@ -59,8 +58,8 @@ resource "oci_functions_application" "engine_app" {
       "DX_ENGINE_AUTH_SECRET_B64"         : local.engine_auth_secret_b64
       "DX_ENGINE_SUBSCRIPTION_SECRET_B64" : local.engine_subscription_secret_b64
       "DX_ENGINE_DB_CONNSTR_B64"          : local.engine_db_connstr_secret_b64
-      "DX_ENGINE_SLACK_TOKEN_B64"         : local.engine_slack_token_secret_b64
-      "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : local.engine_slack_admin_channel_secret_b64
+      "DX_ENGINE_SLACK_TOKEN_B64"         : base64encode(var.ENGINE_SLACK_TOKEN)
+      "DX_ENGINE_SLACK_ADMIN_CHANNEL_B64" : base64encode(var.ENGINE_SLACK_ADMIN_CHANNEL)
    }
 }
 

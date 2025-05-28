@@ -8,6 +8,9 @@ variable "edge_endpoints" {
       path       = "/mc"
       methods    = ["GET"]
     }, {
+      path       = "/mc/{var1}"
+      methods    = ["GET"]
+    }, {
        // --- /adm/v1/*
       path       = "/adm/v1/hello"
       methods    = ["POST"]

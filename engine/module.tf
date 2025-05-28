@@ -39,7 +39,6 @@ variable "ENGINE_CWL_CONTAINER_SHAPE"  { type = string }
 variable "EDGE_DX_URL"                 { type = string }
 
 variable "ENGINE_MAINTENANCE_MODE"     { type = bool }
-variable "ENGINE_APPLY_UPDATES"        { type = bool }
 
 variable "ENGINE_SLACK_TOKEN"          { type = string }
 variable "ENGINE_SLACK_ADMIN_CHANNEL"  { type = string }
