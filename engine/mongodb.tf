@@ -55,10 +55,23 @@ resource "mongodbatlas_advanced_cluster" "engine_mongodb_cluster" {
 }
 
 # --- Network Access
-resource "mongodbatlas_project_ip_access_list" "engine_mongodb_global_acl" {
+resource "mongodbatlas_project_ip_access_list" "engine_mongodb_natgw_access_list" {
+   depends_on = [ oci_core_nat_gateway.nat_gw ]
    project_id = mongodbatlas_project.engine_mongodb_proj.id
-   cidr_block = "0.0.0.0/0"
-   comment    = "global access"
+   ip_address = oci_core_nat_gateway.nat_gw.nat_ip
+   comment    = "Engine NAT Gateway"
+}
+
+locals {
+  mongodb_ip_access_list = [for ip in split(",", var.ENGINE_DB_IP_ACCESS_LIST) : ip if length(trimspace(ip)) > 0]
+}
+
+resource "mongodbatlas_project_ip_access_list" "engine_mongodb_ip_access_list" {
+   for_each   = toset(local.mongodb_ip_access_list)
+
+   project_id = mongodbatlas_project.engine_mongodb_proj.id
+   cidr_block = each.value
+   comment    = "List of permitted IP addresses"
 }
 
 # --- Retrieve connstr

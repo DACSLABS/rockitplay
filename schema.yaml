@@ -17,6 +17,9 @@ groupings:
     - VERSION
     - MONGODBATLAS_CLUSTER_SIZE
     - ENGINE_LB_BANDWIDTH_MBPS
+    - ENGINE_SRC_HASH
+    - EDGE_SRC_HASH
+    - MC_HASH
 
   - title: "ROCKITPLAY Instance"
     visible: true
@@ -49,6 +52,7 @@ groupings:
       - EDGE_MONGODBATLAS_REGION_CLUSTER
       - ENGINE_MONGODBATLAS_DB_TYPE
       - ENGINE_MONGODBATLAS_REGION_CLUSTER
+      - MONGODBATLAS_IP_ACCESS_LIST
 
   - title: "Slack Integration"
     visible:
@@ -240,6 +244,13 @@ variables:
     - "US_EAST_1: Northern Virginia, USA"
     - "US_WEST_2: Oregon, USA"
 
+  MONGODBATLAS_IP_ACCESS_LIST:
+    type: string
+    title: "Custom IP Access List for MongoDB"
+    description: "Please enter a comma separated list of CIDR address notations.
+                  Keep empty if unsure."
+    required: false
+
   ENGINE_MONGODBATLAS_DB_TYPE:
     type: enum
     title: "MongoDB Atlas Cluster Type for ROCKIT Engine"
@@ -291,7 +302,6 @@ variables:
     - "SA_EAST_1: Sao Paulo, Brazil"
     - "US_EAST_1: Northern Virginia, USA"
     - "US_WEST_2: Oregon, USA"
-
 
   ENGINE_SLACK_ADMIN_CHANNEL:
     type: string

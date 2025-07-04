@@ -35,9 +35,6 @@ variable "edge_endpoints" {
       path       = "/be/v1/apps/{var1}"
       methods    = ["GET", "DELETE"]
    }, {
-      path       = "/be/v1/assets"
-      methods    = ["POST"]
-   }, {
       path       = "/be/v1/auth"
       methods    = ["POST"]
    }, {
@@ -60,10 +57,10 @@ variable "edge_endpoints" {
       methods    = ["GET", "DELETE"]
    }, {
       path       = "/be/v1/deps"
-      methods    = ["POST", "PATCH"]
+      methods    = ["POST", "PATCH", "GET", "DELETE"]
    }, {
       path       = "/be/v1/deps/{var1}"
-      methods    = ["DELETE"]
+      methods    = ["GET", "DELETE"]
    }, {
       path       = "/be/v1/export"
       methods    = ["POST"]

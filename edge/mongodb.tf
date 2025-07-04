@@ -55,10 +55,23 @@ resource "mongodbatlas_advanced_cluster" "edge_mongodb_cluster" {
 }
 
 # --- Network Access
-resource "mongodbatlas_project_ip_access_list" "edge_mongodb_global_acl" {
+resource "mongodbatlas_project_ip_access_list" "edge_mongodb_natgw_access_list" {
+   depends_on = [ oci_core_nat_gateway.edge_nat_gw ]
    project_id = mongodbatlas_project.edge_mongodb_proj.id
-   cidr_block = "0.0.0.0/0"
-   comment    = "global access"
+   ip_address = oci_core_nat_gateway.edge_nat_gw.nat_ip
+   comment    = "Edge NAT Gateway"
+}
+
+locals {
+  mongodb_ip_access_list = [for ip in split(",", var.EDGE_DB_IP_ACCESS_LIST) : ip if length(trimspace(ip)) > 0]
+}
+
+resource "mongodbatlas_project_ip_access_list" "edge_mongodb_ip_access_list" {
+   for_each   = toset(local.mongodb_ip_access_list)
+
+   project_id = mongodbatlas_project.edge_mongodb_proj.id
+   cidr_block = each.value
+   comment    = "custom permitted IP address(es)"
 }
 
 # --- Retrieve connstr

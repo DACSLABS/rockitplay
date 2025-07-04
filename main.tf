@@ -121,6 +121,7 @@ module engine {
    ENGINE_DB_TYPE                   = local.engine_mongodbatlas_db_type
    ENGINE_DB_SIZE                   = local.engine_mongodbatlas_advanced_cluster_size
    ENGINE_DB_REGION                 = local.engine_mongodbatlas_region
+   ENGINE_DB_IP_ACCESS_LIST         = var.MONGODBATLAS_IP_ACCESS_LIST
    ENGINE_SLACK_TOKEN               = local.slack_token
    ENGINE_SLACK_ADMIN_CHANNEL       = var.ENGINE_SLACK_ADMIN_CHANNEL
    ENGINE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
@@ -175,6 +176,7 @@ module edge {
    EDGE_DB_TYPE                   = local.edge_mongodbatlas_db_type
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
    EDGE_DB_REGION                 = local.edge_mongodbatlas_region
+   EDGE_DB_IP_ACCESS_LIST         = var.MONGODBATLAS_IP_ACCESS_LIST
    EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
@@ -231,4 +233,6 @@ output "baseurl"            { value = module.edge.edge_base_url }
 output "db_conn_edge"       { value = module.edge.edge_db_conn_str }
 output "db_conn_engine"     { value = module.engine.engine_db_conn_str }
 output "nat_gw_ip"          { value = module.edge.edge_nat_gw_ip }
-
+output "engine_src_hash"    { value = var.ENGINE_SRC_HASH }
+output "edge_src_hash"      { value = var.EDGE_SRC_HASH }
+output "mc_hash"            { value = var.MC_HASH }

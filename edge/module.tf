@@ -26,6 +26,7 @@ variable "EDGE_DB_ORGID"              {
 variable "EDGE_DB_TYPE"               { type = string }
 variable "EDGE_DB_SIZE"               { type = string }
 variable "EDGE_DB_REGION"             { type = string }
+variable "EDGE_DB_IP_ACCESS_LIST"     { type = string }
 
 variable "EDGE_ENGINE_BASE_URL"       { type = string }
 variable "EDGE_ENGINE_ADMIN_TOKEN"    { type = string }
@@ -252,4 +253,8 @@ output "edge_ipaddr" {
 
 output "edge_base_url" {
    value = local.edge_base_url
+}
+
+output "edge_comp_ocid" {
+   value = oci_identity_compartment.edge_comp.id
 }

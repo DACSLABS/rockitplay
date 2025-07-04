@@ -65,6 +65,11 @@ variable "ENGINE_MONGODBATLAS_CLUSTER_SIZE" {
   default = "M10"
 }
 
+variable "MONGODBATLAS_IP_ACCESS_LIST" {
+  type = string
+  default = ""
+}
+
 variable "WORKSPACE"                    { type = string }
 variable "ENGINE_SLACK_ADMIN_CHANNEL"   { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"     { type = string }

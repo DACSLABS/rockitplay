@@ -516,31 +516,6 @@ locals {
    edge_deps_bucket_rw_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_deps_bucket_rw_url_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_ASSETS_BUCKET_READWRITE_URL
-resource "oci_vault_secret" "edge_assets_bucket_rw_url_secret" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   vault_id       = var.EDGE_VAULT_OCID
-   key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_ASSETS_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Download/upload URL to access the assets bucket"
-   secret_content {
-      content_type = "BASE64"
-      content      = base64encode(local.edge_assets_bucket_readwrite_url)
-   }
-   # lifecycle { ignore_changes = all }
-}
-
-data "oci_vault_secrets" "edge_assets_bucket_rw_url_secret" {
-    depends_on     = [ oci_vault_secret.edge_assets_bucket_rw_url_secret ]
-    compartment_id = oci_identity_compartment.edge_comp.id
-    vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_ASSETS_BUCKET_READWRITE_URL_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-}
-data "oci_secrets_secretbundle" "edge_assets_bucket_rw_url_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_assets_bucket_rw_url_secret.secrets.0.id }
-locals {
-   edge_assets_bucket_rw_url_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_assets_bucket_rw_url_secret_secretbundle.secret_bundle_content.0.content)
-}
-
 # --- EDGE_DEPOT_BUCKET_READ_URL
 resource "oci_vault_secret" "edge_depot_bucket_ro_url_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -635,7 +610,6 @@ resource "time_sleep" "edge_wait_for_secrets" {
      oci_vault_secret.edge_db_connstr_secret,
      oci_vault_secret.edge_trc_bucket_rw_url_secret,
      oci_vault_secret.edge_deps_bucket_rw_url_secret,
-     oci_vault_secret.edge_assets_bucket_rw_url_secret,
      oci_vault_secret.edge_client_secret
   ]
   create_duration = "10s"

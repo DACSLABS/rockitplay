@@ -25,6 +25,7 @@ variable "ENGINE_DB_ORGID"             {
 variable "ENGINE_DB_TYPE"              { type = string }
 variable "ENGINE_DB_SIZE"              { type = string }
 variable "ENGINE_DB_REGION"            { type = string }
+variable "ENGINE_DB_IP_ACCESS_LIST"    { type = string }
 
 variable "ENGINE_SRC_HASH"             { type = string }
 variable "ENGINE_SRC_ENV"              { type = string }
@@ -258,4 +259,8 @@ output "engine_ipaddr" {
 
 output "engine_base_url" {
    value = local.engine_base_url
+}
+
+output "engine_comp_ocid" {
+   value = oci_identity_compartment.engine_comp.id
 }

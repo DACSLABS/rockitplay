@@ -33,39 +33,6 @@ resource "oci_objectstorage_object_lifecycle_policy" "edge_trc_bucket_lifecycle"
 }
 
 
-resource "oci_objectstorage_bucket" "edge_assets_bucket" {
-   compartment_id = oci_identity_compartment.edge_comp.id
-   name           = "edge-assets-bucket-${local.workspace}"
-   namespace      = var.EDGE_OCI_NAMESPACE
-   object_events_enabled = true
-}
-
-resource "oci_objectstorage_object_lifecycle_policy" "edge_assets_bucket_lifecycle" {
-   depends_on = [
-      oci_objectstorage_bucket.edge_assets_bucket,
-      oci_identity_policy.edge_workspace_depl_pol
-   ]
-   bucket    = "edge-assets-bucket-${local.workspace}"
-   namespace = var.EDGE_OCI_NAMESPACE
-   rules {
-      target = "multipart-uploads"
-      action = "ABORT"
-      is_enabled = true
-      name = "delete uncommitted multipart uploads"
-      time_amount = 1
-      time_unit = "DAYS"
-   }
-   rules {
-      target = "objects"
-      action = "DELETE"
-      is_enabled = true
-      object_name_filter { inclusion_patterns = [ "*.invalid" ] }
-      name = "delete *.invalid"
-      time_amount = 1
-      time_unit = "DAYS"
-   }
-}
-
 
 resource "oci_objectstorage_bucket" "edge_deps_bucket" {
    compartment_id = oci_identity_compartment.edge_comp.id
@@ -131,15 +98,6 @@ resource "oci_objectstorage_preauthrequest" "edge_trc_bucket_readwrite_par" {
    depends_on = [ oci_objectstorage_bucket.edge_trc_bucket ]
    access_type  = "AnyObjectReadWrite"
    bucket       = "edge-trc-bucket-${local.workspace}"
-   name         = "read-write"
-   namespace    = var.EDGE_OCI_NAMESPACE
-   time_expires = "2030-01-01T10:00:00+02:00"
-}
-
-resource "oci_objectstorage_preauthrequest" "edge_assets_bucket_readwrite_par" {
-   depends_on = [ oci_objectstorage_bucket.edge_assets_bucket ]
-   access_type  = "AnyObjectReadWrite"
-   bucket       = "edge-assets-bucket-${local.workspace}"
    name         = "read-write"
    namespace    = var.EDGE_OCI_NAMESPACE
    time_expires = "2030-01-01T10:00:00+02:00"
@@ -258,7 +216,6 @@ locals {
 locals {
    edge_tsk_bucket_readwrite_url     = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_tsk_bucket_readwrite_par.access_uri}"
    edge_trc_bucket_readwrite_url     = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_trc_bucket_readwrite_par.access_uri}"
-   edge_assets_bucket_readwrite_url  = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_assets_bucket_readwrite_par.access_uri}"
    edge_deps_bucket_readwrite_url    = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_deps_bucket_readwrite_par.access_uri}"
    edge_depot_bucket_read_url        = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_depot_bucket_read_par.access_uri}"
    edge_depot_bucket_readwrite_url   = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_depot_bucket_readwrite_par.access_uri}"

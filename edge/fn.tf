@@ -56,6 +56,7 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_TASK_SIG"                         : var.EDGE_TASK_SIG
       "DX_EDGE_RSI_BASE_URL"                     : var.EDGE_RSI_BASE_URL
       "DX_EDGE_ROCKIT_MC_JS"                     : local.edge_rockitmc_read_url
+      "DX_EDGE_ROCKIT_MC_HASH"                   : var.EDGE_MC_HASH
       "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
       "DX_EDGE_BE_SESSION_SECRET_B64"            : local.edge_be_session_secret_b64
       "DX_EDGE_BE_AUTH_SECRET_B64"               : local.edge_be_auth_secret_b64
@@ -77,7 +78,6 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_DB_CONNSTR_B64"                   : local.edge_db_connstr_secret_b64
       "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
       "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64
-      "DX_EDGE_ASSETS_BUCKET_READWRITE_URL_B64"  : local.edge_assets_bucket_rw_url_secret_b64
       "DX_EDGE_DEPOT_BUCKET_READ_URL_B64"        : local.edge_depot_bucket_ro_url_secret_b64
 
    }
