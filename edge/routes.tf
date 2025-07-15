@@ -110,6 +110,9 @@ variable "edge_endpoints" {
       path       = "/be/v1/trainings"
       methods    = ["GET", "PATCH"]
    }, {
+      path       = "/be/v1/trainings/{var1}"
+      methods    = ["GET"]
+   }, {
       path       = "/be/v1/trigger"
       methods    = ["POST"]
    }, {

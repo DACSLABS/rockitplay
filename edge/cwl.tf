@@ -115,6 +115,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
          "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64
          "DX_EDGE_DEPOT_BUCKET_READ_URL_B64"        : local.edge_depot_bucket_ro_url_secret_b64
+         "DX_HAS_CWL_EVENT_QUEUE"                   : local.use_cwl ? "true" : "false"
       }
    }
 
