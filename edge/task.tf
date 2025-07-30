@@ -21,7 +21,7 @@ resource "null_resource" "edge_task_file" {
       command = <<-EOT
          set -e
          curl -o ./edge-task.tgz ${var.EDGE_TASK_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name edge-task.tgz --file ./edge-task.tgz --namespace ${self.triggers.namespace} --force
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name edge-task.tgz --file ./edge-task.tgz --namespace ${self.triggers.namespace} --force --no-multipart
       EOT
    }
    provisioner "local-exec" {

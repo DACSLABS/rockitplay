@@ -1,14 +1,14 @@
 variable "VERSION" {
    type = number
-   default = 146
+   default = 147
 }
 variable "ENGINE_SRC_HASH" {
    type = string
-   default = "766f021b9211fa876f12c89817187523"
+   default = "0f23a95d263545904dc926e2e65ae8a5"
 }
 variable "EDGE_SRC_HASH" {
    type = string
-   default = "8a583d1e64a0d2065129b1afa21f7f30"
+   default = "b77b93c5cb7b9a00ff04dde8bb509871"
 }
 variable "MC_HASH" {
    type = string

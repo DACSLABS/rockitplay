@@ -21,7 +21,7 @@ resource "null_resource" "engine_task_file" {
       command = <<-EOT
          set -e
          curl -o ./engine-task.tgz ${var.ENGINE_TASK_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name engine-task.tgz --file ./engine-task.tgz --namespace ${self.triggers.namespace} --force
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name engine-task.tgz --file ./engine-task.tgz --namespace ${self.triggers.namespace} --force --no-multipart
       EOT
    }
    provisioner "local-exec" {
