@@ -1,4 +1,4 @@
-<a href="https://www.rockitplay.com"><img src="https://public.cloud.rockitplay.com/doc/faststart.png" width="400" /></a>
+<a href="https://www.rockitplay.com"><img src="images/ROCKITPLAY-FastStart.png" width="400" /></a>
 
 * [Introduction](#introduction)
 * [ROCKITPLAY Cloud Service](#rockitplay-cloud-service)
