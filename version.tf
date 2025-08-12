@@ -1,6 +1,6 @@
 variable "VERSION" {
    type = number
-   default = 147
+   default = 148
 }
 variable "ENGINE_SRC_HASH" {
    type = string
