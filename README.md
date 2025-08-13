@@ -1,6 +1,7 @@
 <a href="https://www.rockitplay.com"><img src="images/ROCKITPLAY-FastStart.png" width="400" /></a>
 
 * [Introduction](#introduction)
+* [Live Demo](#live-demo)
 * [ROCKITPLAY Cloud Service](#rockitplay-cloud-service)
 * [External Cloud Services and Dependencies](#external-cloud-services-and-dependencies)
 * [Usage](#usage)
@@ -281,10 +282,9 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
    | Slack Channels | Name of Slack channels receiving notifications from ROCKITPLAY Cloud Service. |
 
 
-
 # Contact
 
-<a href="https://www.dacslabs.com"><img src="https://public.cloud.rockitplay.com/doc/dacslabs.png" width="100" /></a>
+<a href="https://www.dacslabs.com"><img src="images/DACS-Logo.png" width="100" /></a>
 
 DACS Laboratories GmbH  
 Niermannsweg 11-15  
