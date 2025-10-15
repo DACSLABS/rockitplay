@@ -16,9 +16,6 @@ variable "EDGE_VAULT_KEY_OCID"        { type = string }
 
 variable "EDGE_LOADER_IMG_OCID"       { type = string }
 
-variable "EDGE_N_CONTAINER_INSTANCES" { type = number }
-variable "EDGE_LB_BANDWIDTH_MBPS"     { type = number }
-
 variable "EDGE_DB_ORGID"              {
    type      = string
    sensitive = true
@@ -37,17 +34,30 @@ variable "EDGE_SRC_ENV"               { type = string }
 variable "EDGE_MC_URL"                { type = string }
 variable "EDGE_MC_HASH"               { type = string }
 
+variable "EDGE_SIGNUP_URL"            { type = string }
+variable "EDGE_SIGNUP_HASH"           { type = string }
+variable "EDGE_RESETPW_URL"           { type = string }
+variable "EDGE_RESETPW_HASH"          { type = string }
+
 variable "EDGE_FN_URL"                { type = string }
 variable "EDGE_CWL_URL"               { type = string }
 variable "EDGE_TASK_URL"              { type = string }
 variable "EDGE_TASK_SIG"              { type = string }
 variable "EDGE_TASK_HASH"             { type = string }
 
+variable "EDGE_USE_CWL"               { type = bool }
 variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }
+variable "EDGE_N_CONTAINER_INSTANCES" { type = number }
+
 
 variable "EDGE_DX_URL"                { type = string }
 
 variable "EDGE_MAINTENANCE_MODE"      { type = bool }
+
+variable "EDGE_SMTP_HOST"             { type = string }
+variable "EDGE_SMTP_PORT"             { type = number }
+variable "EDGE_SMTP_USER"             { type = string }
+variable "EDGE_SMTP_PASSWORD"         { type = string }
 
 variable "EDGE_SLACK_TOKEN"           { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"   { type = string }
@@ -116,7 +126,6 @@ locals {
    WORKSPACE       = upper (var.WORKSPACE)
    registry_prefix = "${var.EDGE_OCI_REGION}.ocir.io/${var.EDGE_OCI_NAMESPACE}/"
    edge_registry   = "${local.registry_prefix}edge-registry-${local.workspace}"
-   use_cwl         = var.EDGE_N_CONTAINER_INSTANCES > 0
    cwl_shapes = {
       "CI.Standard.A1.Flex" = {
          platform = "linux/arm64"
@@ -217,7 +226,7 @@ locals {
       "x64",
       local.cwl_shapes[var.EDGE_CWL_CONTAINER_SHAPE].platform,
       (local.env == "test") ? local.dev_bucket_readwrite_par : "",
-      (local.env == "test" && local.use_cwl) ? oci_container_instances_container_instance.edge_cwl[0].id : ""
+      (local.env == "test" && var.EDGE_USE_CWL && var.EDGE_N_CONTAINER_INSTANCES>0) ? oci_container_instances_container_instance.edge_cwl[0].id : ""
    ]
    inject_link_data = base64encode(join (",", local.inject_link_args))
 }
@@ -248,7 +257,7 @@ output "edge_db_conn_str" {
 }
 
 output "edge_ipaddr" {
-   value = local.use_cwl ? local.lb_ipaddr : local.edge_apigw_ipaddr
+   value = var.EDGE_USE_CWL ? local.lb_ipaddr : local.edge_apigw_ipaddr
 }
 
 output "edge_base_url" {

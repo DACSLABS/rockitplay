@@ -1,7 +1,6 @@
-<a href="https://www.rockitplay.com"><img src="images/ROCKITPLAY-FastStart.png" width="400" /></a>
+<a href="https://www.rockitplay.com"><img src="https://public.cloud.rockitplay.com/doc/faststart.png" width="400" /></a>
 
 * [Introduction](#introduction)
-* [Live Demo](#live-demo)
 * [ROCKITPLAY Cloud Service](#rockitplay-cloud-service)
 * [External Cloud Services and Dependencies](#external-cloud-services-and-dependencies)
 * [Usage](#usage)
@@ -39,33 +38,6 @@ available (see Tab.1).
 [^4]: © 2024 Sony Interactive Entertainment Europe Limited (SIEE)
 [^5]: ©2016-2024 Take-Two Interactive Software Inc. 2K, Firaxis Games, Civilization, and their respective logos are trademarks of Take-Two Interactive Software, Inc. All rights reserved.
 
-## Live Demo
-
-Experience ROCKITPLAY FastStart on your Windows Gaming PC by downloading and installing the ROCKITPLAY-accelerated version of **Destroy all Humans! Demo**:
-
-![Destroy all Humans! Demo](https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1297100/header.jpg?t=1664962103 "Destroy all Humans! Demo")
-
-<a href="https://public.cloud.rockitplay.com/github/live-demos/DestroyAllHumansDemo.rsi.exe"><img src="images/PlayNow.png" width="150" /></a>
-
-Depending on the available download bandwidth the game can be started according to the data in Tab. 2.
-
-|                              |                |   **ROCKITPLAY** |     **Standard** |
-|-----------------------------:|---------------:|-----------------:|-----------------:|
-|               **Bandwidth**  |    **Preload** | **Time-to-Play** | **Time-to-Play** |
-|                     6 Mbit/s |        2.57 GB |      57min 11sec |         3h 25min |
-|                    12 Mbit/s |        2.13 GB |      23min 41sec |         1h 42min |
-|                    25 Mbit/s |        1.46 GB |       7min 48sec |      49min 18sec |
-|                    50 Mbit/s |         655 MB |       1min 45sec |      24min 39sec |
-|                    80 Mbit/s |         123 MB |           12 sec |      15min 24sec |
-|                   100 Mbit/s |          63 MB |            5 sec |      12min 20sec |
-|                   200 Mbit/s |          38 MB |            2 sec |       6min 10sec |
-|                   400 Mbit/s |          38 MB |            1 sec |       3min  5sec |
-
-*Tab.2: ROCKITPLAY download statistics of **Destroy all Humans! Demo** at different bandwidths.*
-
-
-## How does it work?
-
 **ROCKIT can be applied to any game.** It is not necessary to modify the game's source
 code. This is accomplished by resequencing the download data stream according to the
 expected loading order of the game. This sorting order is obtained by monitoring the
@@ -87,7 +59,8 @@ the load profile of the game and the current download bandwidth measured on the 
 side. Statistical fluctuations of the network connection are taken into account.
 Faster network connections allow for launching a game with smaller preloads.
 
-**Patches.** ROCKIT's data stream representation allows for computing very small patch sizes compared to conventional general-purpose patch methods (see Tab.3).
+**Patches.** ROCKIT's data stream representation allows for computing very small patch sizes
+compared to conventional general-purpose patch methods (see Tab. 2).
 
 |                           |   **Standard** | **ROCKITPLAY** |               |
 |--------------------------:|---------------:|---------------:|--------------:|
@@ -97,7 +70,7 @@ Faster network connections allow for launching a game with smaller preloads.
 |        Fortnite Q3/21[^8] |      10 200 MB |       2 800 GB |          73 % |
 |       Cyberpunk Q2/21[^9] |      34 500 MB |      15 100 MB |          56 % |
 
-*Tab.3: Internal benchmark results comparing patch sizes for game store standard patches to ROCKITPLAY.*
+*Tab.2: Internal benchmark results comparing patch sizes for game store standard patches to ROCKITPLAY.*
 
 [^6]: © INGAME STUDIOS, Crime Boss: Rockay City Copyright © INGAME STUDIOS a.s. All Rights Reserved.
 [^7]: © 2021 Ubisoft Entertainment. All Rights Reserved. Assassin's Creed, Ubisoft and the Ubisoft logo are registered or unregistered trademarks of Ubisoft Entertainment in the U.S. and/or other countries.
@@ -112,7 +85,7 @@ application specific data prefetching can be applied. Even on PCs with
 low-performance spinning HDDs read performances equivalent to (or even higher than)
 SSD are possible, compared to the native installation.
 
-**ROCKITPLAY FastStart**
+**ROCKITPLAY FastStart** 
 
 The following figure illustrates the typical workflow of producing ROCKITPLAY FastStart images:
 
@@ -282,9 +255,10 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
    | Slack Channels | Name of Slack channels receiving notifications from ROCKITPLAY Cloud Service. |
 
 
+
 # Contact
 
-<a href="https://www.dacslabs.com"><img src="images/DACS-Logo.png" width="100" /></a>
+<a href="https://www.dacslabs.com"><img src="https://public.cloud.rockitplay.com/doc/dacslabs.png" width="100" /></a>
 
 DACS Laboratories GmbH  
 Niermannsweg 11-15  

@@ -50,7 +50,7 @@ resource "oci_identity_policy" "engine_cwl_pol" {
 }
 
 resource "oci_container_instances_container_instance" "engine_cwl" {
-   count               = var.ENGINE_N_CONTAINER_INSTANCES
+   count               = var.ENGINE_USE_CWL ? var.ENGINE_N_CONTAINER_INSTANCES : 0
    depends_on          = [
       null_resource.engine_import_cwl_image,
       oci_objectstorage_preauthrequest.tsk_bucket_readwrite_par,
@@ -114,7 +114,7 @@ resource "oci_container_instances_container_instance" "engine_cwl" {
 
 # --- enforce restart do reset inject.sh
 resource "null_resource" "engine_cwl_restart" {
-   count      = local.use_cwl && local.env == "test"  ? 1 : 0
+   count      = (local.env=="test" && var.ENGINE_USE_CWL && var.ENGINE_N_CONTAINER_INSTANCES>0) ? 1 : 0
    depends_on = [ oci_container_instances_container_instance.engine_cwl ]
    triggers = {
       always = "${timestamp()}"

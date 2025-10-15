@@ -56,11 +56,34 @@ resource "oci_core_default_security_list" "default-security-list" {
          max = 443
       }
    }
+}
+
+resource "oci_core_security_list" "engine_priv_subnet_security_list" {
+   compartment_id = oci_identity_compartment.engine_comp.id
+   vcn_id         = oci_core_vcn.engine_vcn.id
+   display_name   = "priv-subnet-seclist"
+   egress_security_rules {
+      stateless = false
+      destination = "0.0.0.0/0"
+      destination_type = "CIDR_BLOCK"
+      protocol = "all"
+   }
+   ingress_security_rules {
+      stateless = false
+      source = var.vcn_pub_cidr
+      source_type = "CIDR_BLOCK"
+      description = "internal APIGW IP to LB, http"
+      protocol = "6" # 6=TCP (https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
+      tcp_options {
+         min = 80
+         max = 80
+      }
+   }
    ingress_security_rules {
       stateless = false
       source = "0.0.0.0/0"
       source_type = "CIDR_BLOCK"
-      description = "Container Instance"
+      description = "LB to Container Instance, http"
       protocol = "6" # 6=TCP (https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
       tcp_options {
          min = 3000
@@ -477,6 +500,7 @@ resource "oci_core_subnet" "engine_priv_subnet" {
    vcn_id         = oci_core_vcn.engine_vcn.id
    display_name   = "priv-subnet-${local.workspace}"
    route_table_id = oci_core_route_table.priv_subnet_rt.id
+   security_list_ids = [ oci_core_security_list.engine_priv_subnet_security_list.id  ]
 }
 
 

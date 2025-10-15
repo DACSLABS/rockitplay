@@ -57,7 +57,13 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_RSI_BASE_URL"                     : var.EDGE_RSI_BASE_URL
       "DX_EDGE_ROCKIT_MC_JS"                     : local.edge_rockitmc_read_url
       "DX_EDGE_ROCKIT_MC_HASH"                   : var.EDGE_MC_HASH
+      "DX_EDGE_SIGNUP_JS"                        : local.edge_signup_read_url
+      "DX_EDGE_SIGNUP_HASH"                      : var.EDGE_SIGNUP_HASH
+      "DX_EDGE_RESETPW_JS"                       : local.edge_resetpw_read_url
+      "DX_EDGE_RESETPW_HASH"                     : var.EDGE_RESETPW_HASH
       "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
+      "DX_EDGE_SIGNUP_SECRET_B64"                : local.edge_signup_secret_b64
+      "DX_EDGE_RESETPW_SECRET_B64"               : local.edge_signup_secret_b64  // use the same secret as signup
       "DX_EDGE_BE_SESSION_SECRET_B64"            : local.edge_be_session_secret_b64
       "DX_EDGE_BE_AUTH_SECRET_B64"               : local.edge_be_auth_secret_b64
       "DX_EDGE_SESSION_SECRET_B64"               : local.edge_session_secret_b64
@@ -73,13 +79,18 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_ENGINE_SUBSCRIPTION_SECRET_B64"   : local.edge_engine_subscription_secret_b64
       "DX_EDGE_SUBSCRIPTION_SECRET_B64"          : local.edge_subscription_secret_b64
       "DX_EDGE_DEPLOYMENT_SECRET_B64"            : local.edge_deployment_secret_b64
+      "DX_EDGE_SOURCE_SECRET_B64"                : local.edge_source_secret_b64
+      "DX_EDGE_SMTP_HOST"                        : var.EDGE_SMTP_HOST
+      "DX_EDGE_SMTP_PORT"                        : var.EDGE_SMTP_PORT
+      "DX_EDGE_SMTP_USER"                        : var.EDGE_SMTP_USER
+      "DX_EDGE_SMTP_PASSWORD_B64"                : base64encode(var.EDGE_SMTP_PASSWORD)
       "DX_EDGE_SLACK_TOKEN_B64"                  : base64encode(var.EDGE_SLACK_TOKEN)
       "DX_EDGE_SLACK_ADMIN_CHANNEL_B64"          : base64encode(var.EDGE_SLACK_ADMIN_CHANNEL)
       "DX_EDGE_DB_CONNSTR_B64"                   : local.edge_db_connstr_secret_b64
       "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
       "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64
       "DX_EDGE_DEPOT_BUCKET_READ_URL_B64"        : local.edge_depot_bucket_ro_url_secret_b64
-      "DX_HAS_CWL_EVENT_QUEUE"                   : local.use_cwl ? "true" : "false"
+      "DX_HAS_CWL_EVENT_QUEUE"                   : var.EDGE_USE_CWL ? "true" : "false"
    }
 }
 
@@ -97,10 +108,10 @@ resource "oci_functions_function" "edge_fn" {
       "ROCKITPLAY-Tags.instanceName" = "edge-${local.workspace}"
       "ROCKITPLAY-Tags.taskLoader"   = "rockit-loader-${var.EDGE_BASEENV_ID}"
    }
-   provisioned_concurrency_config {
-      count    = local.workspace == "prod" ? 20 : 0
-      strategy = local.workspace == "prod" ? "CONSTANT" : "NONE"
-   }
+   # provisioned_concurrency_config {
+   #    count    = local.env == "prod" ? 20 : 0
+   #    strategy = local.env == "prod" ? "CONSTANT" : "NONE"
+   # }
 }
 
 # --- Logs

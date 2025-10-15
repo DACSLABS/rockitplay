@@ -80,15 +80,19 @@ locals {
    engine_task_hash = jsondecode (data.http.engine_release_json.response_body).taskHash
 }
 locals {
-   edge_src_env     = jsondecode (data.http.edge_release_json.response_body).env
-#  edge_src_hash    = jsondecode (data.http.edge_release_json.response_body).srcHash
-   edge_mc_url      = jsondecode (data.http.edge_release_json.response_body).mc
-   edge_mc_hash     = jsondecode (data.http.edge_release_json.response_body).mcHash
-   edge_fn_url      = jsondecode (data.http.edge_release_json.response_body).fn
-   edge_cwl_url     = jsondecode (data.http.edge_release_json.response_body).cwl
-   edge_task_url    = jsondecode (data.http.edge_release_json.response_body).task
-   edge_task_sig    = jsondecode (data.http.edge_release_json.response_body).taskSig
-   edge_task_hash   = jsondecode (data.http.edge_release_json.response_body).taskHash
+   edge_src_env      = jsondecode (data.http.edge_release_json.response_body).env
+#  edge_src_hash     = jsondecode (data.http.edge_release_json.response_body).srcHash
+   edge_mc_url       = jsondecode (data.http.edge_release_json.response_body).mc
+   edge_mc_hash      = jsondecode (data.http.edge_release_json.response_body).mcHash
+   edge_signup_url   = jsondecode (data.http.edge_release_json.response_body).signup.url
+   edge_signup_hash  = jsondecode (data.http.edge_release_json.response_body).signup.hash
+   edge_resetpw_url  = jsondecode (data.http.edge_release_json.response_body).resetpw.url
+   edge_resetpw_hash = jsondecode (data.http.edge_release_json.response_body).resetpw.hash
+   edge_fn_url       = jsondecode (data.http.edge_release_json.response_body).fn
+   edge_cwl_url      = jsondecode (data.http.edge_release_json.response_body).cwl
+   edge_task_url     = jsondecode (data.http.edge_release_json.response_body).task
+   edge_task_sig     = jsondecode (data.http.edge_release_json.response_body).taskSig
+   edge_task_hash    = jsondecode (data.http.edge_release_json.response_body).taskHash
 }
 
 module engine {
@@ -105,7 +109,6 @@ module engine {
    ENGINE_CERT_OCID                 = local.cert_ocid
    ENGINE_DNS_ZONE_OCID             = local.dns_zone_ocid
    ENGINE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
-   ENGINE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    ENGINE_SRC_HASH                  = var.ENGINE_SRC_HASH
    ENGINE_SRC_ENV                   = local.engine_src_env
    ENGINE_FN_URL                    = local.engine_fn_url
@@ -113,8 +116,9 @@ module engine {
    ENGINE_TASK_URL                  = local.engine_task_url
    ENGINE_TASK_SIG                  = local.engine_task_sig
    ENGINE_TASK_HASH                 = local.engine_task_hash
+   ENGINE_USE_CWL                   = var.use_cwl
    ENGINE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   ENGINE_LB_BANDWIDTH_MBPS         = var.ENGINE_LB_BANDWIDTH_MBPS
+   ENGINE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env] == 0 ? 0 : 1
    ENGINE_VAULT_OCID                = local.vault_ocid
    ENGINE_VAULT_KEY_OCID            = local.vault_key_ocid
    ENGINE_DB_ORGID                  = local.mongodbatlas_orgid
@@ -151,23 +155,27 @@ module edge {
    EDGE_BASEENV_ID                = local.baseenv_id
    EDGE_CERT_DOMAINNAME           = local.cert_domainname
    EDGE_CERT_OCID                 = local.cert_ocid
+   EDGE_WITH_CERT                 = local.with_cert
    EDGE_DNS_ZONE_OCID             = local.dns_zone_ocid
-   EDGE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    EDGE_SRC_HASH                  = var.EDGE_SRC_HASH
    EDGE_SRC_ENV                   = local.edge_src_env
    EDGE_MC_URL                    = local.edge_mc_url
    EDGE_MC_HASH                   = var.MC_HASH
+   EDGE_SIGNUP_URL                = local.edge_signup_url
+   EDGE_SIGNUP_HASH               = local.edge_signup_hash
+   EDGE_RESETPW_URL               = local.edge_resetpw_url
+   EDGE_RESETPW_HASH              = local.edge_resetpw_hash
    EDGE_FN_URL                    = local.edge_fn_url
    EDGE_CWL_URL                   = local.edge_cwl_url
    EDGE_TASK_URL                  = local.edge_task_url
    EDGE_TASK_SIG                  = local.edge_task_sig
    EDGE_TASK_HASH                 = local.edge_task_hash
+   EDGE_USE_CWL                   = var.use_cwl
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   EDGE_LB_BANDWIDTH_MBPS         = var.EDGE_LB_BANDWIDTH_MBPS
+   EDGE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
    EDGE_DX_URL                    = local.edge_dx_url
    EDGE_RSI_BASE_URL              = var.RSI_URL
-   EDGE_WITH_CERT                 = local.with_cert
    EDGE_VAULT_OCID                = local.vault_ocid
    EDGE_VAULT_KEY_OCID            = local.vault_key_ocid
    EDGE_ENGINE_ADMIN_TOKEN        = local.engine_admin_token
@@ -177,6 +185,10 @@ module edge {
    EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
    EDGE_DB_REGION                 = local.edge_mongodbatlas_region
    EDGE_DB_IP_ACCESS_LIST         = var.MONGODBATLAS_IP_ACCESS_LIST
+   EDGE_SMTP_HOST                 = var.SMTP_HOST
+   EDGE_SMTP_PORT                 = var.SMTP_PORT
+   EDGE_SMTP_USER                 = var.SMTP_USER
+   EDGE_SMTP_PASSWORD             = var.SMTP_PASSWORD
    EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
@@ -184,42 +196,56 @@ module edge {
 
 resource "null_resource" "engine_curl_post_initialize" {
    depends_on = [ module.engine ]
+   count = (var.use_cwl && var.N_CONTAINER_INSTANCES==0) ? 0 : 1
+
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
-         ENGINE_BASE_URL="https://${module.engine.engine_ipaddr}"
+         ENGINE_BASE_URL="${module.engine.apigw_url}"
          chmod +x ./engine/gen-admin-token.sh
          token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-            if curl --insecure --fail -H "x-rockit-engine-admin-token: $token" -X POST $ENGINE_BASE_URL/srv/v1/initialize; then
+            curl --fail --insecure -H "x-rockit-engine-admin-token: $token" -X POST $ENGINE_BASE_URL/srv/v1/initialize
+            if test $? -eq 0; then
                break
             fi
-            nRetries=$((nRetries+1))
+            nRetries=$(($nRetries+1))
             sleep 60
          done
+         if test $nRetries -eq 10; then
+            echo "ERROR: retries exhausted, db initialization probably failed, check Engine CWL or Fn log."
+            exit 1
+         fi
       EOT
    }
 }
 
 resource "null_resource" "edge_curl_post_initialize" {
    depends_on = [ module.edge ]
+   count = (var.use_cwl && var.N_CONTAINER_INSTANCES==0) ? 0 : 1
+
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
       interpreter = [ "/bin/bash", "-c" ]
       command = <<-EOT
-         EDGE_BASE_URL="https://${module.edge.edge_ipaddr}"
+         EDGE_BASE_URL="${module.edge.apigw_url}"
          chmod +x ./edge/gen-admin-token.sh
          token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-         if curl --insecure --fail -H "x-rockit-admin-token: $token" -X POST $EDGE_BASE_URL/srv/v1/initialize; then
-            break
-         fi
-         nRetries=$((nRetries+1))
-         sleep 60
+            curl --fail --insecure -H "x-rockit-admin-token: $token" -X POST $EDGE_BASE_URL/srv/v1/initialize
+            if test $? -eq 0; then
+               break
+            fi
+            nRetries=$(($nRetries+1))
+            sleep 60
          done
+         if test $nRetries -eq 10; then
+            echo "ERROR: retries exhausted, db initialization probably failed, check Edge CWL or Fn log."
+            exit 1
+         fi
       EOT
    }
 }

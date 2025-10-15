@@ -1,5 +1,5 @@
 locals {
-   edge_pub_hostname = local.workspace == "prod" ? "edge" : "edge-${local.workspace}"
+   edge_pub_hostname = local.env == "prod" ? "edge" : "edge-${local.workspace}"
 }
 
 
@@ -14,13 +14,13 @@ resource "oci_dns_rrset" "edge_pub_dns_record" {
    ]
 
    zone_name_or_id = var.EDGE_DNS_ZONE_OCID
-   rtype           = local.use_cwl ? "A" : "CNAME"
-   domain = "${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}."
+   rtype           = "CNAME"
+   domain          = "${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}."
 
    items {
        domain = "${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}."
-       rtype  = local.use_cwl ? "A" : "CNAME"
-       rdata  = local.use_cwl ? "${local.lb_ipaddr}" : "${oci_apigateway_gateway.edge_pub_api_gw[0].hostname}."
+       rtype  = "CNAME"
+       rdata  = "${oci_apigateway_gateway.edge_pub_api_gw.hostname}."
        ttl    = (local.env != "prod" && local.env != "stage") ?  300 : 3600
    }
 }

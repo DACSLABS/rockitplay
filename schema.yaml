@@ -15,8 +15,6 @@ groupings:
     - region
     - rockit_engine_link_b64
     - VERSION
-    - MONGODBATLAS_CLUSTER_SIZE
-    - ENGINE_LB_BANDWIDTH_MBPS
     - ENGINE_SRC_HASH
     - EDGE_SRC_HASH
     - MC_HASH
@@ -42,16 +40,16 @@ groupings:
       - use_cwl
       - CWL_CONTAINER_SHAPE
       - N_CONTAINER_INSTANCES
-      - EDGE_LB_BANDWIDTH_MBPS
-
 
   - title: "MongoDB Atlas Integration"
     visible: true
     variables:
       - EDGE_MONGODBATLAS_DB_TYPE
       - EDGE_MONGODBATLAS_REGION_CLUSTER
+      - EDGE_MONGODBATLAS_CLUSTER_SIZE
       - ENGINE_MONGODBATLAS_DB_TYPE
       - ENGINE_MONGODBATLAS_REGION_CLUSTER
+      - ENGINE_MONGODBATLAS_CLUSTER_SIZE
       - MONGODBATLAS_IP_ACCESS_LIST
 
   - title: "Slack Integration"
@@ -62,13 +60,21 @@ groupings:
           - "prod: Production or Live Environment"
         - eq:
           - ${env_label}
-          - "stage: Staging Environent"
+          - "stage: Staging Environment"
         - eq:
           - ${env_label}
           - "test: Testing Environment"
     variables:
     - ENGINE_SLACK_ADMIN_CHANNEL
     - EDGE_SLACK_ADMIN_CHANNEL
+
+  - title: "SMTP Configuration"
+    visible: true
+    variables:
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_USER
+      - SMTP_PASSWORD
 
 variables:
 
@@ -83,9 +89,9 @@ variables:
   rockit_base_link_b64:
     type: string
     title: "ROCKIT Base Link"
-    description: "ROCKITPLAY requires the ROCKIT Base Environment Stack to be configured and
-                  installed. Please copy the 'rockit_base_link' value from the latest successul
-                  job of the OCI Stack 'ROCKIT Base Environment'."
+    description: "ROCKIT Edge requires the ROCKIT Base Environment Stack to be configured and
+                  installed. Please copy the 'rockit_base_link' value from the latest successful
+                  'Apply' job of the OCI Stack 'ROCKIT Base Environment'."
     visible: true
     required: true
     pattern: "^dxbaselnk1.[-A-Za-z0-9+/]*={0,3}$"
@@ -104,16 +110,17 @@ variables:
                   (3) 'test':  Add debug and side-loading functionalities, deploys
                                low-pricing / free tier components. Operations are limited
                                with respect to storage size and performance."
+    required: true
     enum:
     - "prod: Production or Live Environment"
-    - "stage: Staging Environent"
+    - "stage: Staging Environment"
     - "test: Testing Environment"
 
   WORKSPACE:
     type: string
     title: "Instance Identifier"
     description: "Please provide an identifier which will be used as suffix to all
-                  resources belonging to this ROCKIT Engine instance.
+                  resources belonging to this ROCKITPLAY instance.
                   If you plan to deploy a production system only simply use 'prod' or 'live'"
     required: true
     pattern: "^[a-z][a-z0-9]{1,19}$"
@@ -126,6 +133,7 @@ variables:
                   This will disable all API endpoints and periodic jobs."
     visible: true
     default: false
+
 
   show_advanced_settings:
     type: boolean
@@ -144,10 +152,11 @@ variables:
 
   use_cwl:
     type: boolean
-    title: "Use Container Workloads"
+    title: "Use Container Workloads for ROCKITPLAY instance"
     description: "Use container workloads instead of lambda functions to handle
-                  API requests? Before enabling make sure you understand the cost
-                  structure of container workloads. If unsure, keep unchecked."
+                  API requests? Before enabling make sure you understand the
+                  cost structure of container workloads. If unsure, keep
+                  unchecked."
     visible: ${show_advanced_settings}
     default:
       or:
@@ -156,41 +165,34 @@ variables:
         - "prod: Production or Live Environment"
       - eq:
         - ${env_label}
-        - "stage: Staging Environent"
+        - "stage: Staging Environment"
 
   CWL_CONTAINER_SHAPE:
     type: enum
-    title: "Container Shape"
-    description: "Please choose the shape of the container instances."
-    visible: ${use_cwl}
+    title: "Container Shape for ROCKITPLAY instance"
+    description: "Please choose the shape to use for container instances."
+    visible:
+      and:
+        - ${show_advanced_settings}
+        - ${use_cwl}
     required: true
     default: "CI.Standard.E4.Flex"
     enum:
-    - "CI.Standard.A1.Flex"
-    - "CI.Standard.E4.Flex"
+      - "CI.Standard.E4.Flex"
+      - "CI.Standard.A1.Flex"
 
   N_CONTAINER_INSTANCES:
     type: number
-    title: "Number of container instances"
+    title: "Number of container instances for ROCKITPLAY"
     description: "Please enter the number of simultaneously running container
                   instances."
     visible:
       and:
-      - ${show_advanced_settings}
-      - ${use_cwl}
+        - ${show_advanced_settings}
+        - ${use_cwl}
     required: true
-    minimum: 1
+    minimum: 0
     default: 1
-
-  EDGE_LB_BANDWIDTH_MBPS:
-    type: number
-    title: "Load Balancer Bandwidth for ROCKIT Edge"
-    description: "Please enter the bandwidth of the load balancer in Mbps."
-    visible: ${use_cwl}
-    required: true
-    default: 10
-    minimum: 10
-    maximum: 8000
 
   EDGE_MONGODBATLAS_DB_TYPE:
     type: enum
@@ -203,8 +205,8 @@ variables:
     required: true
     visible:  true
     enum:
-    - "free_cluster"
-    - "advanced_cluster"
+    - "free_cluster: Free Tier Cluster"
+    - "advanced_cluster: Advanced Cluster for production environments"
 
   EDGE_MONGODBATLAS_REGION_CLUSTER:
     type: enum
@@ -220,7 +222,7 @@ variables:
           - "prod: Production or Live Environment"
         - eq:
           - ${env_label}
-          - "stage: Staging Environent"
+          - "stage: Staging Environment"
         - eq:
           - ${env_label}
           - "test: Testing Environment"
@@ -246,9 +248,9 @@ variables:
 
   MONGODBATLAS_IP_ACCESS_LIST:
     type: string
-    title: "Custom IP Access List for MongoDB"
-    description: "Please enter a comma separated list of CIDR address notations.
-                  Keep empty if unsure."
+    title: "MongoDB IP Access List"
+    description: "Please enter a comma separated list of CIDR address notations
+                  or leave empty for no additional access."
     required: false
 
   ENGINE_MONGODBATLAS_DB_TYPE:
@@ -262,8 +264,8 @@ variables:
     required: true
     visible:  true
     enum:
-    - "free_cluster"
-    - "advanced_cluster"
+    - "free_cluster: Free Tier Cluster"
+    - "advanced_cluster: Advanced Cluster for production environments"
 
   ENGINE_MONGODBATLAS_REGION_CLUSTER:
     type: enum
@@ -279,7 +281,7 @@ variables:
           - "prod: Production or Live Environment"
         - eq:
           - ${env_label}
-          - "stage: Staging Environent"
+          - "stage: Staging Environment"
         - eq:
           - ${env_label}
           - "test: Testing Environment"
@@ -303,18 +305,50 @@ variables:
     - "US_EAST_1: Northern Virginia, USA"
     - "US_WEST_2: Oregon, USA"
 
+  SMTP_HOST:
+    type: string
+    title: "SMTP Host"
+    description: "ROCKITPLAY sends automatic emails, e.g., user invitations, password
+                  resets etc. Please enter the hostname of your SMTP server."
+    required: true
+    visible: true
+
+  SMTP_PORT:
+    type: number
+    title: "SMTP Port"
+    description: "Please enter the port of your SMTP server."
+    required: true
+    default: 587
+    visible: true
+    minimum: 1
+    maximum: 65535
+
+  SMTP_USER:
+    type: string
+    title: "SMTP User"
+    description: "Please enter the user name to authenticate against your SMTP server."
+    required: true
+    visible: true
+
+  SMTP_PASSWORD:
+    type: string
+    title: "SMTP Password"
+    description: "Please enter the password to authenticate against your SMTP server."
+    required: true
+    visible: true
+    sensitive: true
+    minLength: 8
+
   ENGINE_SLACK_ADMIN_CHANNEL:
     type: string
-    title: "Slack Channel for ROCKIT Engine Site-Admins"
+    title: "Slack Admin Channel for ROCKIT Engine"
     description: "Please enter the Id of the Slack channel which should receive
-                  notifications for the site administrators of ROCKIT Engine, e.g,
-                  '#my-admin-channel'"
+                  notifications for the site administrator, e.g, '#my-admin-channel'"
     required: true
 
   EDGE_SLACK_ADMIN_CHANNEL:
     type: string
-    title: "Slack Channel for ROCKIT Edge Site-Admins"
+    title: "Slack Admin Channel for ROCKIT Edge"
     description: "Please enter the Id of the Slack channel which should receive
-                  notifications for the site administrators of ROCKIT Edge, e.g,
-                  '#my-admin-channel'"
+                  notifications for the site administrator, e.g, '#my-admin-channel'"
     required: true

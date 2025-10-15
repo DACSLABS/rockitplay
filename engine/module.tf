@@ -1,48 +1,50 @@
 # --- Environment variables
 // 'prod', 'stage', 'test'
-variable "ENV"                         { type = string }
-variable "WORKSPACE"                   { type = string }
+variable "ENV"                          { type = string }
+variable "WORKSPACE"                    { type = string }
 
-variable "ENGINE_OCI_TENANCY_OCID"     { type = string }
-variable "ENGINE_OCI_REGION"           { type = string }
-variable "ENGINE_OCI_NAMESPACE"        { type = string }
+variable "ENGINE_OCI_TENANCY_OCID"      { type = string }
+variable "ENGINE_OCI_REGION"            { type = string }
+variable "ENGINE_OCI_NAMESPACE"         { type = string }
 
-variable "ENGINE_PARENT_COMP_OCID"     { type = string }
-variable "ENGINE_BASEENV_ID"           { type = string }
+variable "ENGINE_PARENT_COMP_OCID"      { type = string }
+variable "ENGINE_BASEENV_ID"            { type = string }
 
-variable "ENGINE_VAULT_OCID"           { type = string }
-variable "ENGINE_VAULT_KEY_OCID"       { type = string }
+variable "ENGINE_VAULT_OCID"            { type = string }
+variable "ENGINE_VAULT_KEY_OCID"        { type = string }
 
-variable "ENGINE_LOADER_IMG_OCID"      { type = string }
+variable "ENGINE_LOADER_IMG_OCID"       { type = string }
 
-variable "ENGINE_N_CONTAINER_INSTANCES" { type = number }
-variable "ENGINE_LB_BANDWIDTH_MBPS"     { type = number }
-
-variable "ENGINE_DB_ORGID"             {
+variable "ENGINE_DB_ORGID"              {
    type      = string
    sensitive = true
 }
-variable "ENGINE_DB_TYPE"              { type = string }
-variable "ENGINE_DB_SIZE"              { type = string }
-variable "ENGINE_DB_REGION"            { type = string }
-variable "ENGINE_DB_IP_ACCESS_LIST"    { type = string }
+variable "ENGINE_DB_TYPE"               { type = string }
+variable "ENGINE_DB_SIZE"               { type = string }
+variable "ENGINE_DB_REGION"             { type = string }
+variable "ENGINE_DB_IP_ACCESS_LIST"     { type = string }
 
-variable "ENGINE_SRC_HASH"             { type = string }
-variable "ENGINE_SRC_ENV"              { type = string }
-variable "ENGINE_FN_URL"               { type = string }
-variable "ENGINE_CWL_URL"              { type = string }
-variable "ENGINE_TASK_URL"             { type = string }
-variable "ENGINE_TASK_SIG"             { type = string }
-variable "ENGINE_TASK_HASH"            { type = string }
 
-variable "ENGINE_CWL_CONTAINER_SHAPE"  { type = string }
+variable "ENGINE_SRC_HASH"              { type = string }
+variable "ENGINE_SRC_ENV"               { type = string }
 
-variable "EDGE_DX_URL"                 { type = string }
 
-variable "ENGINE_MAINTENANCE_MODE"     { type = bool }
+variable "ENGINE_FN_URL"                { type = string }
+variable "ENGINE_CWL_URL"               { type = string }
+variable "ENGINE_TASK_URL"              { type = string }
+variable "ENGINE_TASK_SIG"              { type = string }
+variable "ENGINE_TASK_HASH"             { type = string }
 
-variable "ENGINE_SLACK_TOKEN"          { type = string }
-variable "ENGINE_SLACK_ADMIN_CHANNEL"  { type = string }
+variable "ENGINE_USE_CWL"               { type = bool }
+variable "ENGINE_CWL_CONTAINER_SHAPE"   { type = string }
+variable "ENGINE_N_CONTAINER_INSTANCES" { type = number }
+
+variable "EDGE_DX_URL"                  { type = string }
+
+variable "ENGINE_MAINTENANCE_MODE"      { type = bool }
+
+variable "ENGINE_SLACK_TOKEN"           { type = string }
+variable "ENGINE_SLACK_ADMIN_CHANNEL"   { type = string }
 
 variable "ENGINE_WITH_CERT" {
    type = bool
@@ -60,6 +62,7 @@ variable "ENGINE_DNS_ZONE_OCID" {
    type = string
    default = ""
 }
+
 
 
 variable "ENGINE_APIGW_CONNECTION_TIMEOUT"  {
@@ -99,7 +102,6 @@ locals {
    WORKSPACE       = upper (var.WORKSPACE)
    registry_prefix = "${var.ENGINE_OCI_REGION}.ocir.io/${var.ENGINE_OCI_NAMESPACE}/"
    engine_registry = "${local.registry_prefix}engine-registry-${local.workspace}"
-   use_cwl         = var.ENGINE_N_CONTAINER_INSTANCES > 0
    cwl_shapes = {
       "CI.Standard.A1.Flex" = {
          platform = "linux/arm64"
@@ -192,7 +194,7 @@ locals {
       "x64",
       local.cwl_shapes[var.ENGINE_CWL_CONTAINER_SHAPE].platform,
       (local.env == "test") ? local.dev_bucket_readwrite_par : "",
-      (local.env == "test" && local.use_cwl) ? oci_container_instances_container_instance.engine_cwl[0].id : ""
+      (local.env == "test" && var.ENGINE_USE_CWL && var.ENGINE_N_CONTAINER_INSTANCES>0) ? oci_container_instances_container_instance.engine_cwl[0].id : ""
    ]
    inject_link_data = base64encode(join (",", local.inject_link_args))
 }
@@ -245,6 +247,10 @@ output "inject_link" {
    value = local.env == "test" ? "dxinjectlnk3.engine.${nonsensitive(local.inject_link_data)}" : null
 }
 
+output "apigw_url" {
+   value = local.engine_apigw_url
+}
+
 output "admin_secret_b64" {
    value = nonsensitive (local.engine_admin_secret_b64)
 }
@@ -254,7 +260,7 @@ output "engine_db_conn_str" {
 }
 
 output "engine_ipaddr" {
-   value = local.use_cwl ? local.lb_ipaddr : local.engine_apigw_ipaddr
+   value = var.ENGINE_USE_CWL ? local.lb_ipaddr : local.engine_apigw_ipaddr
 }
 
 output "engine_base_url" {

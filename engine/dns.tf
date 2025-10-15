@@ -14,13 +14,13 @@ resource "oci_dns_rrset" "engine_pub_dns_record" {
    ]
 
    zone_name_or_id = var.ENGINE_DNS_ZONE_OCID
-   rtype           = local.use_cwl ? "A" : "CNAME"
-   domain = "${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}."
+   rtype           = "CNAME"
+   domain          = "${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}."
 
    items {
        domain = "${local.engine_pub_hostname}.${var.ENGINE_CERT_DOMAINNAME}."
-       rtype  = local.use_cwl ? "A" : "CNAME"
-       rdata  = local.use_cwl ? "${local.lb_ipaddr}" : "${oci_apigateway_gateway.engine_pub_api_gw[0].hostname}."
+       rtype  = "CNAME"
+       rdata  = "${oci_apigateway_gateway.engine_pub_api_gw.hostname}."
        ttl    = (local.env != "prod" && local.env != "stage") ?  300 : 3600
    }
 }

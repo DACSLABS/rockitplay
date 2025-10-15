@@ -21,22 +21,22 @@ variable "RSI_URL" {
   type = string
   default = "https://public.cloud.rockitplay.com/rsi"
 }
+
+variable "use_cwl" {
+  type    = bool
+  default = false
+}
 variable "CWL_CONTAINER_SHAPE" {
   type    = string
   default = "CI.Standard.A1.Flex"
 }
 variable "N_CONTAINER_INSTANCES" {
   type    = number
-  default = 0
-}
-
-variable "EDGE_LB_BANDWIDTH_MBPS" {
-  type    = number
-  default = 10
-}
-variable "ENGINE_LB_BANDWIDTH_MBPS" {
-  type    = number
-  default = 10
+  default = 1
+  validation {
+    condition     = var.N_CONTAINER_INSTANCES >= 0
+    error_message = "Number of CWL containers must be >= 0"
+  }
 }
 
 variable "EDGE_MONGODBATLAS_DB_TYPE" {
@@ -70,6 +70,11 @@ variable "MONGODBATLAS_IP_ACCESS_LIST" {
   default = ""
 }
 
+variable "SMTP_HOST"        { type = string }
+variable "SMTP_PORT"        { type = number }
+variable "SMTP_USER"        { type = string }
+variable "SMTP_PASSWORD"    { type = string }
+
 variable "WORKSPACE"                    { type = string }
 variable "ENGINE_SLACK_ADMIN_CHANNEL"   { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"     { type = string }
@@ -89,8 +94,8 @@ locals {
   vault_key_ocid       = split (",", local.rockit_base_link)[2]
   baseenv_id           = split (",", local.rockit_base_link)[3]
   N_CONTAINER_INSTANCES = {
-    prod  = max (1, var.N_CONTAINER_INSTANCES)
-    stage = max (1, var.N_CONTAINER_INSTANCES)
+    prod  = max (0, var.N_CONTAINER_INSTANCES)
+    stage = max (0, var.N_CONTAINER_INSTANCES)
     test  = var.N_CONTAINER_INSTANCES
   }
   edge_mongodbatlas_region                  = split (":", var.EDGE_MONGODBATLAS_REGION_CLUSTER)[0]

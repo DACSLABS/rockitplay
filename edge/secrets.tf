@@ -36,6 +36,44 @@ locals {
    edge_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_admin_secret_secretbundle.secret_bundle_content.0.content)
 }
 
+// --- EDGE_SIGNUP_SECRET
+resource "random_password" "initial_edge_signup_secret" {
+  length           = 100
+  special          = true
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 1
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+
+resource "oci_vault_secret" "edge_signup_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_SIGNUP_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign user invitation / signup tokens"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_signup_secret.result)
+   }
+   lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_signup_secret" {
+    depends_on     = [ oci_vault_secret.edge_signup_secret ]
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SIGNUP_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_signup_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_signup_secret.secrets.0.id }
+locals {
+   edge_signup_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_signup_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_BE_SESSION_SECRET
 resource "random_password" "initial_edge_be_session_secret" {
   length           = 100
@@ -407,6 +445,45 @@ data "oci_vault_secrets" "edge_deployment_secret" {
 data "oci_secrets_secretbundle" "edge_deployment_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_deployment_secret.secrets.0.id }
 locals {
    edge_deployment_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_deployment_secret_secretbundle.secret_bundle_content.0.content)
+}
+
+# --- EDGE_SOURCES_SECRET
+#     (aes-256-cbc algorithm: fixed key length: 32 bytes)
+resource "random_password" "initial_edge_source_secret" {
+  length           = 32
+  special          = false
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 0
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+
+resource "oci_vault_secret" "edge_source_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_SOURCE_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode sources"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_source_secret.result)
+   }
+   # lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_source_secret" {
+    depends_on     = [ oci_vault_secret.edge_source_secret ]
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_SOURCE_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_source_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_source_secret.secrets.0.id }
+locals {
+   edge_source_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_source_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_DB_PW
