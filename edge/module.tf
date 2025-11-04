@@ -1,6 +1,11 @@
 # --- Environment variables
-// 'prod', 'stage', 'test'
-variable "ENV"                        { type = string }
+variable "ENV"                        {
+   type = string
+   validation {
+      condition =  contains(["TEST", "STAGE", "PROD"], var.ENV)
+      error_message = "only 'TEST', 'STAGE' or 'PROD' environment is supported"
+   }
+}
 variable "WORKSPACE"                  { type = string }
 
 variable "EDGE_OCI_TENANCY_OCID"      { type = string }
@@ -20,7 +25,13 @@ variable "EDGE_DB_ORGID"              {
    type      = string
    sensitive = true
 }
-variable "EDGE_DB_TYPE"               { type = string }
+variable "EDGE_DB_TYPE"               {
+   type = string
+   validation {
+      condition =  contains(["free_cluster", "advanced_cluster"], var.EDGE_DB_TYPE)
+      error_message = "only 'free_cluster' or 'advanced_cluster' databases are supported'"
+   }
+}
 variable "EDGE_DB_SIZE"               { type = string }
 variable "EDGE_DB_REGION"             { type = string }
 variable "EDGE_DB_IP_ACCESS_LIST"     { type = string }
@@ -47,7 +58,13 @@ variable "EDGE_TASK_HASH"             { type = string }
 
 variable "EDGE_USE_CWL"               { type = bool }
 variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }
-variable "EDGE_N_CONTAINER_INSTANCES" { type = number }
+variable "EDGE_N_CONTAINER_INSTANCES" {
+   type = number
+   validation {
+      condition =  var.EDGE_N_CONTAINER_INSTANCES >= 1
+      error_message = "Number of Edge containers must be >= 1"
+   }
+}
 
 
 variable "EDGE_DX_URL"                { type = string }
@@ -231,6 +248,19 @@ locals {
    inject_link_data = base64encode(join (",", local.inject_link_args))
 }
 
+# --- dxsrv link
+locals {
+   dxsrv_edge_link_args = [
+      local.workspace,
+      random_password.edge_instance_id.result,
+      oci_identity_compartment.edge_comp.id,
+      var.EDGE_VAULT_OCID,
+      var.EDGE_VAULT_KEY_OCID,
+      oci_vault_secret.edge_ib_secret.id
+   ]
+   dxsrv_edge_link_data = base64encode(join (",", local.dxsrv_edge_link_args))
+}
+
 locals {
    edge_base_url = var.EDGE_WITH_CERT ? "https://${local.edge_pub_hostname}.${var.EDGE_CERT_DOMAINNAME}" : "https://local.edge_ipaddr"
 }
@@ -242,6 +272,10 @@ output "edge_instance_id" {
 
 output "inject_link" {
    value = local.env == "test" ? "dxinjectlnk3.edge.${nonsensitive(local.inject_link_data)}" : null
+}
+
+output "dxsrv_edge_link" {
+   value = "dxsrvlnk1.edge.${nonsensitive(local.dxsrv_edge_link_data)}"
 }
 
 output "apigw_url" {

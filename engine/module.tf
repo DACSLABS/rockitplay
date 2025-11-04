@@ -1,6 +1,11 @@
 # --- Environment variables
-// 'prod', 'stage', 'test'
-variable "ENV"                          { type = string }
+variable "ENV"                        {
+   type = string
+   validation {
+      condition =  contains(["TEST", "STAGE", "PROD"], var.ENV)
+      error_message = "only 'TEST', 'STAGE' or 'PROD' environment is supported"
+   }
+}
 variable "WORKSPACE"                    { type = string }
 
 variable "ENGINE_OCI_TENANCY_OCID"      { type = string }
@@ -19,7 +24,13 @@ variable "ENGINE_DB_ORGID"              {
    type      = string
    sensitive = true
 }
-variable "ENGINE_DB_TYPE"               { type = string }
+variable "ENGINE_DB_TYPE"               {
+   type = string
+   validation {
+      condition =  contains(["free_cluster", "advanced_cluster"], var.ENGINE_DB_TYPE)
+      error_message = "only 'free_cluster' or 'advanced_cluster' databases are supported'"
+   }
+}
 variable "ENGINE_DB_SIZE"               { type = string }
 variable "ENGINE_DB_REGION"             { type = string }
 variable "ENGINE_DB_IP_ACCESS_LIST"     { type = string }
@@ -37,7 +48,14 @@ variable "ENGINE_TASK_HASH"             { type = string }
 
 variable "ENGINE_USE_CWL"               { type = bool }
 variable "ENGINE_CWL_CONTAINER_SHAPE"   { type = string }
-variable "ENGINE_N_CONTAINER_INSTANCES" { type = number }
+variable "ENGINE_N_CONTAINER_INSTANCES" {
+   type = number
+   default = 1
+   validation {
+     condition     = var.ENGINE_N_CONTAINER_INSTANCES >= 1
+     error_message = "Number of Engine containers must be >= 1"
+   }
+}
 
 variable "EDGE_DX_URL"                  { type = string }
 

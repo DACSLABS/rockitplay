@@ -9,48 +9,74 @@ groupings:
   - title: "Predefined General Configuration"
     visible: false
     variables:
-    - tenancy_ocid
-    - compartment_ocid
-    - current_user_ocid
-    - region
-    - rockit_engine_link_b64
-    - VERSION
-    - ENGINE_SRC_HASH
-    - EDGE_SRC_HASH
-    - MC_HASH
+      - tenancy_ocid
+      - compartment_ocid
+      - current_user_ocid
+      - region
+      - rockit_engine_link_b64
+      - VERSION
+      - ENGINE_SRC_HASH
+      - EDGE_SRC_HASH
+      - MC_HASH
 
   - title: "ROCKITPLAY Instance"
     visible: true
     variables:
-    - dacslabs_link_b64
-    - rockit_base_link_b64
-    - env_label
-    - WORKSPACE
+      - dacslabs_link_b64
+      - rockit_base_link_b64
+      - env_label
+      - WORKSPACE
 
   - title: "Maintenance"
     visible: true
     variables:
-    - MAINTENANCE_MODE
+      - MAINTENANCE_MODE
 
   - title: "Advanced Settings"
     visible: true
     variables:
       - show_advanced_settings
       - RSI_URL
-      - use_cwl
+      - runtime
       - CWL_CONTAINER_SHAPE
       - N_CONTAINER_INSTANCES
 
   - title: "MongoDB Atlas Integration"
-    visible: true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "prod: Production or Live Environment"
     variables:
-      - EDGE_MONGODBATLAS_DB_TYPE
-      - EDGE_MONGODBATLAS_REGION_CLUSTER
-      - EDGE_MONGODBATLAS_CLUSTER_SIZE
-      - ENGINE_MONGODBATLAS_DB_TYPE
-      - ENGINE_MONGODBATLAS_REGION_CLUSTER
-      - ENGINE_MONGODBATLAS_CLUSTER_SIZE
+      - PROD_MONGODBATLAS_DB_TYPE
+      - PROD_MONGODBATLAS_REGION_CLUSTER
+      - PROD_MONGODBATLAS_CLUSTER_SIZE
       - MONGODBATLAS_IP_ACCESS_LIST
+
+  - title: "MongoDB Atlas Integration"
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "stage: Staging Environment"
+    variables:
+      - STAGE_MONGODBATLAS_DB_TYPE
+      - STAGE_MONGODBATLAS_REGION_CLUSTER
+      - STAGE_MONGODBATLAS_CLUSTER_SIZE
+      - MONGODBATLAS_IP_ACCESS_LIST
+
+  - title: "MongoDB Atlas Integration"
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "test: Testing Environment"
+    variables:
+      - TEST_MONGODBATLAS_DB_TYPE
+      - TEST_MONGODBATLAS_REGION_CLUSTER
+      - TEST_MONGODBATLAS_CLUSTER_SIZE
+      - MONGODBATLAS_IP_ACCESS_LIST
+
 
   - title: "Slack Integration"
     visible:
@@ -65,8 +91,8 @@ groupings:
           - ${env_label}
           - "test: Testing Environment"
     variables:
-    - ENGINE_SLACK_ADMIN_CHANNEL
-    - EDGE_SLACK_ADMIN_CHANNEL
+      - ENGINE_SLACK_ADMIN_CHANNEL
+      - EDGE_SLACK_ADMIN_CHANNEL
 
   - title: "SMTP Configuration"
     visible: true
@@ -81,7 +107,7 @@ variables:
   dacslabs_link_b64:
     type: string
     title: "DACSLABS Link"
-    description: "Please copy the dacslabs_link provided by DACSLABS."
+    description: "Please paste the dacslabs_link provided by DACSLABS."
     visible: true
     required: true
     pattern: "^dacslabslnk1.[-A-Za-z0-9+/]*={0,3}$"
@@ -89,7 +115,7 @@ variables:
   rockit_base_link_b64:
     type: string
     title: "ROCKIT Base Link"
-    description: "ROCKIT Edge requires the ROCKIT Base Environment Stack to be configured and
+    description: "ROCKITPLAY requires the ROCKIT Base Environment Stack to be configured and
                   installed. Please copy the 'rockit_base_link' value from the latest successful
                   'Apply' job of the OCI Stack 'ROCKIT Base Environment'."
     visible: true
@@ -112,9 +138,9 @@ variables:
                                with respect to storage size and performance."
     required: true
     enum:
-    - "prod: Production or Live Environment"
-    - "stage: Staging Environment"
-    - "test: Testing Environment"
+      - "prod: Production or Live Environment"
+      - "stage: Staging Environment"
+      - "test: Testing Environment"
 
   WORKSPACE:
     type: string
@@ -123,7 +149,7 @@ variables:
                   resources belonging to this ROCKITPLAY instance.
                   If you plan to deploy a production system only simply use 'prod' or 'live'"
     required: true
-    pattern: "^[a-z][a-z0-9]{1,19}$"
+    pattern: "^[a-z][a-z0-9]{1,18}$"
 
 
   MAINTENANCE_MODE:
@@ -150,22 +176,22 @@ variables:
     required: true
     visible: ${show_advanced_settings}
 
-  use_cwl:
-    type: boolean
-    title: "Use Container Workloads for ROCKITPLAY instance"
-    description: "Use container workloads instead of lambda functions to handle
-                  API requests? Before enabling make sure you understand the
-                  cost structure of container workloads. If unsure, keep
-                  unchecked."
+  runtime:
+    type: enum
+    title: "HTTP Request Runtime"
+    description: "Please specify which runtime environment should be used
+                  to handle HTTP requests.
+                  (1) 'containers':  Configure container workloads for production environments.
+                                     Containers are running continuously and provide
+                                     low-latency responses but involve additional costs.
+                  (2) 'functions':   Use serverless functions to handle HTTP requests.
+                                     Functions are cost-efficient as you only pay for
+                                     actual usage but may introduce latency during cold starts."
     visible: ${show_advanced_settings}
-    default:
-      or:
-      - eq:
-        - ${env_label}
-        - "prod: Production or Live Environment"
-      - eq:
-        - ${env_label}
-        - "stage: Staging Environment"
+    required: true
+    enum:
+      - "containers"
+      - "functions"
 
   CWL_CONTAINER_SHAPE:
     type: enum
@@ -174,7 +200,9 @@ variables:
     visible:
       and:
         - ${show_advanced_settings}
-        - ${use_cwl}
+        - eq:
+          - ${runtime}
+          - "containers"
     required: true
     default: "CI.Standard.E4.Flex"
     enum:
@@ -189,62 +217,192 @@ variables:
     visible:
       and:
         - ${show_advanced_settings}
-        - ${use_cwl}
+        - eq:
+          - ${runtime}
+          - "containers"
     required: true
-    minimum: 0
+    minimum: 1
     default: 1
 
-  EDGE_MONGODBATLAS_DB_TYPE:
+  # --- mongodb PROD
+  PROD_MONGODBATLAS_DB_TYPE:
     type: enum
-    title: "MongoDB Atlas Cluster Type for ROCKIT Edge"
-    description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers supporting M0 and M10+ clusters
-                  taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
-    default: "free_cluster"
+    title: "MongoDB Atlas Cluster Type"
+    description: "Please choose the type of the MongoDB Atlas cluster."
     required: true
-    visible:  true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "prod: Production or Live Environment"
+    default: "advanced_cluster: Advanced Cluster for production environments"
     enum:
-    - "free_cluster: Free Tier Cluster"
-    - "advanced_cluster: Advanced Cluster for production environments"
+      - "free_cluster: Free Tier Cluster"
+      - "advanced_cluster: Advanced Cluster for production environments"
 
-  EDGE_MONGODBATLAS_REGION_CLUSTER:
+  PROD_MONGODBATLAS_REGION_CLUSTER:
     type: enum
-    title: "MongoDB Atlas Cluster Region for ROCKIT Edge"
+    title: "MongoDB Atlas Cluster Region"
     description: "Please choose the location of the MongoDB Atlas instances.
                   Location identifiers supporting M0 and M10+ clusters taken from
                   https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
     required: true
     visible:
-      or:
+      and:
         - eq:
-          - ${env_label}
-          - "prod: Production or Live Environment"
-        - eq:
-          - ${env_label}
-          - "stage: Staging Environment"
-        - eq:
-          - ${env_label}
-          - "test: Testing Environment"
+            - ${env_label}
+            - "prod: Production or Live Environment"
     enum:
-    - "AF_SOUTH_1: Cape Town, South Africa"
-    - "AP_EAST_1: Hong Kong, China"
-    - "AP_NORTHEAST_1: Tokyo, Japan"
-    - "AP_NORTHEAST_2: Seoul, South Korea"
-    - "AP_SOUTHEAST_1: Singapore"
-    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
-    - "AP_SOUTH_1: Mumbai, India"
-    - "EU_CENTRAL_1: Frankfurt, Germany"
-    - "EU_NORTH_1: Stockholm, Sweden"
-    - "EU_SOUTH_1: Milan, Italy"
-    - "EU_SOUTH_2: Spain"
-    - "EU_WEST_1: Ireland"
-    - "EU_WEST_3: Paris, France"
-    - "IL_CENTRAL_1: Tel Aviv, Israel"
-    - "ME_SOUTH_1: Bahrain"
-    - "SA_EAST_1: Sao Paulo, Brazil"
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_WEST_2: Oregon, USA"
+      - "AF_SOUTH_1: Cape Town, South Africa"
+      - "AP_EAST_1: Hong Kong, China"
+      - "AP_NORTHEAST_1: Tokyo, Japan"
+      - "AP_NORTHEAST_2: Seoul, South Korea"
+      - "AP_SOUTHEAST_1: Singapore"
+      - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+      - "AP_SOUTH_1: Mumbai, India"
+      - "EU_CENTRAL_1: Frankfurt, Germany"
+      - "EU_NORTH_1: Stockholm, Sweden"
+      - "EU_SOUTH_1: Milan, Italy"
+      - "EU_SOUTH_2: Spain"
+      - "EU_WEST_1: Ireland"
+      - "EU_WEST_3: Paris, France"
+      - "IL_CENTRAL_1: Tel Aviv, Israel"
+      - "ME_SOUTH_1: Bahrain"
+      - "SA_EAST_1: Sao Paulo, Brazil"
+      - "US_EAST_1: Northern Virginia, USA"
+      - "US_WEST_2: Oregon, USA"
+
+  PROD_MONGODBATLAS_CLUSTER_SIZE:
+    type: string
+    title: "MongoDB Atlas Cluster Instance Size"
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "prod: Production or Live Environment"
+        - eq:
+            - ${PROD_MONGODBATLAS_DB_TYPE}
+            - "advanced_cluster: Advanced Cluster for production environments"
+
+  # --- mongodb STAGE
+  STAGE_MONGODBATLAS_DB_TYPE:
+    type: enum
+    title: "MongoDB Atlas Cluster Type"
+    description: "Please choose the type of the MongoDB Atlas cluster."
+    required: true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "stage: Staging Environment"
+    default: "advanced_cluster: Advanced Cluster for production environments"
+    enum:
+      - "free_cluster: Free Tier Cluster"
+      - "advanced_cluster: Advanced Cluster for production environments"
+
+  STAGE_MONGODBATLAS_REGION_CLUSTER:
+    type: enum
+    title: "MongoDB Atlas Cluster Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers supporting M0 and M10+ clusters taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "stage: Staging Environment"
+    enum:
+      - "AF_SOUTH_1: Cape Town, South Africa"
+      - "AP_EAST_1: Hong Kong, China"
+      - "AP_NORTHEAST_1: Tokyo, Japan"
+      - "AP_NORTHEAST_2: Seoul, South Korea"
+      - "AP_SOUTHEAST_1: Singapore"
+      - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+      - "AP_SOUTH_1: Mumbai, India"
+      - "EU_CENTRAL_1: Frankfurt, Germany"
+      - "EU_NORTH_1: Stockholm, Sweden"
+      - "EU_SOUTH_1: Milan, Italy"
+      - "EU_SOUTH_2: Spain"
+      - "EU_WEST_1: Ireland"
+      - "EU_WEST_3: Paris, France"
+      - "IL_CENTRAL_1: Tel Aviv, Israel"
+      - "ME_SOUTH_1: Bahrain"
+      - "SA_EAST_1: Sao Paulo, Brazil"
+      - "US_EAST_1: Northern Virginia, USA"
+      - "US_WEST_2: Oregon, USA"
+
+  STAGE_MONGODBATLAS_CLUSTER_SIZE:
+    type: string
+    title: "MongoDB Atlas Cluster Instance Size"
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "stage: Staging Environment"
+        - eq:
+            - ${STAGE_MONGODBATLAS_DB_TYPE}
+            - "advanced_cluster: Advanced Cluster for production environments"
+
+  # --- mongodb TEST
+  TEST_MONGODBATLAS_DB_TYPE:
+    type: enum
+    title: "MongoDB Atlas Cluster Type"
+    description: "Please choose the type of the MongoDB Atlas cluster."
+    required: true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "test: Testing Environment"
+    default: "free_cluster: Free Tier Cluster"
+    enum:
+      - "free_cluster: Free Tier Cluster"
+      - "advanced_cluster: Advanced Cluster for production environments"
+
+  TEST_MONGODBATLAS_REGION_CLUSTER:
+    type: enum
+    title: "MongoDB Atlas Cluster Region"
+    description: "Please choose the location of the MongoDB Atlas instances.
+                  Location identifiers supporting M0 and M10+ clusters taken from
+                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
+    required: true
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "test: Testing Environment"
+    enum:
+      - "AF_SOUTH_1: Cape Town, South Africa"
+      - "AP_EAST_1: Hong Kong, China"
+      - "AP_NORTHEAST_1: Tokyo, Japan"
+      - "AP_NORTHEAST_2: Seoul, South Korea"
+      - "AP_SOUTHEAST_1: Singapore"
+      - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
+      - "AP_SOUTH_1: Mumbai, India"
+      - "EU_CENTRAL_1: Frankfurt, Germany"
+      - "EU_NORTH_1: Stockholm, Sweden"
+      - "EU_SOUTH_1: Milan, Italy"
+      - "EU_SOUTH_2: Spain"
+      - "EU_WEST_1: Ireland"
+      - "EU_WEST_3: Paris, France"
+      - "IL_CENTRAL_1: Tel Aviv, Israel"
+      - "ME_SOUTH_1: Bahrain"
+      - "SA_EAST_1: Sao Paulo, Brazil"
+      - "US_EAST_1: Northern Virginia, USA"
+      - "US_WEST_2: Oregon, USA"
+
+  TEST_MONGODBATLAS_CLUSTER_SIZE:
+    type: string
+    title: "MongoDB Atlas Cluster Instance Size"
+    visible:
+      and:
+        - eq:
+            - ${env_label}
+            - "test: Testing Environment"
+        - eq:
+            - ${TEST_MONGODBATLAS_DB_TYPE}
+            - "advanced_cluster: Advanced Cluster for production environments"
 
   MONGODBATLAS_IP_ACCESS_LIST:
     type: string
@@ -253,58 +411,8 @@ variables:
                   or leave empty for no additional access."
     required: false
 
-  ENGINE_MONGODBATLAS_DB_TYPE:
-    type: enum
-    title: "MongoDB Atlas Cluster Type for ROCKIT Engine"
-    description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers supporting M0 and M10+ clusters
-                  taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
-    default: "free_cluster"
-    required: true
-    visible:  true
-    enum:
-    - "free_cluster: Free Tier Cluster"
-    - "advanced_cluster: Advanced Cluster for production environments"
 
-  ENGINE_MONGODBATLAS_REGION_CLUSTER:
-    type: enum
-    title: "MongoDB Atlas Cluster Region for ROCKIT Engine"
-    description: "Please choose the location of the MongoDB Atlas instances.
-                  Location identifiers supporting M0 and M10+ clusters taken from
-                  https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws-availability-zones"
-    required: true
-    visible:
-      or:
-        - eq:
-          - ${env_label}
-          - "prod: Production or Live Environment"
-        - eq:
-          - ${env_label}
-          - "stage: Staging Environment"
-        - eq:
-          - ${env_label}
-          - "test: Testing Environment"
-    enum:
-    - "AF_SOUTH_1: Cape Town, South Africa"
-    - "AP_EAST_1: Hong Kong, China"
-    - "AP_NORTHEAST_1: Tokyo, Japan"
-    - "AP_NORTHEAST_2: Seoul, South Korea"
-    - "AP_SOUTHEAST_1: Singapore"
-    - "AP_SOUTHEAST_2: Sydney, NSW, Australia"
-    - "AP_SOUTH_1: Mumbai, India"
-    - "EU_CENTRAL_1: Frankfurt, Germany"
-    - "EU_NORTH_1: Stockholm, Sweden"
-    - "EU_SOUTH_1: Milan, Italy"
-    - "EU_SOUTH_2: Spain"
-    - "EU_WEST_1: Ireland"
-    - "EU_WEST_3: Paris, France"
-    - "IL_CENTRAL_1: Tel Aviv, Israel"
-    - "ME_SOUTH_1: Bahrain"
-    - "SA_EAST_1: Sao Paulo, Brazil"
-    - "US_EAST_1: Northern Virginia, USA"
-    - "US_WEST_2: Oregon, USA"
-
+  # --- EMail integration
   SMTP_HOST:
     type: string
     title: "SMTP Host"
@@ -339,6 +447,7 @@ variables:
     sensitive: true
     minLength: 8
 
+  # --- Slack integration
   ENGINE_SLACK_ADMIN_CHANNEL:
     type: string
     title: "Slack Admin Channel for ROCKIT Engine"

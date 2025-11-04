@@ -116,15 +116,15 @@ module engine {
    ENGINE_TASK_URL                  = local.engine_task_url
    ENGINE_TASK_SIG                  = local.engine_task_sig
    ENGINE_TASK_HASH                 = local.engine_task_hash
-   ENGINE_USE_CWL                   = var.use_cwl
+   ENGINE_USE_CWL                   = local.USE_CWL[local.env]
    ENGINE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   ENGINE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env] == 0 ? 0 : 1
+   ENGINE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES
    ENGINE_VAULT_OCID                = local.vault_ocid
    ENGINE_VAULT_KEY_OCID            = local.vault_key_ocid
    ENGINE_DB_ORGID                  = local.mongodbatlas_orgid
-   ENGINE_DB_TYPE                   = local.engine_mongodbatlas_db_type
-   ENGINE_DB_SIZE                   = local.engine_mongodbatlas_advanced_cluster_size
-   ENGINE_DB_REGION                 = local.engine_mongodbatlas_region
+   ENGINE_DB_TYPE                   = local.mongodbatlas_db_type[local.env]
+   ENGINE_DB_SIZE                   = local.mongodbatlas_advanced_cluster_size[local.env]
+   ENGINE_DB_REGION                 = local.mongodbatlas_region[local.env]
    ENGINE_DB_IP_ACCESS_LIST         = var.MONGODBATLAS_IP_ACCESS_LIST
    ENGINE_SLACK_TOKEN               = local.slack_token
    ENGINE_SLACK_ADMIN_CHANNEL       = var.ENGINE_SLACK_ADMIN_CHANNEL
@@ -171,9 +171,9 @@ module edge {
    EDGE_TASK_URL                  = local.edge_task_url
    EDGE_TASK_SIG                  = local.edge_task_sig
    EDGE_TASK_HASH                 = local.edge_task_hash
-   EDGE_USE_CWL                   = var.use_cwl
+   EDGE_USE_CWL                   = local.USE_CWL[local.env]
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
-   EDGE_N_CONTAINER_INSTANCES     = local.N_CONTAINER_INSTANCES[local.env]
+   EDGE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES
    EDGE_DX_URL                    = local.edge_dx_url
    EDGE_RSI_BASE_URL              = var.RSI_URL
    EDGE_VAULT_OCID                = local.vault_ocid
@@ -181,9 +181,9 @@ module edge {
    EDGE_ENGINE_ADMIN_TOKEN        = local.engine_admin_token
    EDGE_ENGINE_BASE_URL           = module.engine.engine_base_url
    EDGE_DB_ORGID                  = local.mongodbatlas_orgid
-   EDGE_DB_TYPE                   = local.edge_mongodbatlas_db_type
-   EDGE_DB_SIZE                   = local.edge_mongodbatlas_advanced_cluster_size
-   EDGE_DB_REGION                 = local.edge_mongodbatlas_region
+   EDGE_DB_TYPE                   = local.mongodbatlas_db_type[local.env]
+   EDGE_DB_SIZE                   = local.mongodbatlas_advanced_cluster_size[local.env]
+   EDGE_DB_REGION                 = local.mongodbatlas_region[local.env]
    EDGE_DB_IP_ACCESS_LIST         = var.MONGODBATLAS_IP_ACCESS_LIST
    EDGE_SMTP_HOST                 = var.SMTP_HOST
    EDGE_SMTP_PORT                 = var.SMTP_PORT
@@ -196,7 +196,6 @@ module edge {
 
 resource "null_resource" "engine_curl_post_initialize" {
    depends_on = [ module.engine ]
-   count = (var.use_cwl && var.N_CONTAINER_INSTANCES==0) ? 0 : 1
 
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
@@ -224,7 +223,6 @@ resource "null_resource" "engine_curl_post_initialize" {
 
 resource "null_resource" "edge_curl_post_initialize" {
    depends_on = [ module.edge ]
-   count = (var.use_cwl && var.N_CONTAINER_INSTANCES==0) ? 0 : 1
 
    triggers   = { always = "${timestamp()}" }
    provisioner "local-exec" {
@@ -254,6 +252,7 @@ output "admin_secret_b64"   { value = module.edge.edge_admin_secret_b64 }
 output "version"            { value = var.VERSION }
 output "inject_link_edge"   { value = module.edge.inject_link }
 output "inject_link_engine" { value = module.engine.inject_link }
+output "dxsrv_edge_link"    { value = module.edge.dxsrv_edge_link }
 # output "instance_id"      { value = module.edge.instance_id_output }
 output "baseurl"            { value = module.edge.edge_base_url }
 output "db_conn_edge"       { value = module.edge.edge_db_conn_str }

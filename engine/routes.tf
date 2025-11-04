@@ -16,6 +16,9 @@ variable "engine_adm_v1_api" {
    }, {
       path      = "/ping"
       methods   = ["POST"]
+   }, {
+      path      = "/versions"
+      methods   = ["GET"]
    }]
 }
 

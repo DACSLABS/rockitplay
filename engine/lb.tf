@@ -34,10 +34,10 @@ locals {
 
 
 # see https://docs.oracle.com/en-us/iaas/tools/terraform-provider-oci/6.27.0/docs/r/load_balancer_backend_set.html
-resource "oci_load_balancer_backend_set" "engine_lb_backends" {
+resource "oci_load_balancer_backend_set" "engine_lb_beset" {
    count          = var.ENGINE_USE_CWL ? 1 : 0
 
-   name             = "engine-lb-backends-${local.workspace}"
+   name             = "engine-lb-beset-${local.workspace}"
 	load_balancer_id = oci_load_balancer_load_balancer.engine_lb[0].id
 
 	policy = "LEAST_CONNECTIONS"
@@ -59,7 +59,7 @@ resource "oci_load_balancer_listener" "engine_http" {
 
 	name = "engine_${local.workspace}_http"
 	load_balancer_id = oci_load_balancer_load_balancer.engine_lb[0].id
-	default_backend_set_name = oci_load_balancer_backend_set.engine_lb_backends[0].name
+	default_backend_set_name = oci_load_balancer_backend_set.engine_lb_beset[0].name
 	port = 80
 	protocol = "HTTP"
 }
@@ -68,7 +68,7 @@ resource "oci_load_balancer_listener" "engine_http" {
 resource "oci_load_balancer_backend" "engine_cwl_container" {
    count           = var.ENGINE_USE_CWL ? var.ENGINE_N_CONTAINER_INSTANCES : 0
 
-	backendset_name = oci_load_balancer_backend_set.engine_lb_backends[0].name
+	backendset_name = oci_load_balancer_backend_set.engine_lb_beset[0].name
 	ip_address = oci_container_instances_container_instance.engine_cwl[count.index].vnics[0].private_ip
 	load_balancer_id = oci_load_balancer_load_balancer.engine_lb[0].id
 	port = 3000

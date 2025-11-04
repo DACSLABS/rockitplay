@@ -33,6 +33,9 @@ variable "edge_adm_v1_api" {
    }, {
       path       = "/users/{var1}"
       methods    = ["DELETE"]
+   }, {
+      path       = "/versions"
+      methods    = ["GET"]
    }]
 }
 
