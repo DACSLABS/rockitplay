@@ -82,6 +82,9 @@ resource "oci_container_instances_container_instance" "engine_cwl" {
          "WORKSPACE"                         : local.workspace
          "INSTANCE_ID"                       : random_password.instance_id.result
          "OCI_TENANCY"                       : var.ENGINE_OCI_TENANCY_OCID
+         "OCI_NAMESPACE"                     : var.ENGINE_OCI_NAMESPACE
+         "OCI_REGION"                        : var.ENGINE_OCI_REGION
+         "OCI_AV_DOMAINS"                    : local.avDomains
          "DX_ENGINE_BASE_URL"                : "https://${local.engine_pub_hostname}.cloud.rockitplay.com"
          "DX_ENGINE_COMP_OCID"               : oci_identity_compartment.engine_comp.id
          "DX_ENGINE_VAULT_OCID"              : var.ENGINE_VAULT_OCID

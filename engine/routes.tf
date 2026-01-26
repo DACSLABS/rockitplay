@@ -5,20 +5,11 @@ variable "engine_adm_v1_api" {
       methods   = list(string)
    }))
    default = [{
-      path      = "/hello"
-      methods   = ["POST"]
-   }, {
       path      = "/orgs"
       methods   = ["GET", "POST"]
    }, {
       path      = "/orgs/{var1}"
       methods   = ["GET", "DELETE"]
-   }, {
-      path      = "/ping"
-      methods   = ["POST"]
-   }, {
-      path      = "/versions"
-      methods   = ["GET"]
    }]
 }
 
@@ -93,7 +84,16 @@ variable "engine_srv_v1_api" {
       methods   = list(string)
    }))
    default = [{
+      path      = "/hello"
+      methods   = ["POST"]
+   }, {
       path      = "/initialize"
       methods   = ["POST"]
+   }, {
+      path      = "/ping"
+      methods   = ["POST"]
+   }, {
+      path      = "/versions"
+      methods   = ["GET"]
    }]
 }

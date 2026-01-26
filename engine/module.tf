@@ -151,6 +151,9 @@ data "http" "public_ip" {
 data "oci_identity_availability_domains" "engine_availability_domains" {
    compartment_id = oci_identity_compartment.engine_comp.id
 }
+locals {
+   avDomains = join(",", [for ad in data.oci_identity_availability_domains.engine_availability_domains.availability_domains : ad.name])
+}
 
 # --- Compartments
 resource "oci_identity_compartment" "engine_comp" {

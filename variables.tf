@@ -97,6 +97,8 @@ variable "SMTP_PORT"        { type = number }
 variable "SMTP_USER"        { type = string }
 variable "SMTP_PASSWORD"    { type = string }
 
+variable "GOOGLE_CLIENT_ID"  { type = string }
+
 variable "WORKSPACE"                    { type = string }
 variable "ENGINE_SLACK_ADMIN_CHANNEL"   { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"     { type = string }

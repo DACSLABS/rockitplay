@@ -19,23 +19,14 @@ variable "edge_adm_v1_api" {
       methods   = list(string)
    }))
    default = [{
-      path       = "/hello"
-      methods    = ["POST"]
-   }, {
       path       = "/orgs"
       methods    = ["POST"]
    }, {
       path       = "/orgs/{var1}"
       methods    = ["DELETE"]
    }, {
-      path       = "/ping"
-      methods    = ["POST"]
-   }, {
       path       = "/users/{var1}"
       methods    = ["DELETE"]
-   }, {
-      path       = "/versions"
-      methods    = ["GET"]
    }]
 }
 
@@ -45,6 +36,9 @@ variable "edge_be_v1_api" {
       methods   = list(string)
    }))
    default = [{
+      path       = "/activities"
+      methods    = ["GET"]
+   }, {
       path       = "/apikeys"
       methods    = ["POST", "DELETE"]
    }, {
@@ -53,9 +47,6 @@ variable "edge_be_v1_api" {
    }, {
       path       = "/apps/{var1}"
       methods    = ["GET", "DELETE"]
-   }, {
-      path       = "/auth"
-      methods    = ["POST"]
    }, {
       path       = "/builds"
       methods    = ["POST"]
@@ -99,11 +90,17 @@ variable "edge_be_v1_api" {
       path       = "/login"
       methods    = ["POST"]
    }, {
+      path       = "/logout"
+      methods    = ["POST"]
+   }, {
       path       = "/orgs"
       methods    = ["POST"]
    }, {
       path       = "/orgs/{var1}"
       methods    = ["DELETE"]
+   }, {
+      path       = "/refresh"
+      methods    = ["POST"]
    }, {
       path       = "/resetpw"
       methods    = ["POST", "PATCH", "GET"]
@@ -199,7 +196,13 @@ variable "edge_srv_v1_api" {
       methods   = list(string)
    }))
    default = [{
+      path       = "/hello"
+      methods    = ["POST"]
+   }, {
       path       = "/initialize"
+      methods    = ["POST"]
+   }, {
+      path       = "/ping"
       methods    = ["POST"]
    }, {
       path       = "/progress"
@@ -210,5 +213,8 @@ variable "edge_srv_v1_api" {
    }, {
       path       = "/release"
       methods    = ["POST"]
+   }, {
+      path       = "/versions"
+      methods    = ["GET"]
    }]
 }

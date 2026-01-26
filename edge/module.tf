@@ -79,6 +79,10 @@ variable "EDGE_SMTP_PASSWORD"         { type = string }
 variable "EDGE_SLACK_TOKEN"           { type = string }
 variable "EDGE_SLACK_ADMIN_CHANNEL"   { type = string }
 
+variable "EDGE_GOOGLE_CLIENT_ID"      { type = string }
+
+variable "EDGE_USE_ABLY"              { type = bool}
+
 variable "EDGE_WITH_CERT" {
    type = bool
 }
@@ -181,6 +185,9 @@ data "http" "public_ip" {
 # --- Availability domains
 data "oci_identity_availability_domains" "edge_availability_domains" {
    compartment_id = oci_identity_compartment.edge_comp.id
+}
+locals {
+   avDomains = join(",", [for ad in data.oci_identity_availability_domains.edge_availability_domains.availability_domains : ad.name])
 }
 
 # --- Compartments

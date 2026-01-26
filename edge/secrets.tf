@@ -74,8 +74,8 @@ locals {
    edge_signup_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_signup_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_BE_SESSION_SECRET
-resource "random_password" "initial_edge_be_session_secret" {
+# --- EDGE_BE_REFRESH_SECRET
+resource "random_password" "initial_edge_be_refresh_secret" {
   length           = 100
   special          = true
   upper            = true
@@ -88,32 +88,32 @@ resource "random_password" "initial_edge_be_session_secret" {
   override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
 }
 
-resource "oci_vault_secret" "edge_be_session_secret" {
+resource "oci_vault_secret" "edge_be_refresh_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
    vault_id       = var.EDGE_VAULT_OCID
    key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_BE_SESSION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Secret to encode/sign backend session tokens"
+   secret_name    = nonsensitive ("EDGE_BE_REFRESH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign backend refresh tokens"
    secret_content {
       content_type = "BASE64"
-      content      = base64encode(random_password.initial_edge_be_session_secret.result)
+      content      = base64encode(random_password.initial_edge_be_refresh_secret.result)
    }
    lifecycle { ignore_changes = all }
 }
 
-data "oci_vault_secrets" "edge_be_session_secret" {
-    depends_on     = [ oci_vault_secret.edge_be_session_secret ]
+data "oci_vault_secrets" "edge_be_refresh_secret" {
+    depends_on     = [ oci_vault_secret.edge_be_refresh_secret ]
     compartment_id = oci_identity_compartment.edge_comp.id
     vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_BE_SESSION_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+    name           = nonsensitive ("EDGE_BE_REFRESH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
 }
-data "oci_secrets_secretbundle" "edge_be_session_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_session_secret.secrets.0.id }
+data "oci_secrets_secretbundle" "edge_be_refresh_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_refresh_secret.secrets.0.id }
 locals {
-   edge_be_session_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_session_secret_secretbundle.secret_bundle_content.0.content)
+   edge_be_refresh_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_refresh_secret_secretbundle.secret_bundle_content.0.content)
 }
 
-# --- EDGE_BE_AUTH_SECRET
-resource "random_password" "initial_edge_be_auth_secret" {
+# --- EDGE_BE_ACCESS_SECRET
+resource "random_password" "initial_edge_be_access_secret" {
   length           = 100
   special          = true
   upper            = true
@@ -126,28 +126,28 @@ resource "random_password" "initial_edge_be_auth_secret" {
   override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
 }
 
-resource "oci_vault_secret" "edge_be_auth_secret" {
+resource "oci_vault_secret" "edge_be_access_secret" {
    compartment_id = oci_identity_compartment.edge_comp.id
    vault_id       = var.EDGE_VAULT_OCID
    key_id         = var.EDGE_VAULT_KEY_OCID
-   secret_name    = nonsensitive ("EDGE_BE_AUTH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
-   description    = "Secret to encode/sign backend auth tokens"
+   secret_name    = nonsensitive ("EDGE_BE_ACCESS_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign backend access tokens"
    secret_content {
       content_type = "BASE64"
-      content      = base64encode(random_password.initial_edge_be_auth_secret.result)
+      content      = base64encode(random_password.initial_edge_be_access_secret.result)
    }
    lifecycle { ignore_changes = all }
 }
 
-data "oci_vault_secrets" "edge_be_auth_secret" {
-    depends_on     = [ oci_vault_secret.edge_be_auth_secret ]
+data "oci_vault_secrets" "edge_be_access_secret" {
+    depends_on     = [ oci_vault_secret.edge_be_access_secret ]
     compartment_id = oci_identity_compartment.edge_comp.id
     vault_id       = var.EDGE_VAULT_OCID
-    name           = nonsensitive ("EDGE_BE_AUTH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+    name           = nonsensitive ("EDGE_BE_ACCESS_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
 }
-data "oci_secrets_secretbundle" "edge_be_auth_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_auth_secret.secrets.0.id }
+data "oci_secrets_secretbundle" "edge_be_access_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_access_secret.secrets.0.id }
 locals {
-   edge_be_auth_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_auth_secret_secretbundle.secret_bundle_content.0.content)
+   edge_be_access_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_access_secret_secretbundle.secret_bundle_content.0.content)
 }
 
 # --- EDGE_SESSION_SECRET
@@ -674,8 +674,8 @@ locals {
 resource "time_sleep" "edge_wait_for_secrets" {
   depends_on = [
      oci_vault_secret.edge_admin_secret,
-     oci_vault_secret.edge_be_session_secret,
-     oci_vault_secret.edge_be_auth_secret,
+     oci_vault_secret.edge_be_refresh_secret,
+     oci_vault_secret.edge_be_access_secret,
      oci_vault_secret.session_edge_secret,
      oci_vault_secret.edge_ib_secret,
      oci_vault_secret.edge_auth_secret,

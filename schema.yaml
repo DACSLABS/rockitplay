@@ -77,7 +77,6 @@ groupings:
       - TEST_MONGODBATLAS_CLUSTER_SIZE
       - MONGODBATLAS_IP_ACCESS_LIST
 
-
   - title: "Slack Integration"
     visible:
       or:
@@ -101,6 +100,11 @@ groupings:
       - SMTP_PORT
       - SMTP_USER
       - SMTP_PASSWORD
+
+  - title: "Google API"
+    visible: true
+    variables:
+      - GOOGLE_CLIENT_ID
 
 variables:
 
@@ -461,3 +465,13 @@ variables:
     description: "Please enter the Id of the Slack channel which should receive
                   notifications for the site administrator, e.g, '#my-admin-channel'"
     required: true
+
+
+  # --- Google API
+  GOOGLE_CLIENT_ID:
+    type: string
+    title: "Google Client ID"
+    description: "Please enter the Google OAuth Client ID for Google Sign-In integration.
+                  You can obtain this from the Google Cloud Console.
+                  Leave empty to disable Google Sign-In."
+    required: false

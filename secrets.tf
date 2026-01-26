@@ -62,6 +62,13 @@ data "oci_vault_secrets" "slack_token_secret" {
 }
 data "oci_secrets_secretbundle" "slack_token_secretbundle" { secret_id = data.oci_vault_secrets.slack_token_secret.secrets.0.id }
 
+# --- ROCKITPLAY_ABLY_TOKEN
+data "oci_vault_secrets" "ably_token_secret" {
+    vault_id       = local.vault_ocid
+    compartment_id = local.rockitplay_comp_ocid
+    name           = "ROCKITPLAY_ABLY_TOKEN.${local.baseenv_id}"
+}
+data "oci_secrets_secretbundle" "ably_token_secretbundle" { secret_id = data.oci_vault_secrets.ably_token_secret.secrets.0.id }
 
 locals {
    with_cert                  = local.cert_ocid == "n/a" ? false : true
@@ -73,4 +80,5 @@ locals {
    mongodbatlas_admin_pubkey  = base64decode (data.oci_secrets_secretbundle.mongodbatlas_admin_pubkey_secretbundle.secret_bundle_content.0.content)
    mongodbatlas_admin_privkey = base64decode (data.oci_secrets_secretbundle.mongodbatlas_admin_privkey_secretbundle.secret_bundle_content.0.content)
    slack_token                = base64decode (data.oci_secrets_secretbundle.slack_token_secretbundle.secret_bundle_content.0.content)
+   ably_token                 = base64decode (data.oci_secrets_secretbundle.ably_token_secretbundle.secret_bundle_content.0.content)
 }

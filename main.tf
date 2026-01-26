@@ -192,6 +192,8 @@ module edge {
    EDGE_MAINTENANCE_MODE          = var.MAINTENANCE_MODE
    EDGE_SLACK_TOKEN               = local.slack_token
    EDGE_SLACK_ADMIN_CHANNEL       = var.EDGE_SLACK_ADMIN_CHANNEL
+   EDGE_GOOGLE_CLIENT_ID          = var.GOOGLE_CLIENT_ID
+   EDGE_USE_ABLY                  = (local.ably_token != "" ) ? true : false
 }
 
 resource "null_resource" "engine_curl_post_initialize" {

@@ -21,10 +21,21 @@ resource "null_resource" "import_fn_image" {
          (echo '${local.engine_registry_user_pw}' | docker login ${var.ENGINE_OCI_REGION}.ocir.io -u ${var.ENGINE_OCI_NAMESPACE}/${oci_identity_user.engine_registry_user.name} --password-stdin)
 
          rm -rf $workdir
-         docker tag  dacslabs/rockit-engine-fn:${var.ENGINE_SRC_HASH} ${local.engine_registry}/rockit-engine-fn:${var.ENGINE_SRC_HASH}
+
+         imageid=$(docker image ls --format "{{.ID}}" dacslabs/rockit-engine-fn:${var.ENGINE_SRC_HASH})
+         if test $(echo "$imageid" | wc -w) -ne 1; then
+            echo "ERROR: received unexpected image id hashes from 'docker images'. Inspect content of engine-fn.tgz."
+            exit 1
+         fi
+
+         docker tag  $imageid ${local.engine_registry}/rockit-engine-fn:${var.ENGINE_SRC_HASH}
+         docker tag  $imageid ${local.engine_registry}/rockit-engine-fn:latest
+
          docker push ${local.engine_registry}/rockit-engine-fn:${var.ENGINE_SRC_HASH}
+         docker push ${local.engine_registry}/rockit-engine-fn:latest
 
          docker rmi ${local.engine_registry}/rockit-engine-fn:${var.ENGINE_SRC_HASH}
+         docker rmi ${local.engine_registry}/rockit-engine-fn:latest
          docker rmi dacslabs/rockit-engine-fn:${var.ENGINE_SRC_HASH}
       EOT
    }
@@ -46,6 +57,9 @@ resource "oci_functions_application" "engine_app" {
       "WORKSPACE"                         : local.workspace
       "INSTANCE_ID"                       : random_password.instance_id.result
       "OCI_TENANCY"                       : var.ENGINE_OCI_TENANCY_OCID
+      "OCI_NAMESPACE"                     : var.ENGINE_OCI_NAMESPACE
+      "OCI_REGION"                        : var.ENGINE_OCI_REGION
+      "OCI_AV_DOMAINS"                    : local.avDomains
       "DX_ENGINE_COMP_OCID"               : oci_identity_compartment.engine_comp.id
       "DX_ENGINE_VAULT_OCID"              : var.ENGINE_VAULT_OCID
       "DX_ENGINE_TASK_LOG_OCID"           : oci_logging_log.engine_task_log.id

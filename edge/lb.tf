@@ -56,7 +56,7 @@ resource "oci_load_balancer_backend_set" "edge_lb_beset" {
 resource "oci_load_balancer_listener" "edge_http" {
    count          = var.EDGE_USE_CWL ? 1 : 0
 
-	name = "edge_${local.workspace}_http"
+	name = "edge-http-${local.workspace}"
 	load_balancer_id = oci_load_balancer_load_balancer.edge_lb[0].id
 	default_backend_set_name = oci_load_balancer_backend_set.edge_lb_beset[0].name
 	port = 80

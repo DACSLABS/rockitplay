@@ -82,6 +82,9 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "WORKSPACE"                                : local.workspace
          "INSTANCE_ID"                              : random_password.edge_instance_id.result
          "OCI_TENANCY"                              : var.EDGE_OCI_TENANCY_OCID
+         "OCI_NAMESPACE"                            : var.EDGE_OCI_NAMESPACE
+         "OCI_REGION"                               : var.EDGE_OCI_REGION
+         "OCI_AV_DOMAINS"                           : local.avDomains
          "DX_EDGE_BASE_URL"                         : local.edge_base_url
          "DX_EDGE_COMP_OCID"                        : oci_identity_compartment.edge_comp.id
          "DX_EDGE_VAULT_OCID"                       : var.EDGE_VAULT_OCID
@@ -100,8 +103,8 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
          "DX_EDGE_SIGNUP_SECRET_B64"                : local.edge_signup_secret_b64
          "DX_EDGE_RESETPW_SECRET_B64"               : local.edge_signup_secret_b64  // use the same secret as signup
-         "DX_EDGE_BE_SESSION_SECRET_B64"            : local.edge_be_session_secret_b64
-         "DX_EDGE_BE_AUTH_SECRET_B64"               : local.edge_be_auth_secret_b64
+         "DX_EDGE_BE_REFRESH_SECRET_B64"            : local.edge_be_refresh_secret_b64
+         "DX_EDGE_BE_ACCESS_SECRET_B64"               : local.edge_be_access_secret_b64
          "DX_EDGE_SESSION_SECRET_B64"               : local.edge_session_secret_b64
          "DX_EDGE_CLIENT_SECRET_B64"                : local.edge_client_secret_b64
          "DX_EDGE_DX_ORGTOKEN_PUBKEY_PEM_PROD_B64"  : local.orgTokenPubKeyB64.prod
@@ -122,6 +125,8 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_SMTP_PASSWORD_B64"                : base64encode(var.EDGE_SMTP_PASSWORD)
          "DX_EDGE_SLACK_TOKEN_B64"                  : base64encode(var.EDGE_SLACK_TOKEN)
          "DX_EDGE_SLACK_ADMIN_CHANNEL_B64"          : base64encode(var.EDGE_SLACK_ADMIN_CHANNEL)
+         "DX_EDGE_GOOGLE_CLIENT_ID"                 : var.EDGE_GOOGLE_CLIENT_ID
+         "DX_EDGE_ABLY_APIKEY"                      : local.edge_ably_apikey
          "DX_EDGE_DB_CONNSTR_B64"                   : local.edge_db_connstr_secret_b64
          "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
          "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64

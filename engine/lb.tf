@@ -57,7 +57,7 @@ resource "oci_load_balancer_backend_set" "engine_lb_beset" {
 resource "oci_load_balancer_listener" "engine_http" {
    count          = var.ENGINE_USE_CWL ? 1 : 0
 
-	name = "engine_${local.workspace}_http"
+  name = "engine-http-${local.workspace}"
 	load_balancer_id = oci_load_balancer_load_balancer.engine_lb[0].id
 	default_backend_set_name = oci_load_balancer_backend_set.engine_lb_beset[0].name
 	port = 80
