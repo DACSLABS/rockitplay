@@ -71,28 +71,18 @@ data "http" "edge_release_json" {
    }
 }
 locals {
-   engine_src_env   = jsondecode (data.http.engine_release_json.response_body).env
-#  engine_src_hash  = jsondecode (data.http.engine_release_json.response_body).srcHash
-   engine_fn_url    = jsondecode (data.http.engine_release_json.response_body).fn
-   engine_cwl_url   = jsondecode (data.http.engine_release_json.response_body).cwl
-   engine_task_url  = jsondecode (data.http.engine_release_json.response_body).task
-   engine_task_sig  = jsondecode (data.http.engine_release_json.response_body).taskSig
-   engine_task_hash = jsondecode (data.http.engine_release_json.response_body).taskHash
-}
-locals {
-   edge_src_env      = jsondecode (data.http.edge_release_json.response_body).env
-#  edge_src_hash     = jsondecode (data.http.edge_release_json.response_body).srcHash
-   edge_mc_url       = jsondecode (data.http.edge_release_json.response_body).mc
-   edge_mc_hash      = jsondecode (data.http.edge_release_json.response_body).mcHash
-   edge_signup_url   = jsondecode (data.http.edge_release_json.response_body).signup.url
-   edge_signup_hash  = jsondecode (data.http.edge_release_json.response_body).signup.hash
-   edge_resetpw_url  = jsondecode (data.http.edge_release_json.response_body).resetpw.url
-   edge_resetpw_hash = jsondecode (data.http.edge_release_json.response_body).resetpw.hash
-   edge_fn_url       = jsondecode (data.http.edge_release_json.response_body).fn
-   edge_cwl_url      = jsondecode (data.http.edge_release_json.response_body).cwl
-   edge_task_url     = jsondecode (data.http.edge_release_json.response_body).task
-   edge_task_sig     = jsondecode (data.http.edge_release_json.response_body).taskSig
-   edge_task_hash    = jsondecode (data.http.edge_release_json.response_body).taskHash
+   engine_src_env  = jsondecode (data.http.engine_release_json.response_body).env
+   engine_fn_url   = jsondecode (data.http.engine_release_json.response_body).fn
+   engine_cwl_url  = jsondecode (data.http.engine_release_json.response_body).cwl
+   engine_task_url = jsondecode (data.http.engine_release_json.response_body).task
+   engine_task_sig = jsondecode (data.http.engine_release_json.response_body).taskSig
+
+   edge_src_env    = jsondecode (data.http.edge_release_json.response_body).env
+   edge_html_url   = jsondecode (data.http.edge_release_json.response_body).html
+   edge_fn_url     = jsondecode (data.http.edge_release_json.response_body).fn
+   edge_cwl_url    = jsondecode (data.http.edge_release_json.response_body).cwl
+   edge_task_url   = jsondecode (data.http.edge_release_json.response_body).task
+   edge_task_sig   = jsondecode (data.http.edge_release_json.response_body).taskSig
 }
 
 module engine {
@@ -115,7 +105,8 @@ module engine {
    ENGINE_CWL_URL                   = local.engine_cwl_url
    ENGINE_TASK_URL                  = local.engine_task_url
    ENGINE_TASK_SIG                  = local.engine_task_sig
-   ENGINE_TASK_HASH                 = local.engine_task_hash
+   ENGINE_TASK_HASH                 = var.ENGINE_TASK_HASH
+   ENGINE_ROCKIT_IB_HASH            = var.ROCKIT_IB_HASH
    ENGINE_USE_CWL                   = local.USE_CWL[local.env]
    ENGINE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
    ENGINE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES
@@ -160,20 +151,17 @@ module edge {
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    EDGE_SRC_HASH                  = var.EDGE_SRC_HASH
    EDGE_SRC_ENV                   = local.edge_src_env
-   EDGE_MC_URL                    = local.edge_mc_url
-   EDGE_MC_HASH                   = var.MC_HASH
-   EDGE_SIGNUP_URL                = local.edge_signup_url
-   EDGE_SIGNUP_HASH               = local.edge_signup_hash
-   EDGE_RESETPW_URL               = local.edge_resetpw_url
-   EDGE_RESETPW_HASH              = local.edge_resetpw_hash
+   EDGE_ROCKITPLAY_HTML_URL       = local.edge_html_url
+   EDGE_ROCKITPLAY_HTML_HASH      = var.ROCKITPLAY_HTML_HASH
    EDGE_FN_URL                    = local.edge_fn_url
    EDGE_CWL_URL                   = local.edge_cwl_url
    EDGE_TASK_URL                  = local.edge_task_url
    EDGE_TASK_SIG                  = local.edge_task_sig
-   EDGE_TASK_HASH                 = local.edge_task_hash
+   EDGE_TASK_HASH                 = var.EDGE_TASK_HASH
    EDGE_USE_CWL                   = local.USE_CWL[local.env]
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
    EDGE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES
+   EDGE_USE_WAF                   = var.USE_WAF
    EDGE_DX_URL                    = local.edge_dx_url
    EDGE_RSI_BASE_URL              = var.RSI_URL
    EDGE_VAULT_OCID                = local.vault_ocid
@@ -250,16 +238,19 @@ resource "null_resource" "edge_curl_post_initialize" {
    }
 }
 
-output "admin_secret_b64"   { value = module.edge.edge_admin_secret_b64 }
-output "version"            { value = var.VERSION }
-output "inject_link_edge"   { value = module.edge.inject_link }
-output "inject_link_engine" { value = module.engine.inject_link }
-output "dxsrv_edge_link"    { value = module.edge.dxsrv_edge_link }
-# output "instance_id"      { value = module.edge.instance_id_output }
-output "baseurl"            { value = module.edge.edge_base_url }
-output "db_conn_edge"       { value = module.edge.edge_db_conn_str }
-output "db_conn_engine"     { value = module.engine.engine_db_conn_str }
-output "nat_gw_ip"          { value = module.edge.edge_nat_gw_ip }
-output "engine_src_hash"    { value = var.ENGINE_SRC_HASH }
-output "edge_src_hash"      { value = var.EDGE_SRC_HASH }
-output "mc_hash"            { value = var.MC_HASH }
+output "admin_secret_b64"     { value = module.edge.edge_admin_secret_b64 }
+output "version"              { value = var.VERSION }
+output "inject_link_edge"     { value = module.edge.inject_link }
+output "inject_link_engine"   { value = module.engine.inject_link }
+output "dxsrv_edge_link"      { value = module.edge.dxsrv_edge_link }
+# output "instance_id"        { value = module.edge.instance_id_output }
+output "baseurl"              { value = module.edge.edge_base_url }
+output "db_conn_edge"         { value = module.edge.edge_db_conn_str }
+output "db_conn_engine"       { value = module.engine.engine_db_conn_str }
+output "nat_gw_ip"            { value = module.edge.edge_nat_gw_ip }
+output "engine_src_hash"      { value = var.ENGINE_SRC_HASH }
+output "engine_task_hash"     { value = var.ENGINE_TASK_HASH }
+output "edge_src_hash"        { value = var.EDGE_SRC_HASH }
+output "edge_task_hash"       { value = var.EDGE_TASK_HASH }
+output "rockitplay_html_hash" { value = var.ROCKITPLAY_HTML_HASH }
+output "rockit_ib_hash"       { value = var.ROCKIT_IB_HASH }

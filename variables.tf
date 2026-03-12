@@ -35,6 +35,10 @@ variable "N_CONTAINER_INSTANCES" {
   type    = number
   default = 1
 }
+variable "USE_WAF" {
+  type    = bool
+  default = false
+}
 
 # --- mongodb PROD
 variable "PROD_MONGODBATLAS_DB_TYPE" {

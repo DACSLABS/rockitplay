@@ -46,6 +46,8 @@ variable "ENGINE_TASK_URL"              { type = string }
 variable "ENGINE_TASK_SIG"              { type = string }
 variable "ENGINE_TASK_HASH"             { type = string }
 
+variable "ENGINE_ROCKIT_IB_HASH"        { type = string }
+
 variable "ENGINE_USE_CWL"               { type = bool }
 variable "ENGINE_CWL_CONTAINER_SHAPE"   { type = string }
 variable "ENGINE_N_CONTAINER_INSTANCES" {

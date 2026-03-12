@@ -16,8 +16,11 @@ groupings:
       - rockit_engine_link_b64
       - VERSION
       - ENGINE_SRC_HASH
+      - ENGINE_TASK_HASH
       - EDGE_SRC_HASH
-      - MC_HASH
+      - EDGE_TASK_HASH
+      - ROCKITPLAY_HTML_HASH
+      - ROCKIT_IB_HASH
 
   - title: "ROCKITPLAY Instance"
     visible: true
@@ -40,6 +43,7 @@ groupings:
       - runtime
       - CWL_CONTAINER_SHAPE
       - N_CONTAINER_INSTANCES
+      - USE_WAF
 
   - title: "MongoDB Atlas Integration"
     visible:
@@ -227,6 +231,26 @@ variables:
     required: true
     minimum: 1
     default: 1
+
+  # --- WAF
+  USE_WAF:
+    type: boolean
+    title: "Use Web Application Firewall (WAF)"
+    description: "Enable Oracle Cloud Infrastructure Web Application Firewall (WAF)
+                  to protect your ROCKIT Edge instance from common web exploits and
+                  attacks. Please note that enabling WAF will incur additional costs
+                  based on the number of WAF rules and the amount of traffic processed."
+    visible:
+      and:
+        - ${show_advanced_settings}
+        - eq:
+          - ${runtime}
+          - "containers"
+    default:
+      and:
+        - eq:
+            - ${env_label}
+            - "prod: Production or Live Environment"
 
   # --- mongodb PROD
   PROD_MONGODBATLAS_DB_TYPE:

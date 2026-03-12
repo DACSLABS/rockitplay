@@ -42,13 +42,8 @@ variable "EDGE_ENGINE_ADMIN_TOKEN"    { type = string }
 variable "EDGE_SRC_HASH"              { type = string }
 variable "EDGE_SRC_ENV"               { type = string }
 
-variable "EDGE_MC_URL"                { type = string }
-variable "EDGE_MC_HASH"               { type = string }
-
-variable "EDGE_SIGNUP_URL"            { type = string }
-variable "EDGE_SIGNUP_HASH"           { type = string }
-variable "EDGE_RESETPW_URL"           { type = string }
-variable "EDGE_RESETPW_HASH"          { type = string }
+variable "EDGE_ROCKITPLAY_HTML_URL"   { type = string }
+variable "EDGE_ROCKITPLAY_HTML_HASH"  { type = string }
 
 variable "EDGE_FN_URL"                { type = string }
 variable "EDGE_CWL_URL"               { type = string }
@@ -65,6 +60,7 @@ variable "EDGE_N_CONTAINER_INSTANCES" {
       error_message = "Number of Edge containers must be >= 1"
    }
 }
+variable "EDGE_USE_WAF"               { type = bool }
 
 
 variable "EDGE_DX_URL"                { type = string }

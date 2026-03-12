@@ -70,15 +70,10 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_TASK_URL"                         : "${local.edge_tsk_bucket_readwrite_url}edge-task.tgz"
       "DX_EDGE_TASK_SIG"                         : var.EDGE_TASK_SIG
       "DX_EDGE_RSI_BASE_URL"                     : var.EDGE_RSI_BASE_URL
-      "DX_EDGE_ROCKIT_MC_JS"                     : local.edge_rockitmc_read_url
-      "DX_EDGE_ROCKIT_MC_HASH"                   : var.EDGE_MC_HASH
-      "DX_EDGE_SIGNUP_JS"                        : local.edge_signup_read_url
-      "DX_EDGE_SIGNUP_HASH"                      : var.EDGE_SIGNUP_HASH
-      "DX_EDGE_RESETPW_JS"                       : local.edge_resetpw_read_url
-      "DX_EDGE_RESETPW_HASH"                     : var.EDGE_RESETPW_HASH
       "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
       "DX_EDGE_SIGNUP_SECRET_B64"                : local.edge_signup_secret_b64
       "DX_EDGE_RESETPW_SECRET_B64"               : local.edge_signup_secret_b64  // use the same secret as signup
+      "DX_EDGE_BE_ORGSEL_SECRET_B64"             : local.edge_be_orgsel_secret_b64
       "DX_EDGE_BE_REFRESH_SECRET_B64"            : local.edge_be_refresh_secret_b64
       "DX_EDGE_BE_ACCESS_SECRET_B64"             : local.edge_be_access_secret_b64
       "DX_EDGE_SESSION_SECRET_B64"               : local.edge_session_secret_b64

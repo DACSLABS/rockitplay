@@ -11,6 +11,7 @@ resource "null_resource" "engine_task_file" {
    triggers = {
       # always = timestamp ()
       task_hash = var.ENGINE_TASK_HASH
+      ib_hash   = var.ENGINE_ROCKIT_IB_HASH
       # --- store destruction time data in triggers
       bucket_name = "engine-tsk-bucket-${local.workspace}"
       namespace   = var.ENGINE_OCI_NAMESPACE

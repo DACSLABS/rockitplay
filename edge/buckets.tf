@@ -1,4 +1,12 @@
 # --- Buckets
+resource "oci_objectstorage_bucket" "edge_html_bucket" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   name           = "edge-html-bucket-${local.workspace}"
+   namespace      = var.EDGE_OCI_NAMESPACE
+   object_events_enabled = false
+}
+
+
 resource "oci_objectstorage_bucket" "edge_trc_bucket" {
    compartment_id = oci_identity_compartment.edge_comp.id
    name           = "edge-trc-bucket-${local.workspace}"
@@ -94,6 +102,15 @@ resource "oci_objectstorage_object_lifecycle_policy" "edge_depot_bucket_lifecycl
 
 # --- Preauthenticated Requests
 
+resource "oci_objectstorage_preauthrequest" "edge_html_bucket_read_par" {
+   depends_on = [ oci_objectstorage_bucket.edge_html_bucket ]
+   access_type  = "AnyObjectRead"
+   bucket       = "edge-html-bucket-${local.workspace}"
+   name         = "read"
+   namespace    = var.EDGE_OCI_NAMESPACE
+   time_expires = "2030-01-01T10:00:00+02:00"
+}
+
 resource "oci_objectstorage_preauthrequest" "edge_trc_bucket_readwrite_par" {
    depends_on = [ oci_objectstorage_bucket.edge_trc_bucket ]
    access_type  = "AnyObjectReadWrite"
@@ -171,84 +188,119 @@ resource "oci_objectstorage_bucket" "edge_apps_bucket" {
    object_events_enabled = true
 }
 
-resource "oci_objectstorage_preauthrequest" "edge_rockitmc_read_par" {
-   depends_on   = [ oci_objectstorage_bucket.edge_apps_bucket ]
-   access_type  = "ObjectRead"
-   bucket       = "edge-apps-bucket-${local.workspace}"
-   name         = "read-rockitmc-only"
-   object_name  = "rockit-mc.js"
-   namespace    = var.EDGE_OCI_NAMESPACE
-   time_expires = "2030-01-01T10:00:00+02:00"
+resource "null_resource" "dl_rockitplay_html" {
+  depends_on = [oci_objectstorage_bucket.edge_html_bucket]
+
+  triggers = {
+    namespace            = var.EDGE_OCI_NAMESPACE
+    workspace            = local.workspace
+    bucket_name          = "edge-html-bucket-${local.workspace}"
+    rockitplay_html_hash = var.EDGE_ROCKITPLAY_HTML_HASH
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOT
+      set -e
+
+      # Download and extract
+      curl --fail -o rockitplay-html.tgz ${var.EDGE_ROCKITPLAY_HTML_URL}
+      tar -xzf rockitplay-html.tgz
+
+      # Clean previous uploads
+      oci os object bulk-delete \
+        --bucket-name ${self.triggers.bucket_name} \
+        --prefix "" \
+        --namespace ${self.triggers.namespace} \
+        --force
+
+      APPS="welcome mc signup resetpw"
+
+      for app in $APPS; do
+        if [ ! -d "$app" ]; then
+          echo "Warning: $app not found, skipping..."
+          continue
+        fi
+
+        sed -i 's|__GOOGLE_CLIENT_ID__|${var.EDGE_GOOGLE_CLIENT_ID}|g' $app/index.html
+
+        echo "Uploading app: $app"
+
+        # 1. Assets (long cache - immutable since files are hashed)
+        oci os object bulk-upload \
+          --bucket-name ${self.triggers.bucket_name} \
+          --src-dir "$app" \
+          --object-prefix "$app/" \
+          --include "assets/*.css" \
+          --content-type text/css \
+          --cache-control "public, max-age=31536000, immutable" \
+          --overwrite
+
+         oci os object bulk-upload \
+          --bucket-name ${self.triggers.bucket_name} \
+          --src-dir "$app" \
+          --object-prefix "$app/" \
+          --include "assets/*.js" \
+          --content-type application/javascript \
+          --cache-control "public, max-age=31536000, immutable" \
+          --overwrite
+
+         oci os object bulk-upload \
+          --bucket-name ${self.triggers.bucket_name} \
+          --src-dir "$app" \
+          --object-prefix "$app/" \
+          --include "assets/*.png" \
+          --content-type image/png \
+          --cache-control "public, max-age=31536000, immutable" \
+          --overwrite
+
+         oci os object bulk-upload \
+          --bucket-name ${self.triggers.bucket_name} \
+          --src-dir "$app" \
+          --object-prefix "$app/" \
+          --include "assets/*.jpg" \
+          --content-type image/jpeg \
+          --cache-control "public, max-age=31536000, immutable" \
+          --overwrite
+
+        # 2. HTML files (short cache / must revalidate)
+        oci os object bulk-upload \
+          --bucket-name ${self.triggers.bucket_name} \
+          --src-dir "$app" \
+          --object-prefix "$app/" \
+          --include "*.html" \
+          --content-type text/html \
+          --cache-control "public, max-age=0, must-revalidate" \
+          --overwrite
+
+      done
+
+      # cleanup
+      rm -rf rockitplay-html rockitplay-html.tgz
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      oci os object bulk-delete \
+        --bucket-name ${self.triggers.bucket_name} \
+        --prefix "" \
+        --namespace ${self.triggers.namespace} \
+        --force
+    EOT
+  }
 }
-
-resource "oci_objectstorage_preauthrequest" "edge_signup_read_par" {
-   depends_on   = [ oci_objectstorage_bucket.edge_apps_bucket ]
-   access_type  = "ObjectRead"
-   bucket       = "edge-apps-bucket-${local.workspace}"
-   name         = "read-signup-only"
-   object_name  = "rockit-edge-signup.js"
-   namespace    = var.EDGE_OCI_NAMESPACE
-   time_expires = "2030-01-01T10:00:00+02:00"
-}
-
-resource "oci_objectstorage_preauthrequest" "edge_resetpw_read_par" {
-   depends_on   = [ oci_objectstorage_bucket.edge_apps_bucket ]
-   access_type  = "ObjectRead"
-   bucket       = "edge-apps-bucket-${local.workspace}"
-   name         = "read-resetpw-only"
-   object_name  = "rockit-edge-resetpw.js"
-   namespace    = var.EDGE_OCI_NAMESPACE
-   time_expires = "2030-01-01T10:00:00+02:00"
-}
-
-resource "null_resource" "dl_apps" {
-   depends_on   = [ oci_objectstorage_bucket.edge_apps_bucket ]
-   triggers = {
-   #  always       = timestamp ()
-      mc_hash      = var.EDGE_MC_HASH
-      signup_hash  = var.EDGE_SIGNUP_HASH
-      resetpw_hash = var.EDGE_RESETPW_HASH
-      namespace    = var.EDGE_OCI_NAMESPACE
-      workspace    = local.workspace
-      bucket_name  = "edge-apps-bucket-${local.workspace}"
-   }
-
-   provisioner "local-exec" {
-      interpreter = [ "/bin/bash", "-c" ]
-      command = <<-EOT
-         set -e
-         curl --fail -o rockit-mc.js ${var.EDGE_MC_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js --file ./rockit-mc.js --content-type application/javascript --namespace ${self.triggers.namespace} --force
-
-         curl --fail -o rockit-edge-signup.js ${var.EDGE_SIGNUP_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-edge-signup.js --file ./rockit-edge-signup.js --content-type application/javascript --namespace ${self.triggers.namespace} --force
-
-         curl --fail -o rockit-edge-resetpw.js ${var.EDGE_RESETPW_URL}
-         oci os object put --bucket-name ${self.triggers.bucket_name} --name rockit-edge-resetpw.js --file ./rockit-edge-resetpw.js --content-type application/javascript --namespace ${self.triggers.namespace} --force
-      EOT
-   }
-   provisioner "local-exec" {
-      when = destroy
-      command = <<-EOT
-         oci os object delete --bucket-name ${self.triggers.bucket_name} --name rockit-edge-resetpw.js --namespace ${self.triggers.namespace} --force 2>/dev/null || true
-         oci os object delete --bucket-name ${self.triggers.bucket_name} --name rockit-edge-signup.js  --namespace ${self.triggers.namespace} --force 2>/dev/null || true
-         oci os object delete --bucket-name ${self.triggers.bucket_name} --name rockit-mc.js           --namespace ${self.triggers.namespace} --force 2>/dev/null || true
-      EOT
-   }
-}
-
 
 locals {
    dev_bucket_readwrite_par = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par[0].access_uri}" : null
 }
 
 locals {
+   edge_html_bucket_read_url       = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_html_bucket_read_par.access_uri}"
    edge_tsk_bucket_readwrite_url   = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_tsk_bucket_readwrite_par.access_uri}"
    edge_trc_bucket_readwrite_url   = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_trc_bucket_readwrite_par.access_uri}"
    edge_deps_bucket_readwrite_url  = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_deps_bucket_readwrite_par.access_uri}"
    edge_depot_bucket_read_url      = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_depot_bucket_read_par.access_uri}"
    edge_depot_bucket_readwrite_url = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_depot_bucket_readwrite_par.access_uri}"
-   edge_rockitmc_read_url          = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_rockitmc_read_par.access_uri}"
-   edge_signup_read_url            = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_signup_read_par.access_uri}"
-   edge_resetpw_read_url           = "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_resetpw_read_par.access_uri}"
 }

@@ -74,6 +74,42 @@ locals {
    edge_signup_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_signup_secret_secretbundle.secret_bundle_content.0.content)
 }
 
+# --- EDGE_BE_ORGSEL_SECRET
+resource "random_password" "initial_edge_be_orgsel_secret" {
+  length           = 100
+  special          = true
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 1
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+resource "oci_vault_secret" "edge_be_orgsel_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_BE_ORGSEL_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign backend organization selection tokens"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_be_orgsel_secret.result)
+   }
+   lifecycle { ignore_changes = all }
+}
+data "oci_vault_secrets" "edge_be_orgsel_secret" {
+    depends_on     = [ oci_vault_secret.edge_be_orgsel_secret ]
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_BE_ORGSEL_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_be_orgsel_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_be_orgsel_secret.secrets.0.id }
+locals {
+   edge_be_orgsel_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_be_orgsel_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 # --- EDGE_BE_REFRESH_SECRET
 resource "random_password" "initial_edge_be_refresh_secret" {
   length           = 100
