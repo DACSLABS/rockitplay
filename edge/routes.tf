@@ -24,6 +24,7 @@ variable "edge_api_routes" {
       method = "POST"
       endpoints_exact = [
          "orgs",
+         "commit"
       ]
    }, {
    #  prefix = "/adm/v1"
@@ -61,6 +62,7 @@ variable "edge_api_routes" {
          "deployments",
          "deps",
          "keys",
+         "library",
          "roles",
          "sources",
          "subscriptions",
@@ -118,6 +120,7 @@ variable "edge_api_routes" {
       method = "DELETE"
       endpoints_exact = [
          "apikeys",
+         "keys",
       ]
       endpoints_wildcard = [
          "apikeys",

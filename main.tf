@@ -161,7 +161,7 @@ module edge {
    EDGE_USE_CWL                   = local.USE_CWL[local.env]
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
    EDGE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES
-   EDGE_USE_WAF                   = var.USE_WAF
+   EDGE_USE_WAF                   = local.USE_WAF[local.env]
    EDGE_DX_URL                    = local.edge_dx_url
    EDGE_RSI_BASE_URL              = var.RSI_URL
    EDGE_VAULT_OCID                = local.vault_ocid

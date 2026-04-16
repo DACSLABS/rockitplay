@@ -24,7 +24,7 @@ variable "RSI_URL" {
 
 variable "runtime" {
   type    = string
-  default = "Containers"
+  default = "containers"
 }
 
 variable "CWL_CONTAINER_SHAPE" {
@@ -37,7 +37,7 @@ variable "N_CONTAINER_INSTANCES" {
 }
 variable "USE_WAF" {
   type    = bool
-  default = false
+  default = true
 }
 
 # --- mongodb PROD
@@ -125,6 +125,11 @@ locals {
     prod  = var.show_advanced_settings ? (var.runtime == "containers") : true
     stage = var.show_advanced_settings ? (var.runtime == "containers") : true
     test  = var.show_advanced_settings ? (var.runtime == "containers") : false
+  }
+  USE_WAF               = {
+    prod  = var.show_advanced_settings ? (var.runtime == "containers" && var.USE_WAF) : true
+    stage = var.show_advanced_settings ? (var.runtime == "containers" && var.USE_WAF) : true
+    test  = var.show_advanced_settings ? (var.runtime == "containers" && var.USE_WAF) : false
   }
   mongodbatlas_region   = {
     prod  = split (":", var.PROD_MONGODBATLAS_REGION_CLUSTER)[0]
