@@ -9,7 +9,7 @@ resource "null_resource" "engine_task_file" {
       time_sleep.wait_for_tsk_bucket
    ]
    triggers = {
-      # always = timestamp ()
+      always = timestamp ()
       task_hash = var.ENGINE_TASK_HASH
       ib_hash   = var.ENGINE_ROCKIT_IB_HASH
       # --- store destruction time data in triggers

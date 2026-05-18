@@ -9,7 +9,7 @@ resource "null_resource" "edge_task_file" {
       time_sleep.edge_wait_for_tsk_bucket
    ]
    triggers = {
-      # always = timestamp ()
+      always = timestamp ()
       task_hash = var.EDGE_TASK_HASH
       # --- store destruction time data in triggers
       bucket_name = "edge-tsk-bucket-${local.workspace}"

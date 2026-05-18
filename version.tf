@@ -1,10 +1,10 @@
 variable "VERSION" {
    type = number
-   default = 156
+   default = 157
 }
 variable "ENGINE_SRC_HASH" {
    type = string
-   default = "9cb8c15c57055222163ea81459d900f6"
+   default = "589ec71baec88644bb6a171b5f315f17"
 }
 variable "ENGINE_TASK_HASH" {
    type = string
@@ -12,15 +12,15 @@ variable "ENGINE_TASK_HASH" {
 }
 variable "EDGE_SRC_HASH" {
    type = string
-   default = "1bc01841628cf3967ee294f06a54dc18"
+   default = "5022d0701770885e0ea7a049651200e6"
 }
 variable "EDGE_TASK_HASH" {
    type = string
-   default = "c75a0263d7388d6d1711994dff1449ec"
+   default = "80a9cab4bcf9ff417fb7fe25047b7cc9"
 }
 variable "ROCKITPLAY_HTML_HASH" {
    type = string
-   default = "bc31a636b94095638c56a85ee512c4e6"
+   default = "684a7eb1b6f338e089335c33b1dcb6ed"
 }
 variable "ROCKIT_IB_HASH" {
    type = string
