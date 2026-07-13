@@ -246,7 +246,9 @@ locals {
       "x64",
       local.cwl_shapes[var.EDGE_CWL_CONTAINER_SHAPE].platform,
       (local.env == "test") ? local.dev_bucket_readwrite_par : "",
-      (local.env == "test" && var.EDGE_USE_CWL && var.EDGE_N_CONTAINER_INSTANCES>0) ? oci_container_instances_container_instance.edge_cwl[0].id : ""
+      (local.env == "test" && var.EDGE_USE_CWL && var.EDGE_N_CONTAINER_INSTANCES>0) ? oci_container_instances_container_instance.edge_cwl[0].id : "",
+      (local.env == "test") ? local.dev_html_bucket_readwrite_par : "",
+      var.EDGE_GOOGLE_CLIENT_ID
    ]
    inject_link_data = base64encode(join (",", local.inject_link_args))
 }
@@ -274,7 +276,7 @@ output "edge_instance_id" {
 }
 
 output "inject_link" {
-   value = local.env == "test" ? "dxinjectlnk3.edge.${nonsensitive(local.inject_link_data)}" : null
+   value = local.env == "test" ? "dxinjectlnk4.edge.${nonsensitive(local.inject_link_data)}" : null
 }
 
 output "dxsrv_edge_link" {

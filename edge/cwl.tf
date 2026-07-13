@@ -95,6 +95,8 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_TASK_SIG"                         : var.EDGE_TASK_SIG
          "DX_EDGE_RSI_BASE_URL"                     : var.EDGE_RSI_BASE_URL
          "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
+         "DX_EDGE_ADM_REFRESH_SECRET_B64"           : local.edge_adm_refresh_secret_b64
+         "DX_EDGE_ADM_ACCESS_SECRET_B64"            : local.edge_adm_access_secret_b64
          "DX_EDGE_SIGNUP_SECRET_B64"                : local.edge_signup_secret_b64
          "DX_EDGE_RESETPW_SECRET_B64"               : local.edge_signup_secret_b64  // use the same secret as signup
          "DX_EDGE_BE_ORGSEL_SECRET_B64"             : local.edge_be_orgsel_secret_b64
@@ -126,6 +128,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_TRC_BUCKET_READWRITE_URL_B64"     : local.edge_trc_bucket_rw_url_secret_b64
          "DX_EDGE_DEPS_BUCKET_READWRITE_URL_B64"    : local.edge_deps_bucket_rw_url_secret_b64
          "DX_EDGE_DEPOT_BUCKET_READ_URL_B64"        : local.edge_depot_bucket_ro_url_secret_b64
+         "DX_EDGE_CWL_INSTANCE_ID"                  : "${count.index+1}"
          "DX_HAS_CWL_EVENT_QUEUE"                   : var.EDGE_USE_CWL ? "true" : "false"
       }
    }

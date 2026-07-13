@@ -36,6 +36,82 @@ locals {
    edge_admin_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_admin_secret_secretbundle.secret_bundle_content.0.content)
 }
 
+# --- EDGE_ADM_REFRESH_SECRET
+resource "random_password" "initial_edge_adm_refresh_secret" {
+  length           = 100
+  special          = true
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 1
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+
+resource "oci_vault_secret" "edge_adm_refresh_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_ADM_REFRESH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign admin refresh tokens"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_adm_refresh_secret.result)
+   }
+   lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_adm_refresh_secret" {
+    depends_on     = [ oci_vault_secret.edge_adm_refresh_secret ]
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ADM_REFRESH_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_adm_refresh_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_adm_refresh_secret.secrets.0.id }
+locals {
+   edge_adm_refresh_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_adm_refresh_secret_secretbundle.secret_bundle_content.0.content)
+}
+
+# --- EDGE_ADM_ACCESS_SECRET
+resource "random_password" "initial_edge_adm_access_secret" {
+  length           = 100
+  special          = true
+  upper            = true
+  lower            = true
+  numeric          = true
+  min_special      = 1
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
+  override_special = "!@#$%^&*()_+-=[]{}:;<>/?"
+}
+
+resource "oci_vault_secret" "edge_adm_access_secret" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   vault_id       = var.EDGE_VAULT_OCID
+   key_id         = var.EDGE_VAULT_KEY_OCID
+   secret_name    = nonsensitive ("EDGE_ADM_ACCESS_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+   description    = "Secret to encode/sign admin access tokens"
+   secret_content {
+      content_type = "BASE64"
+      content      = base64encode(random_password.initial_edge_adm_access_secret.result)
+   }
+   lifecycle { ignore_changes = all }
+}
+
+data "oci_vault_secrets" "edge_adm_access_secret" {
+    depends_on     = [ oci_vault_secret.edge_adm_access_secret ]
+    compartment_id = oci_identity_compartment.edge_comp.id
+    vault_id       = var.EDGE_VAULT_OCID
+    name           = nonsensitive ("EDGE_ADM_ACCESS_SECRET_${local.WORKSPACE}.${random_password.edge_instance_id.result}")
+}
+data "oci_secrets_secretbundle" "edge_adm_access_secret_secretbundle" { secret_id = data.oci_vault_secrets.edge_adm_access_secret.secrets.0.id }
+locals {
+   edge_adm_access_secret_b64 = sensitive(data.oci_secrets_secretbundle.edge_adm_access_secret_secretbundle.secret_bundle_content.0.content)
+}
+
 // --- EDGE_SIGNUP_SECRET
 resource "random_password" "initial_edge_signup_secret" {
   length           = 100

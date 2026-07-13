@@ -71,6 +71,8 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_TASK_SIG"                         : var.EDGE_TASK_SIG
       "DX_EDGE_RSI_BASE_URL"                     : var.EDGE_RSI_BASE_URL
       "DX_EDGE_ADMIN_SECRET_B64"                 : local.edge_admin_secret_b64
+      "DX_EDGE_ADM_REFRESH_SECRET_B64"           : local.edge_adm_refresh_secret_b64
+      "DX_EDGE_ADM_ACCESS_SECRET_B64"            : local.edge_adm_access_secret_b64
       "DX_EDGE_SIGNUP_SECRET_B64"                : local.edge_signup_secret_b64
       "DX_EDGE_RESETPW_SECRET_B64"               : local.edge_signup_secret_b64  // use the same secret as signup
       "DX_EDGE_BE_ORGSEL_SECRET_B64"             : local.edge_be_orgsel_secret_b64

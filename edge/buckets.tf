@@ -111,6 +111,16 @@ resource "oci_objectstorage_preauthrequest" "edge_html_bucket_read_par" {
    time_expires = "2030-01-01T10:00:00+02:00"
 }
 
+resource "oci_objectstorage_preauthrequest" "edge_html_bucket_dev_readwrite_par" {
+   count        = local.env == "test" ? 1 : 0
+   depends_on   = [ oci_objectstorage_bucket.edge_html_bucket ]
+   access_type  = "AnyObjectReadWrite"
+   bucket       = "edge-html-bucket-${local.workspace}"
+   name         = "dev-read-write"
+   namespace    = var.EDGE_OCI_NAMESPACE
+   time_expires = "2030-01-01T10:00:00+02:00"
+}
+
 resource "oci_objectstorage_preauthrequest" "edge_trc_bucket_readwrite_par" {
    depends_on = [ oci_objectstorage_bucket.edge_trc_bucket ]
    access_type  = "AnyObjectReadWrite"
@@ -214,7 +224,7 @@ resource "null_resource" "dl_rockitplay_html" {
         --namespace ${self.triggers.namespace} \
         --force
 
-      APPS="welcome mc signup resetpw"
+      APPS="mc gc welcome signup resetpw pushworker"
 
       for app in $APPS; do
         if [ ! -d "$app" ]; then
@@ -222,7 +232,10 @@ resource "null_resource" "dl_rockitplay_html" {
           continue
         fi
 
-        sed -i 's|__GOOGLE_CLIENT_ID__|${var.EDGE_GOOGLE_CLIENT_ID}|g' $app/index.html
+        if test -f "$app/index.html"; then
+          echo "Replacing __GOOGLE_CLIENT_ID__ in $app/index.html"
+          sed -i 's|__GOOGLE_CLIENT_ID__|${var.EDGE_GOOGLE_CLIENT_ID}|g' $app/index.html
+        fi
 
         echo "Uploading app: $app"
 
@@ -293,7 +306,8 @@ resource "null_resource" "dl_rockitplay_html" {
 }
 
 locals {
-   dev_bucket_readwrite_par = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par[0].access_uri}" : null
+   dev_bucket_readwrite_par       = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_dev_bucket_readwrite_par[0].access_uri}" : null
+   dev_html_bucket_readwrite_par  = (local.env == "test") ? "https://objectstorage.${var.EDGE_OCI_REGION}.oraclecloud.com${oci_objectstorage_preauthrequest.edge_html_bucket_dev_readwrite_par[0].access_uri}" : null
 }
 
 locals {

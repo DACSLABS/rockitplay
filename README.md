@@ -12,7 +12,7 @@ such applications even with fast internet connections may take several hours.
 A game can only be launched on the local PC once the download is complete and
 installation has finished which takes additional time.
 
-[ROCKITPLAY FastStart](https://edge.cloud.rockitplay.com) is a progressive download technology that launches a game
+**ROCKITPLAY FastStart** is a progressive download technology that launches a game
 after downloading only a small fraction of the whole package (Preload). Depending on
 the game and the available network connection this preload may be on the order of
 only a few percent. While the game can be launched within seconds or minutes with
@@ -36,9 +36,9 @@ available (see Tab.1).
 [^4]: © 2024 Sony Interactive Entertainment Europe Limited (SIEE)
 [^5]: ©2016-2024 Take-Two Interactive Software Inc. 2K, Firaxis Games, Civilization, and their respective logos are trademarks of Take-Two Interactive Software, Inc. All rights reserved.
 
-**FastStart Demos** 
-
-Experience ROCKITPLAY FastStart first-hand. Please visit [ROCKITPLAY](https://edge.cloud.rockitplay.com).
+**FastStart Demos.** Feel free to try FastStart on your PC.
+We provided [two demo games](https://edge-boeck.cloud.rockitplay.com/demo) with FastStart.  
+More information about ROCKITPLAY can be found at [ROCKITPLAY Home](https://edge.cloud.rockitplay.com).
 
 **ROCKIT can be applied to any game.** It is not necessary to modify the game's source
 code. This is accomplished by resequencing the download data stream according to the
@@ -115,6 +115,7 @@ Terraform stack of **ROCKITPLAY Cloud Service**.
 
 Learn more about **ROCKITPLAY FastStart**: Contact [DACSLABS](https://www.dacslabs.com).  
 <a href="https://www.linkedin.com/in/frank-schwarz-rockit/recent-activity/all/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" height="20px"/></a><a href="https://www.youtube.com/watch?v=KcAgoVNso0g&t"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" height="20px"/></a>
+
 
 
 # ROCKITPLAY Cloud Service
@@ -258,6 +259,8 @@ Please contact [DACSLABS](#contact) to obtain a license for **ROCKITPLAY FastSta
 
 
 # Contact
+
+<a href="https://www.dacslabs.com"><img src="https://public.cloud.rockitplay.com/doc/dacslabs.png" width="100" /></a>
 
 DACS Laboratories GmbH  
 Niermannsweg 11-15  

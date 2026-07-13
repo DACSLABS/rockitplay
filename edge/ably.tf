@@ -11,6 +11,7 @@ resource "ably_api_key" "edge_ably_apikey" {
    name   = "rockitplay-publish-apikey"
    capabilities = {
       "rockitplay" = [ "publish", "presence", "subscribe" ],
+      "*"          = [ "push-admin", "push-subscribe" ],
    }
 }
 locals {

@@ -17,23 +17,49 @@ variable "edge_api_routes" {
 
    default = [{
       // --- /adm/v1/*
-   #  prefix = "/adm/v1"
-   #  method = "GET"
-   # }, {
+      prefix = "/adm/v1"
+      method = "GET",
+      endpoints_exact = [
+         "apps",
+         "orgs",
+         "tasks",
+         "tenants",
+         "users"
+      ]
+      endpoints_wildcard = [
+         "apps",
+         "orgs",
+         "tasks",
+         "tenants",
+         "users",
+      ]
+   }, {
       prefix = "/adm/v1"
       method = "POST"
       endpoints_exact = [
+         "commit",
+         "login",
+         "logout",
          "orgs",
-         "commit"
+         "refresh",
+         "tenants",
+         "users",
       ]
    }, {
-   #  prefix = "/adm/v1"
-   #  method = "PATCH"
-   # }, {
+      prefix = "/adm/v1"
+      method = "PATCH"
+      endpoints_exact = [
+         "apps",
+         "orgs",
+         "tenants",
+         "users",
+      ]
+   }, {
       prefix = "/adm/v1"
       method = "DELETE"
       endpoints_wildcard = [
          "orgs",
+         "tenants",
          "users",
       ]
    }, {
@@ -44,31 +70,37 @@ variable "edge_api_routes" {
       endpoints_exact = [
          "activities",
          "apps",
-         "bundles",
          "deployments",
          "deps",
          "keys",
          "library",
+         "messages",
+         "notifications",
+         "packages",
          "roles",
          "sources",
          "subscriptions",
          "tasks",
          "trainings",
          "users",
+         "workbench",
       ]
       endpoints_wildcard = [
          "apps",
-         "bundles",
          "deployments",
          "deps",
          "keys",
          "library",
+         "messages",
+         "notifications",
+         "packages",
          "roles",
          "sources",
          "subscriptions",
          "tasks",
          "trainings",
          "users",
+         "workbench",
       ]
    }, {
       prefix = "/be/v1"
@@ -77,7 +109,6 @@ variable "edge_api_routes" {
          "apikeys",
          "apps",
          "builds",
-         "bundles",
          "commit",
          "deployments",
          "deps",
@@ -86,7 +117,8 @@ variable "edge_api_routes" {
          "keys",
          "login",
          "logout",
-         "orgs",
+         "notifications",
+         "packages",
          "refresh",
          "resetpw",
          "roles",
@@ -103,17 +135,22 @@ variable "edge_api_routes" {
       method = "PATCH"
       endpoints_exact = [
          "apps",
-         "bundles",
          "deployments",
          "deps",
          "keys",
          "orgs",
+         "packages",
          "resetpw",
          "roles",
          "sources",
          "tasks",
          "trainings",
          "users",
+         "workbench",
+         "messages",
+      ]
+      endpoints_wildcard = [
+         "messages",
       ]
    }, {
       prefix = "/be/v1"
@@ -125,11 +162,12 @@ variable "edge_api_routes" {
       endpoints_wildcard = [
          "apikeys",
          "apps",
-         "bundles",
          "deployments",
          "deps",
          "keys",
+         "notifications",
          "orgs",
+         "packages",
          "roles",
          "sources",
          "subscriptions",
@@ -141,11 +179,11 @@ variable "edge_api_routes" {
       prefix = "/client/v1"
       method = "GET"
       endpoints_exact = [
-         "bundles",
+         "packages",
          "rsi",
       ]
       endpoints_wildcard = [
-         "bundles",
+         "packages",
          "deps",
       ]
    }, {
@@ -215,16 +253,22 @@ variable "edge_api_static" {
       id   = string
    }))
    default = [{
-      path = "/"
-      id   = "welcome"
-   }, {
       path = "/apps/mc"
       id   = "mc"
+   }, {
+      path = "/apps/gc"
+      id   = "gc"
    }, {
       path = "/apps/signup"
       id   = "signup"
    }, {
       path = "/apps/resetpw"
       id   = "resetpw"
+   }, {
+      path = "/"
+      id   = "welcome"
+   }, {
+      path = "/apps/pushworker"
+      id   = "pushworker"
    }]
 }
