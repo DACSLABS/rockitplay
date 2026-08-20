@@ -1,3 +1,61 @@
+# OCI limits: 100 rules/policy, 1024 chars per JMESPath condition.
+# Clauses are chunked conservatively (8 per rule) so merged exact+wildcard
+# expressions stay under the character cap as routes grow.
+
+locals {
+   waf_condition_max_length = 1024
+   # Longest clauses pair exact+i_starts_with (~112 chars); 8 fit safely under 1024.
+   waf_clauses_per_rule = 8
+
+   waf_access_route_defs = concat(var.edge_api_routes, var.edge_api_srv_routes)
+
+   waf_access_route_clauses = {
+      for route in local.waf_access_route_defs :
+      "${route.method}${replace(route.prefix, "/", "_")}" => concat(
+         [
+            for ep in route.endpoints_exact :
+            contains(route.endpoints_wildcard, ep)
+            ? "i_equals(http.request.url.path, '${route.prefix}/${ep}') || i_starts_with(http.request.url.path, '${route.prefix}/${ep}/')"
+            : "i_equals(http.request.url.path, '${route.prefix}/${ep}')"
+         ],
+         [
+            for wc in route.endpoints_wildcard :
+            "i_starts_with(http.request.url.path, '${route.prefix}/${wc}/')"
+            if !contains(route.endpoints_exact, wc)
+         ]
+      )
+   }
+
+   waf_access_rules = flatten([
+      for route in local.waf_access_route_defs : [
+         for chunk_idx, chunk in chunklist(
+            local.waf_access_route_clauses["${route.method}${replace(route.prefix, "/", "_")}"],
+            local.waf_clauses_per_rule
+         ) : {
+            name = (
+               length(chunklist(
+                  local.waf_access_route_clauses["${route.method}${replace(route.prefix, "/", "_")}"],
+                  local.waf_clauses_per_rule
+               )) == 1
+               ? "${route.method}${replace(route.prefix, "/", "_")}"
+               : "${route.method}${replace(route.prefix, "/", "_")}_${chunk_idx + 1}"
+            )
+            condition = "i_equals(http.request.method, '${route.method}') && (${join(" || ", chunk)})"
+         }
+      ]
+   ])
+}
+
+check "waf_access_rule_condition_length" {
+   assert {
+      condition = alltrue([
+         for rule in local.waf_access_rules : length(rule.condition) <= local.waf_condition_max_length
+      ])
+      error_message = "A consolidated WAF access rule exceeds the OCI JMESPath condition limit (1024 characters). Reduce waf_clauses_per_rule or split routes manually."
+   }
+}
+
+
 resource "oci_waf_web_app_firewall_policy" "edge_waf_pol" {
    count          = (var.EDGE_USE_WAF && var.EDGE_USE_CWL) ? 1 : 0
    display_name   = "edge-waf-pol-${local.workspace}"
@@ -86,67 +144,14 @@ resource "oci_waf_web_app_firewall_policy" "edge_waf_pol" {
    request_access_control {
       default_action_name = "no-such-route"
 
-      # --- ROCKITPLAY public endpoints
       dynamic "rules" {
-         for_each = flatten([
-         for route in var.edge_api_routes : concat(
-            [for exact in route.endpoints_exact : {
-               key         = "exact_${route.method}${replace(route.prefix, "/", "_")}_${exact}"
-               method      = route.method
-               full_path   = "${route.prefix}/${exact}"
-               is_wildcard = false
-            }],
-            [for wc in route.endpoints_wildcard : {
-               key         = "wildcard_${route.method}${replace(route.prefix, "/", "_")}_${wc}"
-               method      = route.method
-               full_path   = "${route.prefix}/${wc}"
-               is_wildcard = true
-            }]
-         )
-         ])
+         for_each = { for rule in local.waf_access_rules : rule.name => rule }
          content {
-            name               = rules.value.key
+            name               = rules.key
             action_name        = "allow"
             type               = "ACCESS_CONTROL"
             condition_language = "JMESPATH"
-
-            condition = (
-               rules.value.is_wildcard
-               ? "i_equals(http.request.method, '${rules.value.method}') && i_starts_with(http.request.url.path, '${rules.value.full_path}/')"
-               : "i_equals(http.request.method, '${rules.value.method}') && i_equals(http.request.url.path, '${rules.value.full_path}')"
-            )
-         }
-      }
-
-      # --- ROCKITPLAY service endpoints
-      dynamic "rules" {
-         for_each = flatten([
-         for route in var.edge_api_srv_routes : concat(
-            [for exact in route.endpoints_exact : {
-               key         = "exact_${route.method}${replace(route.prefix, "/", "_")}_${exact}"
-               method      = route.method
-               full_path   = "${route.prefix}/${exact}"
-               is_wildcard = false
-            }],
-            [for wc in route.endpoints_wildcard : {
-               key         = "wildcard_${route.method}${replace(route.prefix, "/", "_")}_${wc}"
-               method      = route.method
-               full_path   = "${route.prefix}/${wc}"
-               is_wildcard = true
-            }]
-         )
-         ])
-         content {
-            name               = rules.value.key
-            action_name        = "allow"
-            type               = "ACCESS_CONTROL"
-            condition_language = "JMESPATH"
-
-            condition = (
-               rules.value.is_wildcard
-               ? "i_equals(http.request.method, '${rules.value.method}') && i_starts_with(http.request.url.path, '${rules.value.full_path}/')"
-               : "i_equals(http.request.method, '${rules.value.method}') && i_equals(http.request.url.path, '${rules.value.full_path}')"
-            )
+            condition          = rules.value.condition
          }
       }
    }

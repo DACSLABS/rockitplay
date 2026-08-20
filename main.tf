@@ -196,7 +196,11 @@ resource "null_resource" "engine_curl_post_initialize" {
          token=$(./engine/gen-admin-token.sh '${module.engine.admin_secret_b64}' 'engine-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-            curl --fail --insecure -H "x-rockit-engine-admin-token: $token" -X POST $ENGINE_BASE_URL/srv/v1/initialize
+            curl --fail --insecure \
+               -H "x-rockit-engine-admin-token: $token" \
+               -H "Content-Type: application/json" \
+               -d '{"maintenance":${var.MAINTENANCE_MODE}}' \
+               -X POST $ENGINE_BASE_URL/srv/v1/initialize
             if test $? -eq 0; then
                break
             fi
@@ -223,7 +227,11 @@ resource "null_resource" "edge_curl_post_initialize" {
          token=$(./edge/gen-admin-token.sh '${module.edge.edge_admin_secret_b64}' 'edge-stack')
          nRetries=0
          until [ $nRetries -ge 10 ]; do
-            curl --fail --insecure -H "x-rockit-admin-token: $token" -X POST $EDGE_BASE_URL/srv/v1/initialize
+            curl --fail --insecure \
+               -H "x-rockit-admin-token: $token" \
+               -H "Content-Type: application/json" \
+               -d '{"maintenance":${var.MAINTENANCE_MODE}}' \
+               -X POST $EDGE_BASE_URL/srv/v1/initialize
             if test $? -eq 0; then
                break
             fi

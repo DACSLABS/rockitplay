@@ -10,6 +10,9 @@ variable "engine_adm_v1_api" {
    }, {
       path      = "/orgs/{var1}"
       methods   = ["GET", "DELETE"]
+   }, {
+      path      = "/system"
+      methods   = ["GET", "PATCH"]
    }]
 }
 

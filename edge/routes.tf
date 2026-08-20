@@ -22,6 +22,7 @@ variable "edge_api_routes" {
       endpoints_exact = [
          "apps",
          "orgs",
+         "system",
          "tasks",
          "tenants",
          "users"
@@ -51,6 +52,7 @@ variable "edge_api_routes" {
       endpoints_exact = [
          "apps",
          "orgs",
+         "system",
          "tenants",
          "users",
       ]
@@ -72,6 +74,7 @@ variable "edge_api_routes" {
          "apps",
          "deployments",
          "deps",
+         "jobs",
          "keys",
          "library",
          "messages",
@@ -89,6 +92,7 @@ variable "edge_api_routes" {
          "apps",
          "deployments",
          "deps",
+         "jobs",
          "keys",
          "library",
          "messages",
