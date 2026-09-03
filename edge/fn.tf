@@ -91,6 +91,7 @@ resource "oci_functions_application" "edge_app" {
       "DX_EDGE_ENGINE_SUBSCRIPTION_SECRET_B64"   : local.edge_engine_subscription_secret_b64
       "DX_EDGE_SUBSCRIPTION_SECRET_B64"          : local.edge_subscription_secret_b64
       "DX_EDGE_DEPLOYMENT_SECRET_B64"            : local.edge_deployment_secret_b64
+      "DX_EDGE_ARCHIVE_SECRET_B64"               : local.edge_archive_secret_b64
       "DX_EDGE_SOURCE_SECRET_B64"                : local.edge_source_secret_b64
       "DX_EDGE_SMTP_HOST"                        : var.EDGE_SMTP_HOST
       "DX_EDGE_SMTP_PORT"                        : var.EDGE_SMTP_PORT

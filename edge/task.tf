@@ -29,3 +29,33 @@ resource "null_resource" "edge_task_file" {
       command = "oci os object delete --bucket-name ${self.triggers.bucket_name} --name edge-task.tgz --namespace ${self.triggers.namespace} --force || true"
    }
 }
+
+resource "null_resource" "edge_backrest_files" {
+   depends_on = [
+      oci_objectstorage_bucket.edge_tsk_bucket,
+      time_sleep.edge_wait_for_tsk_bucket
+   ]
+   triggers = {
+      always = timestamp ()
+      backrest_hash = var.EDGE_BACKREST_HASH
+      # --- store destruction time data in triggers
+      bucket_name = "edge-tsk-bucket-${local.workspace}"
+      namespace   = var.EDGE_OCI_NAMESPACE
+   }
+
+   provisioner "local-exec" {
+      interpreter = [ "/bin/bash", "-c" ]
+      command = <<-EOT
+         set -e
+         curl -o ./backrest.tgz ${var.EDGE_BACKREST_URL}
+         tar xvzf ./backrest.tgz
+
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name backrest --file ./backrest --namespace ${self.triggers.namespace} --force --no-multipart
+         oci os object put --bucket-name ${self.triggers.bucket_name} --name dxhttp --file ./dxhttp --namespace ${self.triggers.namespace} --force --no-multipart
+      EOT
+   }
+   provisioner "local-exec" {
+      when = destroy
+      command = "oci os object delete --bucket-name ${self.triggers.bucket_name} --name backrest --namespace ${self.triggers.namespace} --force || true"
+   }
+}

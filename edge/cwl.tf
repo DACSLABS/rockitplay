@@ -115,6 +115,7 @@ resource "oci_container_instances_container_instance" "edge_cwl" {
          "DX_EDGE_ENGINE_SUBSCRIPTION_SECRET_B64"   : local.edge_engine_subscription_secret_b64
          "DX_EDGE_SUBSCRIPTION_SECRET_B64"          : local.edge_subscription_secret_b64
          "DX_EDGE_DEPLOYMENT_SECRET_B64"            : local.edge_deployment_secret_b64
+         "DX_EDGE_ARCHIVE_SECRET_B64"               : local.edge_archive_secret_b64
          "DX_EDGE_SOURCE_SECRET_B64"                : local.edge_source_secret_b64
          "DX_EDGE_SMTP_HOST"                        : var.EDGE_SMTP_HOST
          "DX_EDGE_SMTP_PORT"                        : var.EDGE_SMTP_PORT

@@ -72,6 +72,7 @@ variable "edge_api_routes" {
       endpoints_exact = [
          "activities",
          "apps",
+         "archives",
          "deployments",
          "deps",
          "jobs",
@@ -90,6 +91,7 @@ variable "edge_api_routes" {
       ]
       endpoints_wildcard = [
          "apps",
+         "archives",
          "deployments",
          "deps",
          "jobs",
@@ -112,6 +114,8 @@ variable "edge_api_routes" {
       endpoints_exact = [
          "apikeys",
          "apps",
+         "archives",
+         "backup",
          "builds",
          "commit",
          "deployments",
@@ -125,6 +129,7 @@ variable "edge_api_routes" {
          "packages",
          "refresh",
          "resetpw",
+         "restore",
          "roles",
          "signup",
          "sources",
@@ -139,6 +144,7 @@ variable "edge_api_routes" {
       method = "PATCH"
       endpoints_exact = [
          "apps",
+         "archives",
          "deployments",
          "deps",
          "keys",
@@ -166,6 +172,7 @@ variable "edge_api_routes" {
       endpoints_wildcard = [
          "apikeys",
          "apps",
+         "archives",
          "deployments",
          "deps",
          "keys",

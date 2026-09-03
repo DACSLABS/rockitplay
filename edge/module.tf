@@ -50,6 +50,9 @@ variable "EDGE_CWL_URL"               { type = string }
 variable "EDGE_TASK_URL"              { type = string }
 variable "EDGE_TASK_SIG"              { type = string }
 variable "EDGE_TASK_HASH"             { type = string }
+variable "EDGE_BACKREST_URL"          { type = string }
+variable "EDGE_BACKREST_SIG"          { type = string }
+variable "EDGE_BACKREST_HASH"         { type = string }
 
 variable "EDGE_USE_CWL"               { type = bool }
 variable "EDGE_CWL_CONTAINER_SHAPE"   { type = string }

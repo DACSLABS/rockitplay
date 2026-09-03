@@ -77,12 +77,14 @@ locals {
    engine_task_url = jsondecode (data.http.engine_release_json.response_body).task
    engine_task_sig = jsondecode (data.http.engine_release_json.response_body).taskSig
 
-   edge_src_env    = jsondecode (data.http.edge_release_json.response_body).env
-   edge_html_url   = jsondecode (data.http.edge_release_json.response_body).html
-   edge_fn_url     = jsondecode (data.http.edge_release_json.response_body).fn
-   edge_cwl_url    = jsondecode (data.http.edge_release_json.response_body).cwl
-   edge_task_url   = jsondecode (data.http.edge_release_json.response_body).task
-   edge_task_sig   = jsondecode (data.http.edge_release_json.response_body).taskSig
+   edge_src_env      = jsondecode (data.http.edge_release_json.response_body).env
+   edge_html_url     = jsondecode (data.http.edge_release_json.response_body).html
+   edge_fn_url       = jsondecode (data.http.edge_release_json.response_body).fn
+   edge_cwl_url      = jsondecode (data.http.edge_release_json.response_body).cwl
+   edge_task_url     = jsondecode (data.http.edge_release_json.response_body).task
+   edge_task_sig     = jsondecode (data.http.edge_release_json.response_body).taskSig
+   edge_backrest_url = jsondecode (data.http.edge_release_json.response_body).backrest
+   edge_backrest_sig = jsondecode (data.http.edge_release_json.response_body).backrestSig
 }
 
 module engine {
@@ -158,6 +160,9 @@ module edge {
    EDGE_TASK_URL                  = local.edge_task_url
    EDGE_TASK_SIG                  = local.edge_task_sig
    EDGE_TASK_HASH                 = var.EDGE_TASK_HASH
+   EDGE_BACKREST_URL              = local.edge_backrest_url
+   EDGE_BACKREST_SIG              = local.edge_backrest_sig
+   EDGE_BACKREST_HASH             = var.EDGE_BACKREST_HASH
    EDGE_USE_CWL                   = local.USE_CWL[local.env]
    EDGE_CWL_CONTAINER_SHAPE       = var.CWL_CONTAINER_SHAPE
    EDGE_N_CONTAINER_INSTANCES     = var.N_CONTAINER_INSTANCES

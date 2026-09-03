@@ -198,6 +198,37 @@ resource "oci_objectstorage_bucket" "edge_apps_bucket" {
    object_events_enabled = true
 }
 
+resource "oci_objectstorage_bucket" "edge_import_bucket" {
+   compartment_id = oci_identity_compartment.edge_comp.id
+   name           = "edge-import-bucket-${local.workspace}"
+   namespace      = var.EDGE_OCI_NAMESPACE
+   object_events_enabled = false
+}
+resource "oci_objectstorage_object_lifecycle_policy" "edge_import_bucket_lifecycle" {
+   depends_on = [
+      oci_objectstorage_bucket.edge_import_bucket,
+      oci_identity_policy.edge_workspace_depl_pol
+   ]
+   bucket     = "edge-import-bucket-${local.workspace}"
+   namespace  = var.EDGE_OCI_NAMESPACE
+   rules {
+      target = "multipart-uploads"
+      action = "ABORT"
+      is_enabled = true
+      name = "delete uncommitted multipart uploads"
+      time_amount = 1
+      time_unit = "DAYS"
+   }
+   rules {
+      target = "objects"
+      action = "DELETE"
+      is_enabled = true
+      name = "delete objects"  # all data is temporary in this bucket
+      time_amount = 1
+      time_unit = "DAYS"
+   }
+}
+
 resource "null_resource" "dl_rockitplay_html" {
   depends_on = [oci_objectstorage_bucket.edge_html_bucket]
 
