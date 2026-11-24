@@ -71,13 +71,11 @@ data "http" "edge_release_json" {
    }
 }
 locals {
-   engine_src_env  = jsondecode (data.http.engine_release_json.response_body).env
    engine_fn_url   = jsondecode (data.http.engine_release_json.response_body).fn
    engine_cwl_url  = jsondecode (data.http.engine_release_json.response_body).cwl
    engine_task_url = jsondecode (data.http.engine_release_json.response_body).task
    engine_task_sig = jsondecode (data.http.engine_release_json.response_body).taskSig
 
-   edge_src_env      = jsondecode (data.http.edge_release_json.response_body).env
    edge_html_url     = jsondecode (data.http.edge_release_json.response_body).html
    edge_fn_url       = jsondecode (data.http.edge_release_json.response_body).fn
    edge_cwl_url      = jsondecode (data.http.edge_release_json.response_body).cwl
@@ -102,7 +100,6 @@ module engine {
    ENGINE_DNS_ZONE_OCID             = local.dns_zone_ocid
    ENGINE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    ENGINE_SRC_HASH                  = var.ENGINE_SRC_HASH
-   ENGINE_SRC_ENV                   = local.engine_src_env
    ENGINE_FN_URL                    = local.engine_fn_url
    ENGINE_CWL_URL                   = local.engine_cwl_url
    ENGINE_TASK_URL                  = local.engine_task_url
@@ -152,7 +149,6 @@ module edge {
    EDGE_DNS_ZONE_OCID             = local.dns_zone_ocid
    EDGE_LOADER_IMG_OCID           = local.rockitplay_loader_img_ocid
    EDGE_SRC_HASH                  = var.EDGE_SRC_HASH
-   EDGE_SRC_ENV                   = local.edge_src_env
    EDGE_ROCKITPLAY_HTML_URL       = local.edge_html_url
    EDGE_ROCKITPLAY_HTML_HASH      = var.ROCKITPLAY_HTML_HASH
    EDGE_FN_URL                    = local.edge_fn_url

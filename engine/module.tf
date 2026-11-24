@@ -35,10 +35,7 @@ variable "ENGINE_DB_SIZE"               { type = string }
 variable "ENGINE_DB_REGION"             { type = string }
 variable "ENGINE_DB_IP_ACCESS_LIST"     { type = string }
 
-
 variable "ENGINE_SRC_HASH"              { type = string }
-variable "ENGINE_SRC_ENV"               { type = string }
-
 
 variable "ENGINE_FN_URL"                { type = string }
 variable "ENGINE_CWL_URL"               { type = string }

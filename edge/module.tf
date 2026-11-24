@@ -40,7 +40,6 @@ variable "EDGE_ENGINE_BASE_URL"       { type = string }
 variable "EDGE_ENGINE_ADMIN_TOKEN"    { type = string }
 
 variable "EDGE_SRC_HASH"              { type = string }
-variable "EDGE_SRC_ENV"               { type = string }
 
 variable "EDGE_ROCKITPLAY_HTML_URL"   { type = string }
 variable "EDGE_ROCKITPLAY_HTML_HASH"  { type = string }
